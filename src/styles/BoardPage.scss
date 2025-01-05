@@ -1,0 +1,69 @@
+.main-page {
+  width: 100vw; // 뷰포트 전체 너비
+  height: calc(100vh - 150px); // 네브바 및 푸터를 뺀 높이
+  padding: 0; // 전체적인 여백 제거
+  margin: 0;
+  overflow-y: auto; // 스크롤바 활성화
+  background-color: #f9f9f9;
+
+  .main-section {
+    width: 86%;
+    max-width: 1200px; // 최대 너비 설정
+    margin: 0 auto; // 화면 중앙 정렬
+    padding: 40px 20px; // 내부 여백 설정
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      color: #001f5c;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .post-item {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 8px;
+        transition: box-shadow 0.2s ease-in-out;
+        background-color: #f9f9f9;
+
+        &:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+          margin: 0 0 10px;
+          font-size: 1.5rem;
+          color: #001f5c;
+        }
+
+        p {
+          margin-bottom: 10px;
+          color: #333;
+          font-size: 1rem;
+        }
+
+        .post-info {
+          display: flex;
+          justify-content: flex-end;
+          gap: 15px;
+          font-size: 0.9rem;
+          color: #777;
+
+          span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+        }
+      }
+    }
+  }
+}
