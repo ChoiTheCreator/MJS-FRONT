@@ -52,6 +52,7 @@ const navbarStyle = css`
 
     @media (max-width: 1024px) {
       display: block;
+      margin-left: 20px; /* 햄버거 메뉴와 로고 사이 간격 추가 */
     }
   }
 
@@ -63,6 +64,7 @@ const navbarStyle = css`
     @media (max-width: 1024px) {
       display: none;
       flex-direction: column;
+      align-items: flex-end;
       width: 100%;
       padding: 10px 0;
       background-color: ${navbarBgColor};
@@ -85,7 +87,13 @@ const navbarStyle = css`
   }
 
   .menu-open {
-    display: flex !important; /* 강제로 메뉴 보이기 */
+    display: flex !important;
+  }
+
+  @media (max-width: 1024px) {
+    .logo {
+      padding-right: 15px; /* 로고와 햄버거 메뉴 사이의 간격을 넓히기 위한 패딩 */
+    }
   }
 `;
 

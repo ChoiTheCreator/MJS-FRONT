@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaPen } from 'react-icons/fa';
 
 const boardPageStyle = css`
   display: flex;
@@ -9,12 +11,12 @@ const boardPageStyle = css`
   min-height: calc(100vh - 150px); // 화면 높이를 최소 100vh로 설정
   padding: 0;
   margin: 0;
-  overflow-y: hidden; // 부모 컨테이너의 스크롤 제거
+  overflow-y: hidden;
   background-color: #f9f9f9;
 `;
 
 const mainSectionStyle = css`
-  flex-grow: 1; // 남은 공간을 차지하도록
+  flex-grow: 1;
   width: 86%;
   max-width: 1200px;
   margin: 20px auto;
@@ -22,14 +24,43 @@ const mainSectionStyle = css`
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; // 게시판 컨텐츠 스크롤 가능
+  overflow-y: auto;
+  position: relative;
+`;
+
+const headingContainerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 `;
 
 const headingStyle = css`
   color: #001f5c;
-  margin-bottom: 20px;
   font-size: 2rem;
-  text-align: center;
+`;
+
+const writeButtonStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #001f5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #003cb3;
+  }
+
+  svg {
+    font-size: 1.2rem;
+  }
 `;
 
 const postListStyle = css`
@@ -80,7 +111,13 @@ const BoardPage = () => {
   return (
     <div css={boardPageStyle}>
       <div css={mainSectionStyle}>
-        <h2 css={headingStyle}>자유 게시판</h2>
+        <div css={headingContainerStyle}>
+          <h2 css={headingStyle}>자유 게시판</h2>
+          <Link to="/write" css={writeButtonStyle}>
+            <FaPen />
+            글쓰기
+          </Link>
+        </div>
         <div css={postListStyle}>
           {[...Array(7)].map((_, index) => (
             <div key={index} css={postItemStyle}>
