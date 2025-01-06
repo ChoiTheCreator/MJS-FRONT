@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
+import { FiLogOut } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const profileComponentStyle = css`
   display: flex;
@@ -41,19 +43,16 @@ const profileComponentStyle = css`
       }
     }
 
-    .profile-edit-btn {
+    .logout-btn {
       margin-left: auto;
-      background-color: #001f5c;
-      color: white;
-      padding: 10px 20px;
+      background-color: transparent;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9rem;
+      color: #001f5c;
+      font-size: 1.5rem;
 
       &:hover {
-        background-color: #003cb3;
+        color: #ff4d4d;
       }
     }
   }
@@ -92,6 +91,16 @@ const profileComponentStyle = css`
 `;
 
 const ProfileComponent = () => {
+  const navigate = useNavigate();
+
+  // 로그아웃 함수
+  const handleLogout = () => {
+    // auth 로직: 로그아웃 처리 (로컬 스토리지 제거 등)
+    localStorage.removeItem('userToken');
+    alert('로그아웃되었습니다.');
+    navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
+  };
+
   return (
     <div css={profileComponentStyle}>
       <div className="profile-card">
@@ -101,10 +110,12 @@ const ProfileComponent = () => {
           alt="Profile"
         />
         <div className="profile-details">
-          <h4 className="profile-name">최원빈</h4>
-          <p className="profile-email">wonbin109@mju.ac.kr</p>
+          <h4 className="profile-name">남보라</h4>
+          <p className="profile-email">skaqhfk00@mju.ac.kr</p>
         </div>
-        <button className="profile-edit-btn">프로필 수정</button>
+        <button className="logout-btn" onClick={handleLogout} title="로그아웃">
+          <FiLogOut />
+        </button>
       </div>
 
       <div className="profile-navbar">

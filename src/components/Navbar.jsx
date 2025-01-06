@@ -1,17 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../IMG/schoolLogo.png';
 
 // 색상 변수
 const navbarBgColor = '#002f6c';
 const textColor = '#ffffff';
-const hoverColor = 'rgba(255, 255, 255, 0.8)';
 const hoverBgColor = 'rgba(255, 255, 255, 0.2)';
 const borderRadius = '5px';
 
-// 스타일 정의
 const navbarStyle = css`
   width: 100%;
   background-color: ${navbarBgColor};
@@ -46,10 +44,29 @@ const navbarStyle = css`
     }
   }
 
+  .hamburger-menu {
+    display: none;
+    font-size: 1.8rem;
+    color: ${textColor};
+    cursor: pointer;
+
+    @media (max-width: 1024px) {
+      display: block;
+    }
+  }
+
   .menu {
     display: flex;
     list-style: none;
     gap: 20px;
+
+    @media (max-width: 1024px) {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      padding: 10px 0;
+      background-color: ${navbarBgColor};
+    }
 
     li {
       a {
@@ -61,17 +78,24 @@ const navbarStyle = css`
         transition: all 0.3s ease-in-out;
 
         &:hover {
-          color: ${navbarBgColor};
           background-color: ${hoverBgColor};
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-          transform: scale(1.05);
         }
       }
     }
   }
+
+  .menu-open {
+    display: flex !important; /* 강제로 메뉴 보이기 */
+  }
 `;
 
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
   return (
     <nav css={navbarStyle}>
       <div className="navbar-container">
@@ -83,8 +107,13 @@ const Navbar = () => {
           </Link>
         </div>
 
+        {/* 햄버거 메뉴 */}
+        <div className="hamburger-menu" onClick={toggleMenu}>
+          ☰
+        </div>
+
         {/* 메뉴 */}
-        <ul className="menu">
+        <ul className={`menu ${menuOpen ? 'menu-open' : ''}`}>
           <li>
             <Link to="/info">학과정보</Link>
           </li>

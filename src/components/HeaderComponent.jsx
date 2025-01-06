@@ -1,4 +1,3 @@
-/*eslint-disable */
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
@@ -88,16 +87,21 @@ const headerContainerStyle = css`
     margin-top: 70px;
     flex-shrink: 0;
     width: 25%;
+
+    @media (max-width: 1024px) {
+      display: none; /* 1024px 이하 화면에서 프로필 섹션 숨기기 */
+    }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     flex-direction: column;
     align-items: center;
+    padding: 15px;
 
-    .left-section,
-    .profile-wrapper {
+    .left-section {
       width: 100%;
       margin-left: 0;
+      margin-top: 0;
     }
 
     .highlight-and-search {

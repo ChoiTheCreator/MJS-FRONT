@@ -1,25 +1,28 @@
-/*eslint-disable */
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
 
 const boardPageStyle = css`
+  display: flex;
+  flex-direction: column;
   width: 100vw;
-  height: calc(100vh - 150px);
+  min-height: calc(100vh - 150px); // 화면 높이를 최소 100vh로 설정
   padding: 0;
   margin: 0;
-  overflow-y: auto;
+  overflow-y: hidden; // 부모 컨테이너의 스크롤 제거
   background-color: #f9f9f9;
 `;
 
 const mainSectionStyle = css`
+  flex-grow: 1; // 남은 공간을 차지하도록
   width: 86%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 40px 20px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; // 게시판 컨텐츠 스크롤 가능
 `;
 
 const headingStyle = css`
