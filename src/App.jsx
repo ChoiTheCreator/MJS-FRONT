@@ -1,8 +1,10 @@
 import MainPage from './page/MainPage';
+import TestPage from './page/TestPage';
+
 function App() {
   return (
     <div className="container">
-      <MainPage></MainPage>
+      <TestPage></TestPage>
     </div>
   );
 }
