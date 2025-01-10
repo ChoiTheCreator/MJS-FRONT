@@ -1,0 +1,10 @@
+{
+  "users": [
+    { "id": 1, "name": "홍길동", "email": "hong@example.com", "age": 25 },
+    { "id": 2, "name": "이몽룡", "email": "lee@example.com", "age": 23 }
+  ],
+  "profiles": [
+    { "id": 1, "userId": 1, "bio": "개발을 좋아하는 사람입니다." },
+    { "id": 2, "userId": 2, "bio": "프론트엔드 개발자입니다." }
+  ]
+}

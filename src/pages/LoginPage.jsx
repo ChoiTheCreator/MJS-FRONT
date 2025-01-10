@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { css, Global, keyframes } from '@emotion/react';
 import logoImg from '../IMG/schoolLogoWithNewColor.png'; // 이미지 import
-
+import SignUpPage from './SignupPage';
 const globalStyle = css`
   body,
   html,
@@ -130,6 +130,10 @@ const signupTextStyle = css`
 const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+  const openSignUpModal = () => setIsSignUpModalOpen(true);
+  const closeSignUpModal = () => setIsSignUpModalOpen(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -168,10 +172,17 @@ const LoginPage = () => {
             로그인
           </button>
           <p css={signupTextStyle}>
-            계정이 없으신가요? <a href="/signup">회원가입하기</a>
+            계정이 없으신가요?{' '}
+            <a href="#!" onClick={openSignUpModal}>
+              회원가입하기
+            </a>
           </p>
         </form>
       </div>
+      {/* 모달처럼 보여야 하므로, navigating이 아닌 ChildBlockAppending */}
+      {isSignUpModalOpen && (
+        <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
+      )}
     </>
   );
 };
