@@ -144,7 +144,7 @@ const Navbar = () => {
             <Link to="/reviews">취업후기</Link>
           </li>
           <li>
-            <Link to="/fun">땡지위키</Link>
+            <Link to="/fun">띵지위키</Link>
           </li>
         </ul>
       </div>
