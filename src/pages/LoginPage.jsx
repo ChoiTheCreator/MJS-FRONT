@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import { css, Global, keyframes } from '@emotion/react';
 import logoImg from '../IMG/schoolLogoWithNewColor.png'; // 이미지 import
 import SignUpPage from './SignupPage';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+// 더미 서버 실행 npx json-server --watch ./data/db.json --port 3001
+
 const globalStyle = css`
   body,
   html,
@@ -128,21 +133,39 @@ const signupTextStyle = css`
 `;
 
 const LoginPage = () => {
+  //더미 서버
+  const serverUrl = 'http://localhost:3000/users';
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   const openSignUpModal = () => setIsSignUpModalOpen(true);
   const closeSignUpModal = () => setIsSignUpModalOpen(false);
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (password.length < 6) {
-      setError('비밀번호는 최소 6자 이상이어야 합니다.');
-    } else {
-      setError('');
-      alert('로그인 성공!');
-      // 실제 로그인 요청 처리 로직 추가
+
+    try {
+      const response = await axios.get(serverUrl);
+      const users = response.data;
+
+      const user = users.find(
+        (user) => user.email === email && user.password === password
+      );
+
+      if (user) {
+        alert(`로그인에 성공했습니다 ${user.name} 님 환영합니다.`);
+        navigate('/main');
+      } else {
+        setError('아이디 또는 비밀번호가 틀렸습니다');
+      }
+    } catch (e) {
+      alert('로그인에 실패했습니다');
+      console.log('에러 발생', e);
     }
   };
 
@@ -157,7 +180,8 @@ const LoginPage = () => {
           </div>
           <input
             type="text"
-            placeholder="아이디 또는 이메일"
+            placeholder="이메일"
+            onChange={handleEmailChange}
             css={inputStyle}
           />
           <input
@@ -165,7 +189,7 @@ const LoginPage = () => {
             placeholder="비밀번호"
             css={inputStyle}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
           />
           {error && <p css={errorMessageStyle}>{error}</p>}
           <button type="submit" css={buttonStyle}>

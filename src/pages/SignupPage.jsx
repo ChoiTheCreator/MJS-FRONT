@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from '@emotion/react';
-
+import axios from 'axios';
+import { useState } from 'react';
 const modalOverlayStyle = css`
   position: fixed;
   top: 0;
@@ -35,27 +36,82 @@ const closeButtonStyle = css`
   right: 1rem;
 `;
 
-const SignUpPage = ({ closeModal }) => {
+const SignUpPage = ({ closeSignUpModal }) => {
+  const serverUrl = 'http://localhost:3000/users';
+  //로딩 상태 명시하기
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [age, setAge] = useState('');
+
+  // **onChange 핸들러**
+  const handleNameChange = (e) => setName(e.target.value);
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    //userId는 매우 고유한 Date.now() 활용
+    const userId = Date.now();
+    const newUser = {
+      id: userId,
+      name,
+      email,
+      password,
+    };
+
+    const newProfile = {
+      id: userId,
+      userId: userId,
+      bio: '기본 프로필입니다.',
+    };
+
+    try {
+      await axios.post(serverUrl, newUser);
+      await axios.post(serverUrl, newProfile);
+      alert('회원가입이 완료되었습니다.');
+      setName('');
+      setEmail('');
+      setPassword('');
+      closeSignUpModal();
+    } catch (e) {
+      alert('회원가입에 실패했습니다');
+      console.log('회원가입 실패', e);
+    } finally {
+      setLoading(false);
+      setName('');
+      setEmail('');
+      setPassword('');
+    }
+  };
   return (
-    <div css={modalOverlayStyle} onClick={closeModal}>
+    <div css={modalOverlayStyle} onClick={closeSignUpModal}>
       <div css={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-        <button css={closeButtonStyle} onClick={closeModal}>
+        <button css={closeButtonStyle} onClick={closeSignUpModal}>
           &times;
         </button>
         <h2>회원가입</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
+            value={name}
             placeholder="이름"
+            onChange={handleNameChange}
             css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
           />
           <input
             type="email"
+            value={email}
             placeholder="이메일"
+            onChange={handleEmailChange}
             css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
           />
           <input
             type="password"
+            value={password}
+            onChange={handlePasswordChange}
             placeholder="비밀번호"
             css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
           />
@@ -64,13 +120,15 @@ const SignUpPage = ({ closeModal }) => {
             css={{
               width: '100%',
               padding: '1rem',
-              backgroundColor: '#001f5c',
+              backgroundColor: loading ? '#aaa' : '#001f5c',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer',
             }}
+            disabled={loading}
           >
-            회원가입
+            {loading ? '처리 중...' : '회원가입'}
           </button>
         </form>
       </div>
