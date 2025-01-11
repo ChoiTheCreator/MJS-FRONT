@@ -6,6 +6,8 @@ import SignUpPage from './SignupPage';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../context/AuthContext';
+
 // 더미 서버 실행 npx json-server --watch ./data/db.json --port 3001
 
 const globalStyle = css`
@@ -143,8 +145,13 @@ const LoginPage = () => {
 
   const openSignUpModal = () => setIsSignUpModalOpen(true);
   const closeSignUpModal = () => setIsSignUpModalOpen(false);
+
+  //onChange 핸들러
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  //AuthContext의 상태를 로그인 성공하면 변경하여 Global한 Auth를 다룬다
+  const { setIsLoggedIn } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -159,6 +166,7 @@ const LoginPage = () => {
 
       if (user) {
         alert(`로그인에 성공했습니다 ${user.name} 님 환영합니다.`);
+        setIsLoggedIn(true);
         navigate('/main');
       } else {
         setError('아이디 또는 비밀번호가 틀렸습니다');

@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import React from 'react';
 import { FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // AuthContext import
 
 const profileComponentStyle = css`
   display: flex;
@@ -12,6 +13,14 @@ const profileComponentStyle = css`
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  .login-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
 
   .profile-card {
     display: flex;
@@ -57,91 +66,86 @@ const profileComponentStyle = css`
     }
   }
 
-  .profile-navbar {
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
+  .login-btn,
+  .signup-btn {
+    width: 100%;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-    .profile-links {
-      display: flex;
-      justify-content: space-around;
-      list-style: none;
-      padding: 0;
-      margin: 0;
+  .login-btn {
+    background-color: #ffffff;
+    border: 1px solid #001f5c;
+    color: #001f5c;
 
-      .profile-link {
-        font-size: 0.9rem;
-        font-family: 'Noto Sans KR', sans-serif;
-        font-weight: 600;
-        color: #001f5c;
-        text-decoration: none;
-        padding: 6px 12px;
-        border-radius: 4px;
-        transition: all 0.2s ease-in-out;
+    &:hover {
+      background-color: #f0f4ff;
+    }
+  }
 
-        &:hover {
-          background-color: #f0f4ff;
-        }
+  .signup-btn {
+    background-color: #001f5c;
+    color: white;
 
-        &:active {
-          color: #003cb3;
-        }
-      }
+    &:hover {
+      background-color: #001542;
     }
   }
 `;
 
 const ProfileComponent = () => {
+  const { isLoggedIn, setIsLoggedIn } = useAuth(); // AuthContext에서 로그인 상태 가져오기
   const navigate = useNavigate();
 
-  // 로그아웃 함수
   const handleLogout = () => {
-    // auth 로직: 로그아웃 처리 (로컬 스토리지 제거 등)
-    localStorage.removeItem('userToken');
+    setIsLoggedIn(false); // 로그아웃 처리
     alert('로그아웃되었습니다.');
-    navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
+  };
+
+  const handleLogin = () => {
+    navigate('/login'); // 로그인 페이지로 이동
+  };
+
+  const handleSignUp = () => {
+    navigate('/signup'); // 회원가입 페이지로 이동
   };
 
   return (
     <div css={profileComponentStyle}>
-      <div className="profile-card">
-        <img
-          className="profile-image"
-          src="https://via.placeholder.com/80"
-          alt="Profile"
-        />
-        <div className="profile-details">
-          <h4 className="profile-name">남보라</h4>
-          <p className="profile-email">skaqhfk00@mju.ac.kr</p>
+      {isLoggedIn ? (
+        <div className="profile-card">
+          <img
+            className="profile-image"
+            src="https://via.placeholder.com/80"
+            alt="Profile"
+          />
+          <div className="profile-details">
+            <h4 className="profile-name">남보라</h4>
+            <p className="profile-email">skaqhfk00@mju.ac.kr</p>
+          </div>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            title="로그아웃"
+          >
+            <FiLogOut />
+          </button>
         </div>
-        <button className="logout-btn" onClick={handleLogout} title="로그아웃">
-          <FiLogOut />
-        </button>
-      </div>
-
-      <div className="profile-navbar">
-        <ul className="profile-links">
-          <li>
-            <a href="#MSI" className="profile-link">
-              MSI
-            </a>
-          </li>
-          <li>
-            <a href="#MyiCap" className="profile-link">
-              MYiCap
-            </a>
-          </li>
-          <li>
-            <a href="#Office365" className="profile-link">
-              Office365
-            </a>
-          </li>
-          <li>
-            <a href="#MyPage" className="profile-link">
-              MyPage
-            </a>
-          </li>
-        </ul>
-      </div>
+      ) : (
+        <div className="login-card">
+          <h3>커뮤니티 이용을 위한 로그인이 필요합니다!</h3>
+          <button className="login-btn" onClick={handleLogin}>
+            로그인
+          </button>
+          <button className="signup-btn" onClick={handleSignUp}>
+            회원가입
+          </button>
+        </div>
+      )}
     </div>
   );
 };

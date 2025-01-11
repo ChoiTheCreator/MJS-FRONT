@@ -1,6 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const mainPageContainerStyle = css`
   width: 100vw;
@@ -14,13 +16,13 @@ const mainPageContainerStyle = css`
 const leftSectionStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 내부 요소 간격 */
+  gap: 20px;
 `;
 
 const rightSectionStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 내부 요소 간격 */
+  gap: 20px;
 `;
 
 const contentBoxStyle = css`
@@ -28,13 +30,45 @@ const contentBoxStyle = css`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 150px; /* 최소 높이 */
+  min-height: 150px;
+`;
+
+const profileCardStyle = (isLoggedIn) => css`
+  background-color: ${isLoggedIn ? '#001f5c' : '#ffffff'};
+  color: ${isLoggedIn ? '#ffffff' : '#000000'};
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: ${isLoggedIn
+    ? '0 4px 8px rgba(0, 31, 92, 0.2)'
+    : '0 2px 4px rgba(0, 0, 0, 0.1)'};
+  text-align: center;
+`;
+
+const buttonStyle = css`
+  padding: 10px 20px;
+  background-color: #001f5c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #001542;
+  }
 `;
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useAuth(); // 로그인 상태와 상태 변경 함수
+
+  const handleLogout = () => {
+    setIsLoggedIn(false); // 로그아웃 시 상태 변경
+  };
+
   return (
     <div css={mainPageContainerStyle}>
-      {/* 왼쪽 3개의 박스 */}
       <div css={leftSectionStyle}>
         <div css={contentBoxStyle}>
           <h3>검색 및 배너</h3>
@@ -50,11 +84,26 @@ const MainPage = () => {
         </div>
       </div>
 
-      {/* 오른쪽 3개의 박스 */}
       <div css={rightSectionStyle}>
-        <div css={contentBoxStyle}>
-          <h3>프로필 카드</h3>
-          <p>프로필 정보</p>
+        {/* **프로필 카드 조건부 렌더링** */}
+        <div css={profileCardStyle(isLoggedIn)}>
+          {isLoggedIn ? (
+            <>
+              <h2>환영합니다, 사용자님!</h2>
+              <p>프로필 정보를 여기에 표시할 수 있습니다.</p>
+              <button css={buttonStyle} onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <h3>로그인 필요</h3>
+              <p>로그인 후 프로필 정보를 확인할 수 있습니다.</p>
+              <button css={buttonStyle} onClick={() => navigate('/login')}>
+                로그인하기
+              </button>
+            </>
+          )}
         </div>
         <div css={contentBoxStyle}>
           <h3>날씨 정보</h3>
