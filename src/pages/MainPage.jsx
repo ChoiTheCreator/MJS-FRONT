@@ -1,8 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import TabComponent from '../components/TabComponent';
+import WeatherComponent from '../components/WeatherComponent';
+import RankingComponent from '../components/RankingComponent';
 
 const mainPageContainerStyle = css`
   width: 100vw;
@@ -70,13 +73,10 @@ const MainPage = () => {
   return (
     <div css={mainPageContainerStyle}>
       <div css={leftSectionStyle}>
-        <div css={contentBoxStyle}>
-          <h3>검색 및 배너</h3>
-          <p>여기에 검색창과 강조 배너를 추가하세요.</p>
-        </div>
+        {/* 학사 공지에 TabComponent 삽입 */}
         <div css={contentBoxStyle}>
           <h3>학사 공지</h3>
-          <p>공지사항 탭 내용을 추가하세요.</p>
+          <TabComponent />
         </div>
         <div css={contentBoxStyle}>
           <h3>명지대 뉴스</h3>
@@ -84,34 +84,16 @@ const MainPage = () => {
         </div>
       </div>
 
+      {/* 오른쪽 섹션 */}
       <div css={rightSectionStyle}>
         {/* **프로필 카드 조건부 렌더링** */}
-        <div css={profileCardStyle(isLoggedIn)}>
-          {isLoggedIn ? (
-            <>
-              <h2>환영합니다, 사용자님!</h2>
-              <p>프로필 정보를 여기에 표시할 수 있습니다.</p>
-              <button css={buttonStyle} onClick={handleLogout}>
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <h3>로그인 필요</h3>
-              <p>로그인 후 프로필 정보를 확인할 수 있습니다.</p>
-              <button css={buttonStyle} onClick={() => navigate('/login')}>
-                로그인하기
-              </button>
-            </>
-          )}
-        </div>
-        <div css={contentBoxStyle}>
-          <h3>날씨 정보</h3>
-          <p>날씨 정보를 추가하세요.</p>
-        </div>
-        <div css={contentBoxStyle}>
-          <h3>실시간 검색 순위</h3>
-          <p>검색 순위를 표시합니다.</p>
+
+        {/* 오른쪽 섹션 */}
+        <div css={rightSectionStyle}>
+          <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
+          <div css={contentBoxStyle}>
+            <RankingComponent />
+          </div>
         </div>
       </div>
     </div>
