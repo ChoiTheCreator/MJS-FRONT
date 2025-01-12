@@ -90,7 +90,10 @@ const MainPage = () => {
 
         {/* 오른쪽 섹션 */}
         <div css={rightSectionStyle}>
-          <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
+          <div css={contentBoxStyle}>
+            <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
+          </div>
+
           <div css={contentBoxStyle}>
             <RankingComponent />
           </div>
