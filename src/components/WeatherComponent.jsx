@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const weatherContainerStyle = css`
-  background-color: white; /* 하얀색 배경 */
-  color: #001f5c; /* 남색 글자 */
+  background-color: white;
+  color: #001f5c;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -42,29 +43,27 @@ const weatherContainerStyle = css`
 `;
 
 const WeatherComponent = () => {
-  // **더미 데이터 설정**
-  const weatherData = {
-    main: { temp: 25, humidity: 65 },
-    weather: [{ description: '맑음', icon: '01d' }],
-    wind: { speed: 1.5 },
-  };
-
-  /*
+  const [weatherData, setWeatherData] = useState(null);
+  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
+        console.log('API 키:', apiKey);
         const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?q=Seoul&units=metric&appid=YOUR_API_KEY`
+          `https://api.openweathermap.org/data/2.5/weather?q=Seoul&units=metric&appid=${apiKey}`
         );
         setWeatherData(response.data);
       } catch (error) {
-        console.error('날씨 데이터 가져오기 실패:', error);
+        console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
       }
     };
     fetchWeather();
-  }, []);
-  */
+  }, [apiKey]);
+
+  if (!weatherData) {
+    return <p>날씨 정보를 불러오는 중...</p>;
+  }
 
   return (
     <div css={weatherContainerStyle}>
