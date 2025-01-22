@@ -2,7 +2,10 @@
 
 import { css } from '@emotion/react';
 import axios from 'axios';
+//회원가입 페이지에는 setUser라는 user를 저장하는 글로벌 상태변경 함수만을 가져온다.
+import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { use } from 'react';
 const modalOverlayStyle = css`
   position: fixed;
   top: 0;
@@ -44,11 +47,13 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
+  const { setUser } = useAuth();
 
   // **onChange 핸들러**
   const handleNameChange = (e) => setName(e.target.value);
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -62,16 +67,12 @@ const SignUpPage = ({ closeSignUpModal }) => {
       password,
     };
 
-    const newProfile = {
-      id: userId,
-      userId: userId,
-      bio: '기본 프로필입니다.',
-    };
-
     try {
       await axios.post(serverUrl, newUser);
-      await axios.post(serverUrl, newProfile);
+
       alert('회원가입이 완료되었습니다.');
+      //1. context 변경함수를 활용하여 글로벌리 저장한다.
+      setUser(newUser);
       setName('');
       setEmail('');
       setPassword('');

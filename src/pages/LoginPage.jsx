@@ -150,8 +150,9 @@ const LoginPage = () => {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  //AuthContext의 상태를 로그인 성공하면 변경하여 Global한 Auth를 다룬다
-  const { setIsLoggedIn } = useAuth();
+  //1. AuthContext의 상태를 로그인 성공하면 변경하여 Global한 로그읜 성공 여부 상태를 다룬다.
+  //2. 여기에서도 setUser라는 상태변경함수를 Globally 저장한다.
+  const { setIsLoggedIn, setUser } = useAuth(); //
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -167,6 +168,7 @@ const LoginPage = () => {
       if (user) {
         alert(`로그인에 성공했습니다 ${user.name} 님 환영합니다.`);
         setIsLoggedIn(true);
+        setUser(user);
         navigate('/main');
       } else {
         setError('아이디 또는 비밀번호가 틀렸습니다');
