@@ -1,18 +1,16 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// AuthContext 생성
 const AuthContext = createContext();
 
-// AuthProvider: 로그인 상태를 전역으로 제공
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null); // 로그인한 사용자 정보 저장
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// useAuth 훅: Context 값을 사용하기 위한 커스텀 훅
 export const useAuth = () => useContext(AuthContext);

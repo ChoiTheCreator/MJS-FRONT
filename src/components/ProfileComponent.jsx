@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // AuthContext import
+import axios from 'axios';
 
 const profileComponentStyle = css`
   display: flex;
@@ -100,7 +102,33 @@ const profileComponentStyle = css`
 const ProfileComponent = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth(); // AuthContext에서 로그인 상태 가져오기
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null); // 사용자 데이터를 저장할 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
 
+  const serverUrl = 'http://localhost:4000/users';
+
+  //로그인 시 해당 서버의 이름과 이메일을 fetching하는 useEffect -> 의존성 배열은 상태 : isLoggedIn
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isLoggedIn) {
+          const response = await axios.get(serverUrl);
+
+          setUserData(response.data);
+          console.log(userData);
+          console.log(userData.name);
+          console.log(userData.email);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    //userData 상태에 axios 통신해서 가져온 데이터를 저장 (useEffect는 동기함수를 기대함, 그러나 우리가 만든건 비동기 함수
+    //useEffect는 내부에서 비동기적 행동을 허용하지 않는다. 따라서 내부에 async 함수를 구현했다면, 직접 써줘야함
+    fetchData();
+  }, [isLoggedIn]);
   const handleLogout = () => {
     setIsLoggedIn(false); // 로그아웃 처리
     alert('로그아웃되었습니다.');
@@ -116,16 +144,14 @@ const ProfileComponent = () => {
 
   return (
     <div css={profileComponentStyle}>
-      {isLoggedIn ? (
+      {loading ? (
+        <p>로딩 중...</p>
+      ) : isLoggedIn && userData ? (
         <div className="profile-card">
-          <img
-            className="profile-image"
-            src="https://via.placeholder.com/80"
-            alt="Profile"
-          />
+          <img className="profile-image" alt="Profile" />
           <div className="profile-details">
-            <h4 className="profile-name">남보라</h4>
-            <p className="profile-email">skaqhfk00@mju.ac.kr</p>
+            <h4 className="profile-name">{userData.name}</h4>
+            <p className="profile-email">{userData.email}</p>
           </div>
           <button
             className="logout-btn"
