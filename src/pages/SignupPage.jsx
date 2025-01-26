@@ -68,14 +68,19 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
+      //서버에다가 저장
       await axios.post(serverUrl, newUser);
-
       alert('회원가입이 완료되었습니다.');
+
       //1. context 변경함수를 활용하여 글로벌리 저장한다.
       setUser(newUser);
+
+      //2. 회원가입되고 나면 나머지 초기화
       setName('');
       setEmail('');
       setPassword('');
+
+      //3. 모달 닫기.
       closeSignUpModal();
     } catch (e) {
       alert('회원가입에 실패했습니다');
