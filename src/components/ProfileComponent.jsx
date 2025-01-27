@@ -15,49 +15,41 @@ const profileContainerStyle = css`
 
 const profileCardStyle = css`
   display: flex;
-  align-items: center; /* 수직 중앙 정렬 */
+  flex-direction: column;
+  align-items: center;
   background-color: white;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 420px;
+  text-align: center;
 `;
 
-const profileImageStyle = css`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 1rem; /* 오른쪽 여백 */
-`;
-
-const profileInfoStyle = css`
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 내용 수직 중앙 정렬 */
-`;
-
-const profileNameStyle = css`
-  font-size: 1.2rem;
+const profileTextStyle = css`
+  font-size: 1rem;
   font-weight: bold;
+  margin-bottom: 1rem;
   color: #001f5c;
-  margin-bottom: 0.3rem;
+
+  a {
+    color: #001f5c;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
 `;
 
-const profileEmailStyle = css`
-  font-size: 0.9rem;
-  color: #555;
-`;
-
-const logoutButtonStyle = css`
+const buttonStyle = css`
   margin-top: 0.5rem;
-  margin-left: 25px;
-  padding: 0.5rem 1rem;
-  background-color: navy;
+  padding: 0.7rem 1.5rem;
+  background-color: #001f5c;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -65,18 +57,28 @@ const logoutButtonStyle = css`
   &:hover {
     background-color: #001542;
   }
+
+  &:not(:last-of-type) {
+    margin-bottom: 0.5rem;
+  }
+`;
+
+//로그인 강제 컴포넌트 스타일 조정
+const loginComponentStyle = css`
+  ${profileTextStyle};
+  margin-top: 20px;
+  margin-left: 80px;
 `;
 
 const ProfileComponent = () => {
   const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth();
   const navigate = useNavigate();
-  const serverUrl = 'http://localhost:4000/users';
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (isLoggedIn && user?.id) {
         try {
-          const response = await axios.get(serverUrl);
+          const response = await axios.get('http://localhost:4000/users');
           const currentUser = response.data.find((u) => u.id === user.id);
 
           if (currentUser) {
@@ -102,15 +104,14 @@ const ProfileComponent = () => {
 
   if (!isLoggedIn) {
     return (
-      <div css={profileContainerStyle}>
+      //스타일 재활용 한 loginComponentStyle
+      <div css={loginComponentStyle}>
         <div css={profileCardStyle}>
-          <h3 css={profileNameStyle}>로그인이 필요합니다.</h3>
-          <button
-            css={logoutButtonStyle}
-            style={{ backgroundColor: '#001f5c' }}
-            onClick={() => navigate('/login')}
-          >
-            -> 로그인하러 가기
+          <p css={profileTextStyle}>
+            커뮤니티 이용을 위한 로그인이 필요합니다!
+          </p>
+          <button css={buttonStyle} onClick={() => navigate('/login')}>
+            로그인
           </button>
         </div>
       </div>
@@ -121,14 +122,37 @@ const ProfileComponent = () => {
     <div css={profileContainerStyle}>
       <div css={profileCardStyle}>
         <img
-          css={profileImageStyle}
+          css={css`
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+          `}
           src={user?.profileImage || 'https://via.placeholder.com/60'}
           alt="Profile"
         />
-        <div css={profileInfoStyle}>
-          <h4 css={profileNameStyle}>{user?.name || '이름 없음'}</h4>
-          <p css={profileEmailStyle}>{user?.email || '이메일 없음'}</p>
-        </div>
+        <h4
+          css={css`
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #001f5c;
+            margin-bottom: 0.3rem;
+          `}
+        >
+          {user?.name || '이름 없음'}
+        </h4>
+        <p
+          css={css`
+            font-size: 0.9rem;
+            color: #555;
+          `}
+        >
+          {user?.email || '이메일 없음'}
+        </p>
+        <button css={buttonStyle} onClick={handleLogout}>
+          로그아웃
+        </button>
       </div>
     </div>
   );
