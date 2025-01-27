@@ -6,6 +6,9 @@ import { useAuth } from '../context/AuthContext';
 import TabComponent from '../components/TabComponent';
 import WeatherComponent from '../components/WeatherComponent';
 import RankingComponent from '../components/RankingComponent';
+import AdBanner from '../components/AdBanner';
+import MealPlan from '../components/MealPlan';
+import MyongjiNews from '../components/MyoungjiNews';
 
 const mainPageContainerStyle = css`
   width: 100vw;
@@ -14,6 +17,8 @@ const mainPageContainerStyle = css`
   display: grid;
   grid-template-columns: 2fr 1fr; /* 왼쪽 2/3, 오른쪽 1/3 */
   gap: 20px;
+  align-items: start;
+  min-height: 100vh;
 `;
 
 const leftSectionStyle = css`
@@ -28,38 +33,23 @@ const rightSectionStyle = css`
   gap: 20px;
 `;
 
+const topRowStyle = css`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+`;
+
 const contentBoxStyle = css`
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 150px;
+  height: auto;
 `;
 
-const profileCardStyle = (isLoggedIn) => css`
-  background-color: ${isLoggedIn ? '#001f5c' : '#ffffff'};
-  color: ${isLoggedIn ? '#ffffff' : '#000000'};
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: ${isLoggedIn
-    ? '0 4px 8px rgba(0, 31, 92, 0.2)'
-    : '0 2px 4px rgba(0, 0, 0, 0.1)'};
-  text-align: center;
-`;
-
-const buttonStyle = css`
-  padding: 10px 20px;
-  background-color: #001f5c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #001542;
-  }
+const reducedHeightBoxStyle = css`
+  ${contentBoxStyle}; //위의 content: boxstyle을 그대로 가져와서 코드를 재활용하는 것;
+  height: 200px; /* 배너와 식단 높이 절반으로 줄이기 */
 `;
 
 const MainPage = () => {
@@ -73,30 +63,35 @@ const MainPage = () => {
   return (
     <div css={mainPageContainerStyle}>
       <div css={leftSectionStyle}>
-        {/* 학사 공지에 TabComponent 삽입 */}
+        {/* 상단 배너와 식단 */}
+        <div css={topRowStyle}>
+          <div css={reducedHeightBoxStyle}>
+            <AdBanner />
+          </div>
+          <div css={reducedHeightBoxStyle}>
+            <MealPlan />
+          </div>
+        </div>
+
+        {/* 학사 공지 탭 */}
         <div css={contentBoxStyle}>
           <h3>학사 공지</h3>
           <TabComponent />
         </div>
+
+        {/* 명대 뉴스 */}
         <div css={contentBoxStyle}>
-          <h3>명지대 뉴스</h3>
-          <p>뉴스 섹션 내용을 추가하세요.</p>
+          <MyongjiNews />
         </div>
       </div>
 
       {/* 오른쪽 섹션 */}
       <div css={rightSectionStyle}>
-        {/* **프로필 카드 조건부 렌더링** */}
-
-        {/* 오른쪽 섹션 */}
-        <div css={rightSectionStyle}>
-          <div css={contentBoxStyle}>
-            <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
-          </div>
-
-          <div css={contentBoxStyle}>
-            <RankingComponent />
-          </div>
+        <div css={contentBoxStyle}>
+          <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
+        </div>
+        <div css={contentBoxStyle}>
+          <RankingComponent /> {/* 검색 순위 */}
         </div>
       </div>
     </div>
