@@ -14,6 +14,44 @@ function MarkdownEditor() {
   ]);
   const lineRef = useRef([]);
 
+  // 커서 위치 로드
+  const getCursorPosition = (element) => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return null;
+
+    const range = selection.getRangeAt(0);
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(element);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+    // 커서 위치 (텍스트 노드 내에서의 오프셋 값)
+    return preCaretRange.toString().length;
+  };
+
+  // 커서 위치 이동
+  const setCursorPosition = (element, position) => {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(element);
+
+    // 커서 위치를 설정
+    let charCount = 0, node;
+    for (let i = 0; i < element.childNodes.length; i++) {
+      node = element.childNodes[i];
+      if (node.nodeType === 3) { // 텍스트 노드
+        if (charCount + node.textContent.length >= position) {
+          range.setStart(node, position - charCount);
+          range.collapse(true);
+          break;
+        }
+        charCount += node.textContent.length;
+      }
+    }
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+  };
+
   // 포커스 이벤트 처리
   const handleFocus = (id) => {
     console.log(id)
@@ -42,6 +80,8 @@ function MarkdownEditor() {
         lineRef.current[index + 1]?.focus();
       }, 0); // DOM이 업데이트 될때까지 대기
     }
+
+
   };
 
   return (
