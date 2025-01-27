@@ -1,67 +1,102 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { Bold, Code, Heading1, Heading2, Heading3, Heading4, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+
+const toolbarIconSize = 20
 
 function MarkdownEditor() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [contents, setContents] = useState([
+    { id: 1, type: 'h1', content: '이 텍스트를 편집하세요.' },
+    { id: 2, type: 'p', content: '또 다른 텍스트입니다.' },
+    { id: 3, type: 'p', content: '또 다른 텍스트입니다.' },
+  ]);
+  const lineRef = useRef([]);
 
-  const handleMarkdownFormat = (prefix) => {
-    const textarea = document.getElementById('markdown-editor');
-    const { selectionStart, selectionEnd, value } = textarea;
-
-    const before = value.substring(0, selectionStart);
-    const selected = value.substring(selectionStart, selectionEnd);
-    const after = value.substring(selectionEnd);
-
-    const updatedContent = `${before}${prefix} ${selected}\n${after}`;
-    setContent(updatedContent);
-
-    // 포커스 유지 및 커서 위치 조정
-    setTimeout(() => {
-      textarea.focus();
-      textarea.selectionStart = textarea.selectionEnd = before.length + prefix.length + 1;
-    }, 0);
-
+  // 포커스 이벤트 처리
+  const handleFocus = (id) => {
+    console.log(id)
+    console.log(lineRef.current)
   };
 
-  const toolbarIconSize = 20
+  // key 입력 처리
+  const handleKeyDown = (e, index) => {
+    const line = document.getElementById
+    if (e.key === "ArrowUp" && index > 0) {
+      lineRef.current[index - 1]?.focus();
+    }
+    if (e.key === "ArrowDown" && index < lineRef.current.length - 1) {
+      lineRef.current[index + 1]?.focus();
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      const newContent = [...contents]; // 새 배열로 복사
+      const newId = contents.length + 1;
+      newContent.splice(index + 1, 0, { id: newId, type: 'p', content: '' });
+      setContents(newContent);
+
+      setTimeout(() => {
+        lineRef.current[index + 1]?.focus();
+      }, 0); // DOM이 업데이트 될때까지 대기
+    }
+  };
 
   return (
     <div css={editorWrapper}>
       <div css={css`padding: 16px`}>
         <textarea
           id="title-editor"
+          css={css`
+            width: 100%;
+            font-size: 32px;
+            justify-content: center;
+            border: none;
+            outline: none;
+            align-items: center;
+            `}
           value={title}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: '100%', height: '100%', fontSize: '32px' }}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder='제목을 입력하세요' />
       </div>
       <div css={toolbar}>
-        <div css={css`display: flex`}>
-          <button onClick={() => handleMarkdownFormat('#')}><Heading1 size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('##')}><Heading2 size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('###')}><Heading3 size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('####')}><Heading4 size={toolbarIconSize} /></button>
+        <div css={css`display: flex; padding: 0px 0px 16px 16px;`}>
+          <button css={utilButton} onClick={() => handleInsertHeading(1)}><Heading1 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleInsertHeading(2)}><Heading2 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleInsertHeading(3)}><Heading3 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleInsertHeading(4)}><Heading4 size={toolbarIconSize} /></button>
           <p>|</p>
-          <button onClick={() => handleMarkdownFormat('-')}><Bold size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('>')}><Italic size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('```')}><Strikethrough size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Bold size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Italic size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Strikethrough size={toolbarIconSize} /></button>
           <p>|</p>
-          <button onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('```')}><Image size={toolbarIconSize} /></button>
-          <button onClick={() => handleMarkdownFormat('```')}><Code size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Image size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Code size={toolbarIconSize} /></button>
         </div>
       </div >
-      <div css={css`padding: 16px`}>
-        <textarea
-          id="markdown-editor"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: '100%', height: '400px', padding: '10px', fontSize: '16px' }}
-          placeholder="글을 작성해 보세요" />
+      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100;`}>
+        <div>
+          {contents.map(({ id, type, content }, index) => {
+            const Tag = type; // 동적으로 태그 결정
+            return (
+              <Tag
+                key={id}
+                contentEditable
+                suppressContentEditableWarning
+                onFocus={() => handleFocus(id)}
+                ref={(id) => (lineRef.current[index] = id)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                css={css`outline: none; border: none;`}
+              >
+                {content}
+              </Tag>
+            );
+          })}
+        </div>
       </div>
       <div css={css`width: 100%`}>
         <button>저장</button>
@@ -76,7 +111,12 @@ const editorWrapper = css`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding: '20px'
+  padding: '20px';
+  background: white;
+`
+
+const utilButton = css`
+  background: none;
 `
 
 const textBoxWrapper = css`
