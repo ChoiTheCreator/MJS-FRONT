@@ -53,9 +53,15 @@ function MarkdownEditor() {
   };
 
   // 포커스 이벤트 처리
-  const handleFocus = (id) => {
-    console.log(id)
-    console.log(lineRef.current)
+  const handleFocus = (id, index) => {
+    // console.log(id)
+    // console.log(lineRef.current)
+    // console.log(getCursorPosition(e))
+    const element = lineRef.current[index];
+    if (element) {
+      const cursorPosition = getCursorPosition(element);
+      console.log(`Line ${id} (Index ${index}) Cursor Position:`, cursorPosition);
+    }
   };
 
   // key 입력 처리
@@ -127,7 +133,7 @@ function MarkdownEditor() {
                 key={id}
                 contentEditable
                 suppressContentEditableWarning
-                onFocus={() => handleFocus(id)}
+                onFocus={() => handleFocus(id, index)}
                 ref={(id) => (lineRef.current[index] = id)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 css={css`outline: none; border: none;`}
