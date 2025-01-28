@@ -7,7 +7,7 @@ const toolbarIconSize = 20
 
 function MarkdownEditor() {
   const [title, setTitle] = useState("");
-  const [contents, setContents] = useState('');
+  const [content, setContent] = useState('');
 
   const parseMarkdown = (text) => {
     return text
@@ -63,12 +63,12 @@ function MarkdownEditor() {
         <div style={containerStyle}>
           <textarea
             style={editorStyle}
-            value={contents}
-            onChange={(e) => setContents(e.target.value)}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="글을 입력하세요" />
           <div
             style={previewStyle}
-            dangerouslySetInnerHTML={{ __html: parseMarkdown(markdown) }} />
+            dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} />
         </div>
       </div>
       <div css={css`width: 100%`}>
