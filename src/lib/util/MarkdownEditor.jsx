@@ -10,7 +10,7 @@ const toolbarIconSize = 20
 
 function MarkdownEditor() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(dummyContent);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -91,6 +91,12 @@ function MarkdownEditor() {
   }
 
   const insertQuote = () => {
+    const textarea = editorRef.current;
+    if (!textarea) {
+      console.error("Textarea not found. " + textarea + " is null.")
+      return;
+    }
+
 
   }
 
@@ -112,6 +118,7 @@ function MarkdownEditor() {
       setContent((prev) => `${prev}\n\n![](${imageUrl})\n\n`);
     }
   };
+  //////////////////////////////////////////////////////////////////////
 
   const insertCode = () => {
     const textarea = editorRef.current;
@@ -177,7 +184,7 @@ function MarkdownEditor() {
           <p>|</p>
           <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleImageUploadClick('```')}><Image size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleImageUploadClick()}><Image size={toolbarIconSize} /></button>
           {/* 파일 업로드 숨김 input */}
           <input
             type="file"
@@ -202,9 +209,6 @@ function MarkdownEditor() {
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}>{content}</Markdown>
           </div>
-          {/* <div
-            style={previewStyle}
-            dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} /> */}
         </div>
       </div>
       <div css={css`width: 100%`}>
@@ -282,4 +286,35 @@ const toolbarButton = css`
     background-color: ;
     color: white;
   }
+`;
+
+const dummyContent = `
+# 개인 정보 업로드 금지
+## 보안이 되어있지 않습니다
+### 마크 다운 에디터 입니다
+#### 마크 다운 에디터 입니다
+##### 마인크래프트 무료 다운
+###### 마크 다운 에디터 입니다
+
+마크 다운 에디터 입니다
+
+**마크 다운 에디터 입니다**
+
+ _마크 다운 에디터 입니다_ 
+
+~~마크 다운 에디터 입니다~~
+
+
+
+\`\`\`
+코드 블록입니다
+\`\`\`
+
+> 인용 블록 입니다
+
+
+
+![](https://item.kakaocdn.net/do/0f52321f08519a5b62df65b1b1ea806e7f9f127ae3ca5dc7f0f6349aebcdb3c4)
+
+![](https://item.kakaocdn.net/do/77c280691fcffe943ddf19cbc77fe8e5113e2bd2b7407c8202a97d2241a96625)
 `;
