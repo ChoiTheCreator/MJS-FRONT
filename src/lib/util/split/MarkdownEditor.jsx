@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { Bold, Code, Heading1, Heading2, Heading3, Heading4, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
+import { Bold, Code, Heading1, Heading2, Heading3, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
 import { useRef, useState } from 'react';
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -16,18 +16,22 @@ function MarkdownEditor() {
 
   const insertHeading = (prefix) => {
     const textarea = editorRef.current;
-    if (!textarea) return;
+    if (!textarea) {
+      console.error("Textarea not found. " + textarea + " is null.")
+      return;
+    }
 
-    const start = textarea.selectionStart;
+    // textarea의 선택 영역 pointer
+    const startPointer = textarea.selectionStart;
+    const endPointer = textarea.selectionEnd;
 
-    // Find the start and end of the current line
-    const beforeText = content.substring(0, start);
+    // 선택된 line 추출 및 heading 값 검사
+    const beforeText = content.substring(0, startPointer);
     const lastNewline = beforeText.lastIndexOf("\n") + 1;
-    const nextNewline = content.indexOf("\n", start);
+    const nextNewline = content.indexOf("\n", startPointer);
     const lineEnd = nextNewline === -1 ? content.length : nextNewline;
 
-    // Extract the current line
-    const currentLine = content.substring(lastNewline, lineEnd).trimStart(); // Trim only leading spaces
+    const currentLine = content.substring(lastNewline, lineEnd).trimStart();
     const headingMatch = currentLine.match(/^(#+)\s*/);
 
     let newContent;
@@ -44,22 +48,47 @@ function MarkdownEditor() {
         currentLine +
         content.substring(lineEnd);
     }
-
     setContent(newContent);
 
-    // Restore cursor position after inserting
-    const newCursorPosition = lastNewline + prefix.length + 1;
+    // 커서 위치 복원
     setTimeout(() => {
-      textarea.selectionStart = textarea.selectionEnd = newCursorPosition;
+      const textSelected = startPointer !== endPointer;
+
+      if (textSelected)
+        textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
+      else
+        textarea.selectionStart = startPointer + prefix.length + 1;
+
       textarea.focus();
     }, 0);
   }
 
-  ///////////////////////////// bold /////////////////////////////
+  const insertTextStyle = (prefix, suffix = prefix) => {
+    const textarea = editorRef.current;
+    if (!textarea) {
+      console.error("Textarea not found. " + textarea + " is null.")
+      return;
+    }
 
-  ///////////////////////////// italic /////////////////////////////
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
 
-  ///////////////////////////// strikethrough /////////////////////////////
+    const newContent = `${textarea.value.substring(0, start)}${prefix}${selectedText}${suffix}${textarea.value.substring(end)}`;
+    setContent(newContent);
+
+    // 커서 위치 복원
+    setTimeout(() => {
+      if (selectedText) {
+        textarea.setSelectionRange(start, end + 4);
+        textarea.focus();
+      } else {
+        textarea.selectionStart = start + 2;
+        textarea.focus();
+      }
+    }, 0);
+  }
+
 
 
 
@@ -102,9 +131,9 @@ function MarkdownEditor() {
           <button css={utilButton} onClick={() => insertHeading('##')}><Heading2 size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => insertHeading('###')}><Heading3 size={toolbarIconSize} /></button>
           <p>|</p>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Bold size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Italic size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Strikethrough size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertTextStyle('**')}><Bold size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertTextStyle(' _', '_ ')}><Italic size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertTextStyle('~~')}><Strikethrough size={toolbarIconSize} /></button>
           <p>|</p>
           <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
