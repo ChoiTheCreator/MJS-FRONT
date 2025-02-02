@@ -11,9 +11,7 @@ const App = () => {
       {/* Layout 적용되는 페이지 
       공통되는 부분 */}
       <Route element={<Layout />}>
-        <Route path="/main" element={<MainPage />} />
-        <Route path="/board" element={<BoardPage />} />
-        <Route path="/test" element={<TestPage />} />
+        <Route path="/" element={<TestPage />} />
       </Route>
       {/* Layout 미적용 페이지 */}
     </Routes>
