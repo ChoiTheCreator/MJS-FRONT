@@ -12,6 +12,8 @@ function MarkdownEditor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState(dummyContent);
   const editorRef = useRef(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [link, setLink] = useState("");
   const fileInputRef = useRef(null);
 
   const insertHeading = (prefix) => {
@@ -104,6 +106,30 @@ function MarkdownEditor() {
 
   }
 
+  const insertHyperlink = () => {
+    setShowDialog(true);
+  };
+  const handleInsertLink = () => {
+    if (!link) return;
+
+    const textarea = editorRef.current;
+    if (!textarea) return;
+
+    const startPointer = textarea.selectionStart;
+    const linkString = `[링크](${link})`;
+    const newContent = content.substring(0, startPointer) + linkString + content.substring(startPointer);
+
+    setContent(newContent);
+    setShowDialog(false);
+    setLink("");
+
+    // 커서 위치 재정렬
+    setTimeout(() => {
+      textarea.selectionStart = startPointer + linkString.length;
+      textarea.focus();
+    }, 0);
+  };
+
   ///////////////////////////// 이미지 업로드 /////////////////////////////
   // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
   const handleImageUploadClick = () => {
@@ -182,8 +208,8 @@ function MarkdownEditor() {
           <button css={utilButton} onClick={() => insertTextStyle(' _', '_ ')}><Italic size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => insertTextStyle('~~')}><Strikethrough size={toolbarIconSize} /></button>
           <p>|</p>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertQuote()}><Quote size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertHyperlink()}><Link2 size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => handleImageUploadClick()}><Image size={toolbarIconSize} /></button>
           {/* 파일 업로드 숨김 input */}
           <input
@@ -214,9 +240,85 @@ function MarkdownEditor() {
       <div css={css`width: 100%`}>
         <button>저장</button>
       </div>
+
+      {showDialog && (
+        <div css={dialogOverlay}>
+          <div css={dialogBox}>
+            <h3>링크 추가</h3>
+            <input
+              css={inputStyle}
+              type="text"
+              placeholder="https://www.mjs.ac.kr"
+              value={link}
+              onChange={(e) => setLink(e.target.value)} />
+            <br />
+            <button css={confirmButton} onClick={handleInsertLink}>
+              삽입
+            </button>
+            <button css={cancelButton} onClick={() => setShowDialog(false)}>
+              취소
+            </button>
+          </div>
+        </div>
+      )}
     </div >
   );
 }
+
+// dialog 스타일
+const dialogOverlay = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const dialogBox = css`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+`;
+
+const inputStyle = css`
+  padding: 8px;
+  margin: 10px 0;
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+`;
+
+const dialogButton = css`
+  margin: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+`;
+
+const confirmButton = css`
+  ${dialogButton};
+  background-color: #102E68;
+  color: white;
+  &:hover {
+    background-color: #405886;
+  }
+`;
+
+const cancelButton = css`
+  ${dialogButton};
+  &:hover {
+    background-color: #F0F0F0;
+  }
+`;
 
 // 스타일 정의
 const containerStyle = {
@@ -288,8 +390,7 @@ const toolbarButton = css`
   }
 `;
 
-const dummyContent = `
-# 개인 정보 업로드 금지
+const dummyContent = `# 개인 정보 업로드 금지
 ## 보안이 되어있지 않습니다
 ### 마크 다운 에디터 입니다
 #### 마크 다운 에디터 입니다
