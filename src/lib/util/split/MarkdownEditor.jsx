@@ -2,27 +2,27 @@
 import { css } from '@emotion/react';
 import { Bold, Code, Heading1, Heading2, Heading3, Heading4, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
 import { useRef, useState } from 'react';
+import Markdown from "react-markdown";
 
 const toolbarIconSize = 20
 
 function MarkdownEditor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState('');
+  const fileInputRef = useRef(null);
 
-  const parseMarkdown = (text) => {
-    return text
-      .replace(/#{6}\s(.*)/g, '<h6>$1</h6>')       // h6
-      .replace(/#{5}\s(.*)/g, '<h5>$1</h5>')       // h5
-      .replace(/#{4}\s(.*)/g, '<h4>$1</h4>')       // h4
-      .replace(/#{3}\s(.*)/g, '<h3>$1</h3>')       // h3
-      .replace(/#{2}\s(.*)/g, '<h2>$1</h2>')       // h2
-      .replace(/#{1}\s(.*)/g, '<h1>$1</h1>')       // h1
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')        // italic
-      .replace(/`(.*?)`/g, '<code>$1</code>')      // inline code
-      .replace(/~~(.*?)~~/g, '<del>$1</del>')      // strikethrough
-      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>') // links
-      .replace(/\n/g, '<br/>');                    // line breaks
+  // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
+  const handleImageUploadClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // 파일 선택 시 Blob URL 생성 후 Markdown 에디터에 삽입
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setContent((prev) => `${prev}\n\n![](${imageUrl})\n\n`);
+    }
   };
 
   return (
@@ -55,21 +55,25 @@ function MarkdownEditor() {
           <p>|</p>
           <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Quote size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Link2 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Image size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => handleImageUploadClick('```')}><Image size={toolbarIconSize} /></button>
+          {/* 파일 업로드 숨김 input */}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
           <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Code size={toolbarIconSize} /></button>
         </div>
       </div >
-      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100;`}>
-        <div style={containerStyle}>
-          <textarea
-            style={editorStyle}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="글을 입력하세요" />
-          <div
-            style={previewStyle}
-            dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} />
-        </div>
+      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100; background-color: #f0f0f0`}>
+        <textarea
+          style={editorStyle}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="글을 입력하세요" />
+        <Markdown style={previewStyle}>{content}</Markdown>
       </div>
       <div css={css`width: 100%`}>
         <button>저장</button>
@@ -84,7 +88,7 @@ const containerStyle = {
   height: '100vh',
   gap: '20px',
   padding: '20px',
-  backgroundColor: '#f0f0f0'
+  flex: '1'
 };
 
 const editorStyle = {
