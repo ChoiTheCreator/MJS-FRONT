@@ -50,16 +50,17 @@ function MarkdownEditor() {
     }
     setContent(newContent);
 
-    // 커서 위치 복원
+    // 커서 위치 재정렬
     setTimeout(() => {
       const textSelected = startPointer !== endPointer;
 
-      if (textSelected)
+      if (textSelected) {
         textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
-      else
+        textarea.focus();
+      } else {
         textarea.selectionStart = startPointer + prefix.length + 1;
-
-      textarea.focus();
+        textarea.focus();
+      }
     }, 0);
   }
 
@@ -77,7 +78,7 @@ function MarkdownEditor() {
     const newContent = `${textarea.value.substring(0, start)}${prefix}${selectedText}${suffix}${textarea.value.substring(end)}`;
     setContent(newContent);
 
-    // 커서 위치 복원
+    // 커서 위치 재정렬
     setTimeout(() => {
       if (selectedText) {
         textarea.setSelectionRange(start, end + 4);
@@ -89,9 +90,13 @@ function MarkdownEditor() {
     }, 0);
   }
 
+  const insertQuote = () => {
 
+  }
 
+  const insertLink = () => {
 
+  }
 
   ///////////////////////////// 이미지 업로드 /////////////////////////////
   // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
@@ -107,6 +112,41 @@ function MarkdownEditor() {
       setContent((prev) => `${prev}\n\n![](${imageUrl})\n\n`);
     }
   };
+
+  const insertCode = () => {
+    const textarea = editorRef.current;
+    if (!textarea) {
+      console.error("Textarea not found. " + textarea + " is null.")
+      return;
+    }
+
+    // 커서 위치 기록
+    const startPointer = textarea.selectionStart;
+    const endPointer = textarea.selectionEnd;
+    const text = textarea.value;
+    const textSelected = startPointer !== endPointer;
+
+    // 스타일 적용
+    let newContent;
+    if (textSelected) {
+      const selectedText = text.substring(startPointer, endPointer);
+      newContent = `${text.substring(0, startPointer)}\n\`\`\`\n${selectedText}\n\`\`\`\n${text.substring(endPointer)}`;
+    } else {
+      newContent = `${text.substring(0, startPointer)}\n\`\`\`\n\n\`\`\`\n${text.substring(endPointer)}`;
+    }
+    setContent(newContent);
+
+    // 커서 위치 재정렬
+    setTimeout(() => {
+      if (textSelected) {
+        textarea.setSelectionRange(startPointer + 5, endPointer + 5);
+        textarea.focus();
+      } else {
+        textarea.selectionStart = startPointer + 5;
+        textarea.focus();
+      }
+    }, 0);
+  }
 
   return (
     <div css={editorWrapper}>
@@ -146,7 +186,7 @@ function MarkdownEditor() {
             ref={fileInputRef}
             onChange={handleFileChange}
           />
-          <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Code size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertCode()}><Code size={toolbarIconSize} /></button>
         </div>
       </div >
       <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100;`}>
