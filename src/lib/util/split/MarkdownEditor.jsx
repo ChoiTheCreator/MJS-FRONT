@@ -3,14 +3,68 @@ import { css } from '@emotion/react';
 import { Bold, Code, Heading1, Heading2, Heading3, Heading4, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
 import { useRef, useState } from 'react';
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const toolbarIconSize = 20
 
 function MarkdownEditor() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState('');
+  const editorRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const insertHeading = (prefix) => {
+    const textarea = editorRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+
+    // Find the start and end of the current line
+    const beforeText = content.substring(0, start);
+    const lastNewline = beforeText.lastIndexOf("\n") + 1;
+    const nextNewline = content.indexOf("\n", start);
+    const lineEnd = nextNewline === -1 ? content.length : nextNewline;
+
+    // Extract the current line
+    const currentLine = content.substring(lastNewline, lineEnd).trimStart(); // Trim only leading spaces
+    const headingMatch = currentLine.match(/^(#+)\s*/);
+
+    let newContent;
+    if (headingMatch) {
+      newContent =
+        content.substring(0, lastNewline) +
+        prefix + " " +
+        currentLine.substring(headingMatch[0].length) +
+        content.substring(lineEnd);
+    } else {
+      newContent =
+        content.substring(0, lastNewline) +
+        prefix + " " +
+        currentLine +
+        content.substring(lineEnd);
+    }
+
+    setContent(newContent);
+
+    // Restore cursor position after inserting
+    const newCursorPosition = lastNewline + prefix.length + 1;
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = newCursorPosition;
+      textarea.focus();
+    }, 0);
+  }
+
+  ///////////////////////////// bold /////////////////////////////
+
+  ///////////////////////////// italic /////////////////////////////
+
+  ///////////////////////////// strikethrough /////////////////////////////
+
+
+
+
+  ///////////////////////////// 이미지 업로드 /////////////////////////////
   // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
   const handleImageUploadClick = () => {
     fileInputRef.current.click();
@@ -44,10 +98,9 @@ function MarkdownEditor() {
       </div>
       <div css={toolbar}>
         <div css={css`display: flex; padding: 0px 0px 16px 16px;`}>
-          <button css={utilButton} onClick={() => handleInsertHeading(1)}><Heading1 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleInsertHeading(2)}><Heading2 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleInsertHeading(3)}><Heading3 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleInsertHeading(4)}><Heading4 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertHeading('#')}><Heading1 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertHeading('##')}><Heading2 size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertHeading('###')}><Heading3 size={toolbarIconSize} /></button>
           <p>|</p>
           <button css={utilButton} onClick={() => handleMarkdownFormat('-')}><Bold size={toolbarIconSize} /></button>
           <button css={utilButton} onClick={() => handleMarkdownFormat('>')}><Italic size={toolbarIconSize} /></button>
@@ -67,13 +120,23 @@ function MarkdownEditor() {
           <button css={utilButton} onClick={() => handleMarkdownFormat('```')}><Code size={toolbarIconSize} /></button>
         </div>
       </div >
-      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100; background-color: #f0f0f0`}>
-        <textarea
-          style={editorStyle}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="글을 입력하세요" />
-        <Markdown style={previewStyle}>{content}</Markdown>
+      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100;`}>
+        <div style={containerStyle}>
+          <textarea
+            ref={editorRef}
+            style={editorStyle}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="글을 입력하세요" />
+          <div>
+            <Markdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}>{content}</Markdown>
+          </div>
+          {/* <div
+            style={previewStyle}
+            dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} /> */}
+        </div>
       </div>
       <div css={css`width: 100%`}>
         <button>저장</button>
@@ -88,7 +151,7 @@ const containerStyle = {
   height: '100vh',
   gap: '20px',
   padding: '20px',
-  flex: '1'
+  backgroundColor: '#f0f0f0'
 };
 
 const editorStyle = {
