@@ -181,6 +181,18 @@ function MarkdownEditor() {
     }, 0);
   }
 
+  const handleSave = () => {
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "content.md";
+    document.body.appendChild(link); // Firefox 대응
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div css={editorWrapper}>
       <div css={css`padding: 16px`}>
@@ -220,25 +232,51 @@ function MarkdownEditor() {
             onChange={handleFileChange}
           />
           <button css={utilButton} onClick={() => insertCode()}><Code size={toolbarIconSize} /></button>
+          <button onClick={handleSave}>저장</button>
         </div>
       </div >
-      <div css={css`padding: 16px; display: flex; flex-direction: row; height: 100;`}>
-        <div style={containerStyle}>
-          <textarea
-            ref={editorRef}
-            style={editorStyle}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="글을 입력하세요" />
-          <div>
-            <Markdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}>{content}</Markdown>
-          </div>
+
+      <div
+        css={css`
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        padding: 16px;
+        gap: 16px;`}
+      >
+        <textarea
+          ref={editorRef}
+          css={css`
+              width: 50%;
+              height: 100%;
+              padding: 16px;
+              font-size: 16px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              resize: none;
+              outline: none;
+            `}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="글을 입력하세요" />
+        <div
+          css={css`
+            width: 50%;
+            height: 100%;
+            padding: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            overflow-y: auto;
+            word-break: break-word;
+          `}>
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}>{content}</Markdown>
         </div>
       </div>
       <div css={css`width: 100%`}>
-        <button>저장</button>
+        {/* <button onClick={handleSave}>저장</button> */}
       </div>
 
       {showDialog && (
