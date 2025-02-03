@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import BoardDetailPage from './pages/BoardDetailPage';
+
 // 전역 스타일
 const globalStyle = css`
   body,
