@@ -1,13 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 
 const boardPageStyle = css`
   display: flex;
   flex-direction: column;
   width: 100vw;
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 150px); // 화면 높이를 최소 100vh로 설정
   padding: 0;
   margin: 0;
   overflow-y: hidden;
@@ -27,67 +27,119 @@ const mainSectionStyle = css`
   position: relative;
 `;
 
+const headingContainerStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const headingStyle = css`
+  color: #001f5c;
+  font-size: 2rem;
+`;
+
+const writeButtonStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #001f5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #003cb3;
+  }
+
+  svg {
+    font-size: 1.2rem;
+  }
+`;
+
+const postListStyle = css`
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+`;
+
 const postItemStyle = css`
   border: 1px solid #ddd;
   padding: 15px;
   border-radius: 8px;
   transition: box-shadow 0.2s ease-in-out;
   background-color: #f9f9f9;
-  cursor: pointer;
 
   &:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    color: #001f5c;
+  }
+
+  p {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1rem;
+  }
+
+  .post-info {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #777;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
   }
 `;
 
 const BoardPage = () => {
   const navigate = useNavigate();
-
-  // ✅ `BoardDetailPage`에서도 이 데이터를 동일하게 사용하도록 설정
-  const posts = [
-    {
-      id: '1',
-      title: '자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ',
-      content: `
-        <h1>H1의 크기 입니다</h1>
-        <h2>H2의 크기 입니다</h2>
-        <h3>H3의 크기 입니다</h3>
-        <img src="https://via.placeholder.com/600x300" alt="더미 이미지"/>
-        <p>글 내용이 들어갑니다. 글 내용이 들어갑니다. 글 내용이 들어갑니다.</p>
-      `,
-      likes: 5,
-      comments: 15,
-      views: 234,
-    },
-    {
-      id: '2',
-      title: '명지대 앞 맛집 추천 좀 해줘요!',
-      content: `<p>이 근처에 괜찮은 식당 있을까요? 추천 부탁드립니다.</p>`,
-      likes: 10,
-      comments: 30,
-      views: 512,
-    },
-  ];
-
   return (
     <div css={boardPageStyle}>
       <div css={mainSectionStyle}>
-        <h2>자유 게시판</h2>
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            css={postItemStyle}
-            onClick={() => navigate(`/board/${post.id}`, { state: post })}
-          >
-            <h3>{post.title}</h3>
-            <p>{post.content.replace(/<\/?[^>]+(>|$)/g, '').slice(0, 50)}...</p>
-            <div className="post-info">
-              <span>♥ {post.likes}</span>
-              <span>💬 {post.comments}</span>
-              <span>👁 {post.views}</span>
+        <div css={headingContainerStyle}>
+          <h2 css={headingStyle}>자유 게시판</h2>
+          <Link to="/write" css={writeButtonStyle}>
+            <FaPen />
+            글쓰기
+          </Link>
+        </div>
+        <div css={postListStyle}>
+          {/* 더미 데이터임 */}
+          {[...Array(7)].map((_, index) => (
+            <div
+              onClick={() => navigate(`/board/${index + 1}`)}
+              key={index}
+              css={postItemStyle}
+            >
+              <h3>자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ</h3>
+              <p>
+                미리보기가 들어갑니다. 미리보기가 들어갑니다. 미리보기가
+                들어갑니다.
+              </p>
+              <div className="post-info">
+                <span>♥ 5</span>
+                <span>💬 15</span>
+                <span>👁 234</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
