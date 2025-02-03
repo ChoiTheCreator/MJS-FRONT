@@ -1,25 +1,36 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { Bold, Code, Heading1, Heading2, Heading3, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
+import {
+  Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Image,
+  Italic,
+  Link2,
+  Quote,
+  Strikethrough,
+} from 'lucide-react';
 import { useRef, useState } from 'react';
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
-const toolbarIconSize = 20
+const toolbarIconSize = 20;
 
 function MarkdownEditor() {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState(dummyContent);
   const editorRef = useRef(null);
   const [showDialog, setShowDialog] = useState(false);
-  const [link, setLink] = useState("");
+  const [link, setLink] = useState('');
   const fileInputRef = useRef(null);
 
   const insertHeading = (prefix) => {
     const textarea = editorRef.current;
     if (!textarea) {
-      console.error("Textarea not found. " + textarea + " is null.")
+      console.error('Textarea not found. ' + textarea + ' is null.');
       return;
     }
 
@@ -29,8 +40,8 @@ function MarkdownEditor() {
 
     // 선택된 line 추출 및 heading 값 검사
     const beforeText = content.substring(0, startPointer);
-    const lastNewline = beforeText.lastIndexOf("\n") + 1;
-    const nextNewline = content.indexOf("\n", startPointer);
+    const lastNewline = beforeText.lastIndexOf('\n') + 1;
+    const nextNewline = content.indexOf('\n', startPointer);
     const lineEnd = nextNewline === -1 ? content.length : nextNewline;
 
     const currentLine = content.substring(lastNewline, lineEnd).trimStart();
@@ -40,13 +51,15 @@ function MarkdownEditor() {
     if (headingMatch) {
       newContent =
         content.substring(0, lastNewline) +
-        prefix + " " +
+        prefix +
+        ' ' +
         currentLine.substring(headingMatch[0].length) +
         content.substring(lineEnd);
     } else {
       newContent =
         content.substring(0, lastNewline) +
-        prefix + " " +
+        prefix +
+        ' ' +
         currentLine +
         content.substring(lineEnd);
     }
@@ -57,19 +70,22 @@ function MarkdownEditor() {
       const textSelected = startPointer !== endPointer;
 
       if (textSelected) {
-        textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
+        textarea.setSelectionRange(
+          startPointer + prefix.length + 1,
+          endPointer + prefix.length + 1
+        );
         textarea.focus();
       } else {
         textarea.selectionStart = startPointer + prefix.length + 1;
         textarea.focus();
       }
     }, 0);
-  }
+  };
 
   const insertTextStyle = (prefix, suffix = prefix) => {
     const textarea = editorRef.current;
     if (!textarea) {
-      console.error("Textarea not found. " + textarea + " is null.")
+      console.error('Textarea not found. ' + textarea + ' is null.');
       return;
     }
 
@@ -77,7 +93,10 @@ function MarkdownEditor() {
     const end = textarea.selectionEnd;
     const selectedText = textarea.value.substring(start, end);
 
-    const newContent = `${textarea.value.substring(0, start)}${prefix}${selectedText}${suffix}${textarea.value.substring(end)}`;
+    const newContent = `${textarea.value.substring(
+      0,
+      start
+    )}${prefix}${selectedText}${suffix}${textarea.value.substring(end)}`;
     setContent(newContent);
 
     // 커서 위치 재정렬
@@ -90,21 +109,17 @@ function MarkdownEditor() {
         textarea.focus();
       }
     }, 0);
-  }
+  };
 
   const insertQuote = () => {
     const textarea = editorRef.current;
     if (!textarea) {
-      console.error("Textarea not found. " + textarea + " is null.")
+      console.error('Textarea not found. ' + textarea + ' is null.');
       return;
     }
+  };
 
-
-  }
-
-  const insertLink = () => {
-
-  }
+  const insertLink = () => {};
 
   const insertHyperlink = () => {
     setShowDialog(true);
@@ -117,11 +132,14 @@ function MarkdownEditor() {
 
     const startPointer = textarea.selectionStart;
     const linkString = `[링크](${link})`;
-    const newContent = content.substring(0, startPointer) + linkString + content.substring(startPointer);
+    const newContent =
+      content.substring(0, startPointer) +
+      linkString +
+      content.substring(startPointer);
 
     setContent(newContent);
     setShowDialog(false);
-    setLink("");
+    setLink('');
 
     // 커서 위치 재정렬
     setTimeout(() => {
@@ -130,7 +148,6 @@ function MarkdownEditor() {
     }, 0);
   };
 
-  ///////////////////////////// 이미지 업로드 /////////////////////////////
   // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
   const handleImageUploadClick = () => {
     fileInputRef.current.click();
@@ -144,12 +161,11 @@ function MarkdownEditor() {
       setContent((prev) => `${prev}\n\n![](${imageUrl})\n\n`);
     }
   };
-  //////////////////////////////////////////////////////////////////////
 
   const insertCode = () => {
     const textarea = editorRef.current;
     if (!textarea) {
-      console.error("Textarea not found. " + textarea + " is null.")
+      console.error('Textarea not found. ' + textarea + ' is null.');
       return;
     }
 
@@ -163,9 +179,15 @@ function MarkdownEditor() {
     let newContent;
     if (textSelected) {
       const selectedText = text.substring(startPointer, endPointer);
-      newContent = `${text.substring(0, startPointer)}\n\`\`\`\n${selectedText}\n\`\`\`\n${text.substring(endPointer)}`;
+      newContent = `${text.substring(
+        0,
+        startPointer
+      )}\n\`\`\`\n${selectedText}\n\`\`\`\n${text.substring(endPointer)}`;
     } else {
-      newContent = `${text.substring(0, startPointer)}\n\`\`\`\n\n\`\`\`\n${text.substring(endPointer)}`;
+      newContent = `${text.substring(
+        0,
+        startPointer
+      )}\n\`\`\`\n\n\`\`\`\n${text.substring(endPointer)}`;
     }
     setContent(newContent);
 
@@ -179,14 +201,14 @@ function MarkdownEditor() {
         textarea.focus();
       }
     }, 0);
-  }
+  };
 
   const handleSave = () => {
-    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.download = "content.md";
+    link.download = 'content.md';
     document.body.appendChild(link); // Firefox 대응
     link.click();
     document.body.removeChild(link);
@@ -195,7 +217,11 @@ function MarkdownEditor() {
 
   return (
     <div css={editorWrapper}>
-      <div css={css`padding: 16px`}>
+      <div
+        css={css`
+          padding: 16px;
+        `}
+      >
         <textarea
           id="title-editor"
           css={css`
@@ -205,60 +231,88 @@ function MarkdownEditor() {
             border: none;
             outline: none;
             align-items: center;
-            `}
+          `}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder='제목을 입력하세요' />
+          placeholder="제목을 입력하세요"
+        />
       </div>
       <div css={toolbar}>
-        <div css={css`display: flex; padding: 0px 0px 16px 16px;`}>
-          <button css={utilButton} onClick={() => insertHeading('#')}><Heading1 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => insertHeading('##')}><Heading2 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => insertHeading('###')}><Heading3 size={toolbarIconSize} /></button>
+        <div
+          css={css`
+            display: flex;
+            padding: 0px 0px 16px 16px;
+          `}
+        >
+          <button css={utilButton} onClick={() => insertHeading('#')}>
+            <Heading1 size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => insertHeading('##')}>
+            <Heading2 size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => insertHeading('###')}>
+            <Heading3 size={toolbarIconSize} />
+          </button>
           <p>|</p>
-          <button css={utilButton} onClick={() => insertTextStyle('**')}><Bold size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => insertTextStyle(' _', '_ ')}><Italic size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => insertTextStyle('~~')}><Strikethrough size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertTextStyle('**')}>
+            <Bold size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => insertTextStyle(' _', '_ ')}>
+            <Italic size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => insertTextStyle('~~')}>
+            <Strikethrough size={toolbarIconSize} />
+          </button>
           <p>|</p>
-          <button css={utilButton} onClick={() => insertQuote()}><Quote size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => insertHyperlink()}><Link2 size={toolbarIconSize} /></button>
-          <button css={utilButton} onClick={() => handleImageUploadClick()}><Image size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertQuote()}>
+            <Quote size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => insertHyperlink()}>
+            <Link2 size={toolbarIconSize} />
+          </button>
+          <button css={utilButton} onClick={() => handleImageUploadClick()}>
+            <Image size={toolbarIconSize} />
+          </button>
           {/* 파일 업로드 숨김 input */}
           <input
             type="file"
             accept="image/*"
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
             ref={fileInputRef}
             onChange={handleFileChange}
           />
-          <button css={utilButton} onClick={() => insertCode()}><Code size={toolbarIconSize} /></button>
+          <button css={utilButton} onClick={() => insertCode()}>
+            <Code size={toolbarIconSize} />
+          </button>
           <button onClick={handleSave}>저장</button>
         </div>
-      </div >
+      </div>
 
       <div
         css={css`
-        display: flex;
-        flex-direction: row;
-        height: 100vh;
-        padding: 16px;
-        gap: 16px;`}
+          display: flex;
+          flex-direction: row;
+          height: 100vh;
+          padding: 16px;
+          gap: 16px;
+        `}
       >
         <textarea
           ref={editorRef}
           css={css`
-              width: 50%;
-              height: 100%;
-              padding: 16px;
-              font-size: 16px;
-              border: 1px solid #ccc;
-              border-radius: 8px;
-              resize: none;
-              outline: none;
-            `}
+            width: 50%;
+            height: 100%;
+            padding: 16px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+          `}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="글을 입력하세요" />
+          placeholder="글을 입력하세요"
+        />
         <div
           css={css`
             width: 50%;
@@ -269,13 +323,18 @@ function MarkdownEditor() {
             background-color: #f9f9f9;
             overflow-y: auto;
             word-break: break-word;
-          `}>
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}>{content}</Markdown>
+          `}
+        >
+          <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {content}
+          </Markdown>
         </div>
       </div>
-      <div css={css`width: 100%`}>
+      <div
+        css={css`
+          width: 100%;
+        `}
+      >
         {/* <button onClick={handleSave}>저장</button> */}
       </div>
 
@@ -288,7 +347,8 @@ function MarkdownEditor() {
               type="text"
               placeholder="https://www.mjs.ac.kr"
               value={link}
-              onChange={(e) => setLink(e.target.value)} />
+              onChange={(e) => setLink(e.target.value)}
+            />
             <br />
             <button css={confirmButton} onClick={handleInsertLink}>
               삽입
@@ -299,7 +359,7 @@ function MarkdownEditor() {
           </div>
         </div>
       )}
-    </div >
+    </div>
   );
 }
 
@@ -344,7 +404,7 @@ const dialogButton = css`
 
 const confirmButton = css`
   ${dialogButton};
-  background-color: #102E68;
+  background-color: #102e68;
   color: white;
   &:hover {
     background-color: #405886;
@@ -354,7 +414,7 @@ const confirmButton = css`
 const cancelButton = css`
   ${dialogButton};
   &:hover {
-    background-color: #F0F0F0;
+    background-color: #f0f0f0;
   }
 `;
 
@@ -364,7 +424,7 @@ const containerStyle = {
   height: '100vh',
   gap: '20px',
   padding: '20px',
-  backgroundColor: '#f0f0f0'
+  backgroundColor: '#f0f0f0',
 };
 
 const editorStyle = {
@@ -375,7 +435,7 @@ const editorStyle = {
   border: '2px solid #007acc',
   backgroundColor: '#ffffff',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  resize: 'none'
+  resize: 'none',
 };
 
 const previewStyle = {
@@ -385,9 +445,8 @@ const previewStyle = {
   border: '2px solid #e0e0e0',
   backgroundColor: '#ffffff',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  overflowY: 'auto'
+  overflowY: 'auto',
 };
-
 
 export default MarkdownEditor;
 
@@ -397,24 +456,24 @@ const editorWrapper = css`
   box-sizing: border-box;
   padding: '20px';
   background: white;
-`
+`;
 
 const utilButton = css`
   background: none;
-`
+`;
 
 const textBoxWrapper = css`
   width: '100%';
   height: '300px';
   padding: '10px';
-  fontSize: '16px';
-`
+  font-size: '16px';
+`;
 
 const toolbar = css`
   width: 100%;
   height: 64px;
   padding: '10px';
-`
+`;
 
 const toolbarButton = css`
   padding: 34px;
@@ -422,10 +481,6 @@ const toolbarButton = css`
   border-radius: 4px;
   color: black;
   font-weight: bold;
-  &:hover {
-    background-color: ;
-    color: white;
-  }
 `;
 
 const dummyContent = `# 개인 정보 업로드 금지

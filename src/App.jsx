@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import BoardDetailPage from './pages/BoardDetailPage';
+import MarkdownEditor from './lib/util/MarkdownEditor';
 
 // 전역 스타일
 const globalStyle = css`
@@ -41,6 +42,10 @@ const App = () => {
           <Route element={<Layout />}>
             <Route path="/main" element={<MainPage />} />
             <Route path="/board" element={<BoardPage />} />
+            <Route
+              path="/edit"
+              element={<MarkdownEditor></MarkdownEditor>}
+            ></Route>
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
             <Route path="/board/:postId" element={<BoardDetailPage />} />{' '}
           </Route>

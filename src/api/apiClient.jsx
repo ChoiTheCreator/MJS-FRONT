@@ -4,7 +4,7 @@ import axios from 'axios';
 const apiClient = axios.create({
   baseURL: '', // 프록시 설정을 사용할 때는 빈 문자열 유지
   headers: {
-    // 1. 디폴트타입
+    // 디폴트타입
     'Content-Type': 'application/json',
   },
 });
@@ -18,13 +18,12 @@ const refreshAccessToken = async () => {
     if (!refreshToken) {
       throw new Error('Refresh Token이 없습니다.');
     }
-
+화
     const response = await axios.post(
       '/api/auth/refresh',
       {},
       {
         headers: {
-          //시온님이 강조하신 헤더 전송 방식( 로그인 ,사인업 제외 모든 곳에 헤더 포함 보내야함)
           'ACCESS-AUTH-KEY': `BEARER ${accessToken}`,
           'REFRESH-AUTH-KEY': `BEARER ${refreshToken}`,
         },

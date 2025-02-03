@@ -114,7 +114,7 @@ const BoardPage = () => {
       <div css={mainSectionStyle}>
         <div css={headingContainerStyle}>
           <h2 css={headingStyle}>자유 게시판</h2>
-          <Link to="/write" css={writeButtonStyle}>
+          <Link to="/edit" css={writeButtonStyle}>
             <FaPen />
             글쓰기
           </Link>

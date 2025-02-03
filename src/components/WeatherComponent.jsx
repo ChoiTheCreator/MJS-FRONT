@@ -88,11 +88,14 @@ const WeatherComponent = () => {
 
   useEffect(() => {
     const fetchWeather = async () => {
+      
       try {
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/weather?lat=37.5826&lon=126.9139&units=metric&appid=${apiKey}`
         );
         setWeatherData(response.data);
+
+
       } catch (error) {
         console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
       }
