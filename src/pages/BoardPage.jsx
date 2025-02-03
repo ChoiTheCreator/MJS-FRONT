@@ -18,7 +18,7 @@ const boardPageStyle = css`
 const mainSectionStyle = css`
   flex-grow: 1;
   width: 86%;
-  max-width: 1200px;
+  max-width: 2000px;
   margin: 20px auto;
   padding: 40px 20px;
   background-color: white;
@@ -66,6 +66,7 @@ const writeButtonStyle = css`
 const postListStyle = css`
   display: flex;
   flex-direction: column;
+
   gap: 20px;
 `;
 
@@ -119,6 +120,7 @@ const BoardPage = () => {
           </Link>
         </div>
         <div css={postListStyle}>
+          {/* 더미 데이터임 */}
           {[...Array(7)].map((_, index) => (
             <div key={index} css={postItemStyle}>
               <h3>자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ</h3>

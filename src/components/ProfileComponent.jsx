@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
@@ -78,7 +78,7 @@ const ProfileComponent = () => {
     const fetchUserData = async () => {
       if (isLoggedIn && user?.id) {
         try {
-          const response = await axios.get('http://localhost:4000/users');
+          const response = await axios.get('http://localhost:3000/users');
           const currentUser = response.data.find((u) => u.id === user.id);
 
           if (currentUser) {

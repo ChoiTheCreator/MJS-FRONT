@@ -111,7 +111,9 @@ const Navbar = () => {
         <div className="logo">
           <img src={logo} alt="Logo" />
           <Link to={'/main'}>
-            <span className="logo-text">MJS</span>
+            <span className="logo-text">
+              MJ<span style={{ color: 'skyblue' }}>S</span>
+            </span>
           </Link>
         </div>
 

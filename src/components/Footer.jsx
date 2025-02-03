@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
-import logo from '../IMG/schoolLogo.png';
+
+import logo from '../IMG/schoolLogoWithNewColor.png';
+
+// import logo from '../IMG/cuteLogo.webp';
 
 const footerStyle = css`
   width: 100vw;
-  background-color: #d9d9d9; /* 배경 색상을 더 진한 회색으로 변경 */
+  background-color: white; /* 배경 색상을 더 진한 회색으로 변경 */
   padding: 15px 0;
   position: relative; /* fixed에서 relative로 변경 */
   bottom: 0;
@@ -73,7 +75,9 @@ const Footer = () => {
       <div css={footerContainerStyle}>
         <div css={footerLogoStyle}>
           <img src={logo} alt="Logo" />
-          <span className="footer-logo-text">MJS NOVA</span>
+          <span className="footer-logo-text">
+            MJ<span style={{ color: 'skyblue' }}>S</span> NOVA
+          </span>
         </div>
         <div css={footerLinksStyle}>
           <ul>

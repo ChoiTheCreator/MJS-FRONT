@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const weatherContainerStyle = css`
@@ -38,7 +38,7 @@ const weatherContainerStyle = css`
 
     .temperature-container {
       position: relative;
-      right: 120px;
+      right: 180px;
       display: flex;
       flex-direction: column;
       align-items: center;

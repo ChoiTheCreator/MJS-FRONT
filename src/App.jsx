@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
 import Layout from './components/Layout';
 import BoardPage from './pages/BoardPage';
+import StartPage from './pages/StartPage';
 import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="/board" element={<BoardPage />} />
           </Route>
           {/* Layout 미적용 페이지 */}
+          <Route path="/" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}
           <Route path="*" element={<NotFoundPage />} /> {/* 404 페이지 */}
         </Routes>
