@@ -1,6 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import TabComponent from '../components/TabComponent';
+import WeatherComponent from '../components/WeatherComponent';
+import RankingComponent from '../components/RankingComponent';
+import AdBanner from '../components/AdBanner';
+import MealPlan from '../components/MealPlan';
+import MyongjiNews from '../components/MyoungjiNews';
 
 const mainPageContainerStyle = css`
   width: 100vw;
@@ -9,18 +17,26 @@ const mainPageContainerStyle = css`
   display: grid;
   grid-template-columns: 2fr 1fr; /* 왼쪽 2/3, 오른쪽 1/3 */
   gap: 20px;
+  align-items: start;
+  min-height: 100vh;
 `;
 
 const leftSectionStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 내부 요소 간격 */
+  gap: 20px;
 `;
 
 const rightSectionStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 내부 요소 간격 */
+  gap: 20px;
+`;
+
+const topRowStyle = css`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 `;
 
 const contentBoxStyle = css`
@@ -28,41 +44,54 @@ const contentBoxStyle = css`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 150px; /* 최소 높이 */
+  height: auto;
+`;
+
+const reducedHeightBoxStyle = css`
+  ${contentBoxStyle}; //위의 content: boxstyle을 그대로 가져와서 코드를 재활용하는 것;
+  height: 200px; /* 배너와 식단 높이 절반으로 줄이기 */
 `;
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useAuth(); // 로그인 상태와 상태 변경 함수
+
+  const handleLogout = () => {
+    setIsLoggedIn(false); // 로그아웃 시 상태 변경
+  };
+
   return (
     <div css={mainPageContainerStyle}>
-      {/* 왼쪽 3개의 박스 */}
       <div css={leftSectionStyle}>
-        <div css={contentBoxStyle}>
-          <h3>검색 및 배너</h3>
-          <p>여기에 검색창과 강조 배너를 추가하세요.</p>
+        {/* 상단 배너와 식단 */}
+        <div css={topRowStyle}>
+          <div css={reducedHeightBoxStyle}>
+            <AdBanner />
+          </div>
+          <div css={reducedHeightBoxStyle}>
+            <MealPlan />
+          </div>
         </div>
+
+        {/* 학사 공지 탭 */}
         <div css={contentBoxStyle}>
           <h3>학사 공지</h3>
-          <p>공지사항 탭 내용을 추가하세요.</p>
+          <TabComponent />
         </div>
+
+        {/* 명대 뉴스 */}
         <div css={contentBoxStyle}>
-          <h3>명지대 뉴스</h3>
-          <p>뉴스 섹션 내용을 추가하세요.</p>
+          <MyongjiNews />
         </div>
       </div>
 
-      {/* 오른쪽 3개의 박스 */}
+      {/* 오른쪽 섹션 */}
       <div css={rightSectionStyle}>
         <div css={contentBoxStyle}>
-          <h3>프로필 카드</h3>
-          <p>프로필 정보</p>
+          <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
         </div>
         <div css={contentBoxStyle}>
-          <h3>날씨 정보</h3>
-          <p>날씨 정보를 추가하세요.</p>
-        </div>
-        <div css={contentBoxStyle}>
-          <h3>실시간 검색 순위</h3>
-          <p>검색 순위를 표시합니다.</p>
+          <RankingComponent /> {/* 검색 순위 */}
         </div>
       </div>
     </div>

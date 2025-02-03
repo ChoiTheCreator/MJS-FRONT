@@ -1,8 +1,4 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import emotion from 'eslint-plugin-emotion';
 
 export default [
   { ignores: ['dist'] },
@@ -22,6 +18,7 @@ export default [
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      emotion, // emotion 플러그인 추가
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -33,6 +30,7 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      'react/no-unknown-property': 'off', // emotion이 처리하도록 끄기
     },
   },
-]
+];

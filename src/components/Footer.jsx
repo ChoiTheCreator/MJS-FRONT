@@ -1,14 +1,15 @@
-/*eslint-disable */
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
-import logo from '../IMG/schoolLogo.png';
+
+import logo from '../IMG/schoolLogoWithNewColor.png';
+
+// import logo from '../IMG/cuteLogo.webp';
 
 const footerStyle = css`
   width: 100vw;
-  background-color: #002f6c;
+  background-color: white; /* 배경 색상을 더 진한 회색으로 변경 */
   padding: 15px 0;
-  position: fixed;
+  position: relative; /* fixed에서 relative로 변경 */
   bottom: 0;
   left: 0;
 `;
@@ -33,7 +34,7 @@ const footerLogoStyle = css`
   }
 
   .footer-logo-text {
-    color: white;
+    color: #333; /* 텍스트 색상을 어두운 색으로 유지 */
     font-size: 1.2rem;
     font-weight: 700;
   }
@@ -47,13 +48,13 @@ const footerLinksStyle = css`
     gap: 20px;
 
     li {
-      color: white;
+      color: #333; /* 링크 색상 유지 */
       font-size: 0.9rem;
       cursor: pointer;
       transition: color 0.3s ease;
 
       &:hover {
-        color: #99ccff;
+        color: #666; /* hover 색상 유지 */
         text-decoration: underline;
       }
     }
@@ -62,7 +63,7 @@ const footerLinksStyle = css`
 
 const footerCopyrightStyle = css`
   p {
-    color: #d1d1d1;
+    color: #999; /* 텍스트 색상 유지 */
     font-size: 0.75rem;
     text-align: right;
   }
@@ -74,7 +75,9 @@ const Footer = () => {
       <div css={footerContainerStyle}>
         <div css={footerLogoStyle}>
           <img src={logo} alt="Logo" />
-          <span className="footer-logo-text">MJS NOVA</span>
+          <span className="footer-logo-text">
+            MJ<span style={{ color: 'skyblue' }}>S</span> NOVA
+          </span>
         </div>
         <div css={footerLinksStyle}>
           <ul>

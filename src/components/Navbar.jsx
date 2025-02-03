@@ -111,7 +111,9 @@ const Navbar = () => {
         <div className="logo">
           <img src={logo} alt="Logo" />
           <Link to={'/main'}>
-            <span className="logo-text">MJS</span>
+            <span className="logo-text">
+              MJ<span style={{ color: 'skyblue' }}>S</span>
+            </span>
           </Link>
         </div>
 
@@ -144,7 +146,7 @@ const Navbar = () => {
             <Link to="/reviews">취업후기</Link>
           </li>
           <li>
-            <Link to="/fun">땡지위키</Link>
+            <Link to="/fun">띵지위키</Link>
           </li>
         </ul>
       </div>
