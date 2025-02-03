@@ -4,75 +4,131 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import dummyImg from '../IMG/Myself.jpeg';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const profileContainerStyle = css`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 15vh;
+  flex-direction: column;
+  width: 700px;
+  border-radius: 12px;
+  margin-left: 100px;
+  padding: 15px;
+  background-color: white;
   font-family: 'Poppins', 'Arial', sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const profileCardStyle = css`
+const profileTopSectionStyle = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const profileLoginSectionStyle = css`
+  ${profileTopSectionStyle}; /* ✅ 기존 스타일을 상속 */
+  flex-direction: column;
+`;
+
+const profileInfoStyle = css`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`;
+
+const profileImageStyle = css`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const userDetailsStyle = css`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 420px;
-  text-align: center;
 `;
 
-const profileTextStyle = css`
+const userNameStyle = css`
   font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 1rem;
-  color: #001f5c;
+  color: #000;
+`;
 
-  a {
-    color: #001f5c;
-    text-decoration: underline;
+const userEmailStyle = css`
+  font-size: 0.8rem;
+  color: #777;
+`;
+
+const iconStyle = css`
+  font-size: 1rem;
+  color: #555;
+  cursor: pointer;
+`;
+
+const dividerStyle = css`
+  width: 100%;
+  height: 1px;
+  background-color: #ddd;
+  margin: 10px 0;
+`;
+
+const navigationStyle = css`
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.9rem;
+  font-weight: bold;
+
+  span {
     cursor: pointer;
-
-    &:hover {
-      text-decoration: none;
+    &:nth-of-type(2) {
+      color: #0055ff; /* MYiCap 강조 */
+    }
+    &:nth-of-type(3) {
+      color: #ff6600; /* Office365 강조 */
     }
   }
 `;
 
-const buttonStyle = css`
-  margin-top: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  background-color: #001f5c;
-  color: white;
-  border: none;
-  border-radius: 6px;
+const loginMessageStyle = css`
   font-size: 1rem;
   font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #001542;
-  }
-
-  &:not(:last-of-type) {
-    margin-bottom: 0.5rem;
-  }
+  color: #333;
+  margin-bottom: 15px;
 `;
 
-//로그인 강제 컴포넌트 스타일 조정
-const loginComponentStyle = css`
-  ${profileTextStyle};
-  margin-top: 20px;
-  margin-left: 80px;
+const loginButtonStyle = css`
+  background-color: navy;
+  color: white;
+  width: 100px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out; /* ✅ 애니메이션 적용 */
+
+  &:hover {
+    transform: scale(1.1); /* ✅ hover 시 크기 증가 */
+    background-color: darkblue;
+  }
+
+  &:active {
+    transform: scale(0.95); /* ✅ 클릭 시 크기 감소 */
+  }
 `;
 
 const ProfileComponent = () => {
-  const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth();
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleLogoutClick = () => {
+    setIsLoggedIn(false);
+  };
+
   const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -80,7 +136,6 @@ const ProfileComponent = () => {
         try {
           const response = await axios.get('http://localhost:3000/users');
           const currentUser = response.data.find((u) => u.id === user.id);
-
           if (currentUser) {
             setUser(currentUser); // 사용자 정보 업데이트
           } else {
@@ -95,66 +150,54 @@ const ProfileComponent = () => {
     fetchUserData();
   }, [isLoggedIn, user?.id, setUser]);
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null); // 사용자 정보 초기화
-    alert('로그아웃되었습니다.');
-    navigate('/login');
-  };
-
-  if (!isLoggedIn) {
-    return (
-      //스타일 재활용 한 loginComponentStyle
-      <div css={loginComponentStyle}>
-        <div css={profileCardStyle}>
-          <p css={profileTextStyle}>
-            커뮤니티 이용을 위한 로그인이 필요합니다!
-          </p>
-          <button css={buttonStyle} onClick={() => navigate('/login')}>
-            로그인
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div css={profileContainerStyle}>
-      <div css={profileCardStyle}>
-        <img
-          css={css`
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-          `}
-          src={user?.profileImage || 'https://via.placeholder.com/60'}
-          alt="Profile"
-        />
-        <h4
-          css={css`
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #001f5c;
-            margin-bottom: 0.3rem;
-          `}
-        >
-          {user?.name || '이름 없음'}
-        </h4>
-        <p
-          css={css`
-            font-size: 0.9rem;
-            color: #555;
-          `}
-        >
-          {user?.email || '이메일 없음'}
-        </p>
-        <button css={buttonStyle} onClick={handleLogout}>
-          로그아웃
-        </button>
-      </div>
-    </div>
+    <>
+      {isLoggedIn ? (
+        <div css={profileContainerStyle}>
+          <div css={profileTopSectionStyle}>
+            {/* 프로필 이미지 & 유저 정보 */}
+            <div css={profileInfoStyle}>
+              <img css={profileImageStyle} src={dummyImg} alt="Profile" />
+              <div css={userDetailsStyle}>
+                <span css={userNameStyle}>{user?.name || '이름 없음'}</span>
+                <span css={userEmailStyle}>{user?.email || '이메일 없음'}</span>
+              </div>
+            </div>
+            {/* 오른쪽 외부 링크 아이콘 */}
+
+            <FaExternalLinkAlt css={iconStyle} onClick={handleLogoutClick} />
+          </div>
+
+          {/* 구분선 */}
+          <div css={dividerStyle}></div>
+
+          {/* 네비게이션 메뉴 */}
+          <div css={navigationStyle}>
+            <span>MSI</span>
+            <span>MYiCap</span>
+            <span>Office365</span>
+            <span>MyPage</span>
+          </div>
+        </div>
+      ) : (
+        <div css={profileContainerStyle}>
+          <div css={profileLoginSectionStyle}>
+            <div css={loginMessageStyle}>
+              커뮤니티 이용을 위한
+              <span style={{ color: ' navy', fontWeight: 'bold' }}>
+                {' '}
+                로그인{' '}
+              </span>
+              이 필요합니다!
+            </div>
+            <button css={loginButtonStyle} onClick={handleLoginClick}>
+              {' '}
+              로그인
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

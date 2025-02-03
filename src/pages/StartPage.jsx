@@ -16,6 +16,7 @@ const fadeIn = keyframes`
 
 const containerStyle = css`
   display: flex;
+  background-color: white;
   flex-direction: column;
   justify-content: center;
   align-items: center;

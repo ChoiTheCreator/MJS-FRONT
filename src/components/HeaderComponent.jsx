@@ -87,6 +87,10 @@ const headerContainerStyle = css`
     margin-top: 70px;
     flex-shrink: 0;
     width: 25%;
+    height: 150px; /* 기본 높이 설정 */
+    flex-grow: 1; /* 가능한 공간을 차지하도록 설정 */
+    display: flex; /* 내부 요소(ProfileComponent) 정렬을 위해 */
+    align-items: center;
 
     @media (max-width: 1024px) {
       display: none; /* 1024px 이하 화면에서 프로필 섹션 숨기기 */
