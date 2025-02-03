@@ -84,9 +84,21 @@
       "password": "ww001009!"
     },
     {
-      "id": 1738557759724,
+      "id": "1738557759724",
       "name": "심유진",
       "email": "sim109@naver.com",
+      "password": "ww001009!"
+    },
+    {
+      "id": 1738568849179,
+      "name": "아이폰 ",
+      "email": "iphone109@naver.com",
+      "password": "ww00100(!"
+    },
+    {
+      "id": 1738570989947,
+      "name": "영은이",
+      "email": "silver109@naver.com",
       "password": "ww001009!"
     }
   ],

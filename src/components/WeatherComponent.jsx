@@ -82,6 +82,8 @@ const weatherContainerStyle = css`
 const WeatherComponent = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
+  const [dailyMaxTemp, setDailyMaxTemp] = useState(null);
+  const [dailyMinTemp, setDailyMinTemp] = useState(null);
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {

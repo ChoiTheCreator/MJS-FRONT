@@ -97,7 +97,7 @@ const loginMessageStyle = css`
 `;
 
 const loginButtonStyle = css`
-  background-color: navy;
+  background-color: #001f5c;
   color: white;
   width: 100px;
   height: 30px;
