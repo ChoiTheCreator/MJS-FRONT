@@ -17,22 +17,24 @@ export default function MarkdownEditor() {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  // Heading 추가하는 function 입니다. 현재 선택한 문장의 currentHeading 값과 비교해서 newHeading 스타일을 적용합니다.
   const insertHeading = (prefix) => {
     const textarea = editorRef.current;
+    if (prefix.length > 6) {
+      console.error("Invalid insertHeading(prefix) function parameter. prefix = " + prefix)
+      return;
+    }
     if (!textarea) {
       console.error("Textarea not found. " + textarea + " is null.")
       return;
     }
 
-    // textarea의 선택 영역 pointer
     const startPointer = textarea.selectionStart;
     const endPointer = textarea.selectionEnd;
 
-    // 현재 line 선택
     const beforeText = content.substring(0, startPointer);
     const currentLinePointer = beforeText.lastIndexOf("\n") + 1;
 
-    // 현재 heading 검사
     let pointer = currentLinePointer;
     let currentHeadingLevel = 0;
     for (let i = 0; i < 7; i++) {
@@ -75,67 +77,33 @@ export default function MarkdownEditor() {
         prefix + ' ' +
         content.substring(currentLinePointer);
     } else {
-      newContent =
-        content.substring(0, currentLinePointer) +
-        prefix + ' ' +
-        content.substring(currentLinePointer + currentHeadingLevel + 1);
+      if (currentHeadingLevel === prefix.length) {
+        newContent =
+          content.substring(0, currentLinePointer) +
+          content.substring(currentLinePointer + currentHeadingLevel + 1);
+      } else {
+        newContent =
+          content.substring(0, currentLinePointer) +
+          prefix + ' ' +
+          content.substring(currentLinePointer + currentHeadingLevel + 1);
+      }
     }
     setContent(newContent);
 
-    // 커서 위치 재정렬
     setTimeout(() => {
-      // const isTextSelected = startPointer !== endPointer;
-
       if (currentHeadingLevel === 0) {
         textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
         textarea.focus();
       } else {
-        textarea.setSelectionRange(startPointer + prefix.length - currentHeadingLevel, endPointer + prefix.length - currentHeadingLevel);
-        textarea.focus();
+        if (currentHeadingLevel === prefix.length) {
+          textarea.setSelectionRange(startPointer - (currentHeadingLevel + 1), endPointer - (currentHeadingLevel + 1));
+          textarea.focus();
+        } else {
+          textarea.setSelectionRange(startPointer + prefix.length - currentHeadingLevel, endPointer + prefix.length - currentHeadingLevel);
+          textarea.focus();
+        }
       }
-
-      // if (textSelected) {
-      //   textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
-      //   textarea.focus();
-      // } else {
-      //   textarea.selectionStart = startPointer + prefix.length + 1;
-      //   textarea.focus();
-      // }
     }, 0);
-    // const nextNewline = content.indexOf("\n", startPointer);
-    // const lineEnd = nextNewline === -1 ? content.length : nextNewline;
-
-    // const currentLine = content.substring(currentLinePointer, lineEnd).trimStart();
-    // const headingMatch = currentLine.match(/^(#+)\s*/);
-
-    // let newContent;
-    // if (headingMatch) {
-    //   newContent =
-    //     content.substring(0, currentLinePointer) +
-    //     prefix + " " +
-    //     currentLine.substring(headingMatch[0].length) +
-    //     content.substring(lineEnd);
-    // } else {
-    //   newContent =
-    //     content.substring(0, currentLinePointer) +
-    //     prefix + " " +
-    //     currentLine +
-    //     content.substring(lineEnd);
-    // }
-    // setContent(newContent);
-
-    // 커서 위치 재정렬
-    // setTimeout(() => {
-    //   const textSelected = startPointer !== endPointer;
-
-    //   if (textSelected) {
-    //     textarea.setSelectionRange(startPointer + prefix.length + 1, endPointer + prefix.length + 1);
-    //     textarea.focus();
-    //   } else {
-    //     textarea.selectionStart = startPointer + prefix.length + 1;
-    //     textarea.focus();
-    //   }
-    // }, 0);
   }
 
   const insertTextStyle = (prefix, suffix = prefix) => {
