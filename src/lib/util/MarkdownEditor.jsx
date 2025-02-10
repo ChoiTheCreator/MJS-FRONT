@@ -3,8 +3,15 @@ import { css } from '@emotion/react';
 import { Bold, Code, Heading1, Heading2, Heading3, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
 import { useRef, useState } from 'react';
 import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+
+const mySchema = {
+  ...defaultSchema,
+  protocols: {
+    ...defaultSchema.protocols,
+    src: [...(defaultSchema.protocols?.src || []), 'blob:']
+  },
+};
 
 const toolbarIconSize = 20
 
@@ -269,9 +276,7 @@ export default function MarkdownEditor() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="글을 입력하세요" />
         <div css={parserContainer}>
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}>
+          <Markdown rehypePlugins={[[rehypeSanitize, mySchema]]}>
             {content}
           </Markdown>
         </div>
@@ -280,26 +285,28 @@ export default function MarkdownEditor() {
         {/* <button onClick={handleSave}>저장</button> */}
       </div>
 
-      {showDialog && (
-        <div css={dialogOverlay}>
-          <div css={dialogBox}>
-            <h3>링크 추가</h3>
-            <input
-              css={dialogInputStyle}
-              type="text"
-              placeholder="https://www.mjs.ac.kr"
-              value={link}
-              onChange={(e) => setLink(e.target.value)} />
-            <br />
-            <button css={dialogConfirmButton} onClick={handleInsertLink}>
-              삽입
-            </button>
-            <button css={dialogCancelButton} onClick={() => setShowDialog(false)}>
-              취소
-            </button>
+      {
+        showDialog && (
+          <div css={dialogOverlay}>
+            <div css={dialogBox}>
+              <h3>링크 추가</h3>
+              <input
+                css={dialogInputStyle}
+                type="text"
+                placeholder="https://www.mjs.ac.kr"
+                value={link}
+                onChange={(e) => setLink(e.target.value)} />
+              <br />
+              <button css={dialogConfirmButton} onClick={handleInsertLink}>
+                삽입
+              </button>
+              <button css={dialogCancelButton} onClick={() => setShowDialog(false)}>
+                취소
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </div >
   );
 }
