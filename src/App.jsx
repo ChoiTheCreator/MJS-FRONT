@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import BoardDetailPage from './pages/BoardDetailPage';
+import TestPage from './pages/TestPage';
 
 // 전역 스타일
 const globalStyle = css`
@@ -43,6 +44,7 @@ const App = () => {
             <Route path="/board" element={<BoardPage />} />
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
             <Route path="/board/:postId" element={<BoardDetailPage />} />{' '}
+            <Route path="/write" element={<TestPage />} />
           </Route>
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
