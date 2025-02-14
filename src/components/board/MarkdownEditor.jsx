@@ -2,8 +2,7 @@
 import { css } from '@emotion/react';
 import { Bold, Code, Heading1, Heading2, Heading3, Image, Italic, Link2, Quote, Strikethrough } from 'lucide-react';
 import { useRef, useState } from 'react';
-import Markdown from "react-markdown";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import MarkdownViewer from './MarkdownViewer';
 
 export default function MarkdownEditor() {
   const [title, setTitle] = useState("");
@@ -270,9 +269,9 @@ export default function MarkdownEditor() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="글을 입력하세요" />
         <div css={parserContainer}>
-          <Markdown>
+          <MarkdownViewer>
             {content}
-          </Markdown>
+          </MarkdownViewer>
         </div>
       </div>
       <div css={css`width: 100%`}>
