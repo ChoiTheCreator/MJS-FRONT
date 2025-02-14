@@ -41,11 +41,13 @@ const App = () => {
           {/* Layout 적용되는 페이지 */}
           <Route element={<Layout />}>
             <Route path="/main" element={<MainPage />} />
-            <Route path="/board" element={<BoardPage />} />
+
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
-            <Route path="/board/:postId" element={<BoardDetailPage />} />{' '}
-            <Route path="/write" element={<WritePage />} />
+            <Route path="/board" element={<BoardPage />} />
+            <Route path="/board/view/:postId" element={<BoardDetailPage />} />{' '}
+            <Route path="/board/write" element={<WritePage />} />
           </Route>
+
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}
