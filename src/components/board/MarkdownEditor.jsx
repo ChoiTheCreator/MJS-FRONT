@@ -5,16 +5,6 @@ import { useRef, useState } from 'react';
 import Markdown from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
-const mySchema = {
-  ...defaultSchema,
-  protocols: {
-    ...defaultSchema.protocols,
-    src: [...(defaultSchema.protocols?.src || []), 'blob:']
-  },
-};
-
-const toolbarIconSize = 20
-
 export default function MarkdownEditor() {
   const [title, setTitle] = useState("");
   const [showDialog, setShowDialog] = useState(false);
@@ -23,6 +13,8 @@ export default function MarkdownEditor() {
   const titleBoxRef = useRef(null);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const toolbarIconSize = 20
 
   // Heading 추가하는 function 입니다. 현재 선택한 문장의 currentHeading 값과 비교해서 newHeading 스타일을 적용합니다.
   const insertHeading = (prefix) => {
@@ -113,6 +105,7 @@ export default function MarkdownEditor() {
     }, 0);
   }
 
+  // Text style을 적용하는 function입니다.
   const insertTextStyle = (prefix, suffix = prefix) => {
     const textarea = editorRef.current;
     if (!textarea) {
@@ -130,10 +123,10 @@ export default function MarkdownEditor() {
     // 커서 위치 재정렬
     setTimeout(() => {
       if (selectedText) {
-        textarea.setSelectionRange(start, end + 4);
+        textarea.setSelectionRange(start, end + prefix.length + suffix.length);
         textarea.focus();
       } else {
-        textarea.selectionStart = start + 2;
+        textarea.selectionStart = start + prefix.length;
         textarea.focus();
       }
     }, 0);
@@ -171,6 +164,7 @@ export default function MarkdownEditor() {
     }, 0);
   };
 
+  // TODO: 사진 업로드 시 사진 압축 기능 추가
   ///////////////////////////// 이미지 업로드 /////////////////////////////
   // 이미지 업로드 버튼 클릭 시 input[type="file"] 트리거
   const handleImageUploadClick = () => {
@@ -276,7 +270,7 @@ export default function MarkdownEditor() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="글을 입력하세요" />
         <div css={parserContainer}>
-          <Markdown rehypePlugins={[[rehypeSanitize, mySchema]]}>
+          <Markdown>
             {content}
           </Markdown>
         </div>
