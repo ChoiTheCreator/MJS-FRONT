@@ -1,12 +1,84 @@
 import apiClient from "./apiClient";
 
-export const getBoards = (page = 0, size = 10) => {
-  return apiClient.get("/boards", {
-    params: {
-      page,
-      size,
-    }
-  }).then(response => {
-    console.log(response.data)
-  })
+export const getBoards = async (page = 0, size = 10) => {
+  try {
+    const response = await apiClient.get("/boards", {
+      params: {
+        page,
+        size,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getBoardView = async (uuid) => {
+  if (!uuid) {
+    throw new Error("getBoardView 중 오류 발생: uuid가 지정되지 않았습니다.");
+  }
+
+  try {
+    const response = await apiClient.get(`/boards/${uuid}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const postBoard = async (title, content, published, contentImage = []) => {
+  if (!title)
+    throw new Error("postBoard중 오류 발생: title이 지정되지 않았습니다");
+  if (!content)
+    throw new Error("postBoard중 오류 발생: content가 지정되지 않았습니다");
+  if (typeof published !== "boolean")
+    throw new Error("postBoard중 오류 발생: published가 지정되지 않았습니다");
+
+  try {
+    const response = await apiClient.post("/boards", {
+      title,
+      content,
+      published,
+      contentImage,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const patchBoard = async (uuid, title, content, published, contentImage = []) => {
+  if (!uuid)
+    throw new Error("patchBoard중 오류 발생: uuid가 지정되지 않았습니다");
+  if (!title)
+    throw new Error("patchBoard중 오류 발생: title이 지정되지 않았습니다");
+  if (!content)
+    throw new Error("patchBoard중 오류 발생: content가 지정되지 않았습니다");
+  if (typeof published !== "bolean")
+    throw new Error("patchBoard중 오류 발생: published가 지정되지 않았습니다");
+
+  try {
+    const response = await apiClient.patch(`/boards/${uuid}`, {
+      title,
+      content,
+      published,
+      contentImage,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const deleteBoard = async (uuid) => {
+  if (!uuid)
+    throw new Error("deleteBoard중 오류 발생: uuid가 지정되지 않았습니다")
+
+  try {
+    const response = await apiClient.delete(`/boards/${uuid}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 }

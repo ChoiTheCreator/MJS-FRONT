@@ -11,14 +11,14 @@ const BoardDetailPage = () => {
   const [content, setContent] = useState(dummyPosts[postId].content);
 
   // 게시글 ID에 해당하는 더미 데이터 가져오기
-  useEffect(() => {
-    const foundPost = dummyPosts.find((p) => p.id === postId);
-    if (foundPost) {
-      setPost(foundPost);
-    } else {
-      setPost(null); // 해당 ID가 없을 경우
-    }
-  }, [postId]);
+  // useEffect(() => {
+  //   const foundPost = dummyPosts.find((p) => p.id === postId);
+  //   if (foundPost) {
+  //     setPost(foundPost);
+  //   } else {
+  //     setPost(null); // 해당 ID가 없을 경우
+  //   }
+  // }, [postId]);
 
   if (!post) {
     return (
