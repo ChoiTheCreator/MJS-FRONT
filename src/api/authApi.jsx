@@ -1,12 +1,3 @@
-import axios from 'axios';
-
-const apiClient = axios.create({
-  baseURL: '', // baseURL 제거 또는 빈 문자열로 설정
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
 export const signup = async (username, email, password) => {
   try {
     const response = await apiClient.post(
@@ -16,6 +7,7 @@ export const signup = async (username, email, password) => {
     return response.data;
   } catch (error) {
     console.error('회원가입 요청 실패:', error.response?.data || error.message);
+
     throw error;
   }
 };
@@ -30,3 +22,4 @@ export const login = async (email, password) => {
 };
 
 //로그인, 사인업 함수 제외 한 모든 api function에는 헤더 두줄이 들어가야함
+export const logout = async () => {};

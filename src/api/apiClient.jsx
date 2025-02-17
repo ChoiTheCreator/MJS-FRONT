@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-// Axios 인스턴스
+// Axios 인스턴스 ->
 const apiClient = axios.create({
   baseURL: '', // 프록시 설정을 사용할 때는 빈 문자열 유지
   headers: {
@@ -12,13 +11,13 @@ const apiClient = axios.create({
 // 리프레시 토큰으로 액세스 토큰 갱신 함수
 const refreshAccessToken = async () => {
   try {
-    //보안상 좋지 않은데.. -> 간단해서 
+    //보안상 좋지 않은데.. -> 간단해서
     const refreshToken = localStorage.getItem('refreshToken');
     const accessToken = localStorage.getItem('token');
     if (!refreshToken) {
       throw new Error('Refresh Token이 없습니다.');
     }
-화
+    화;
     const response = await axios.post(
       '/api/auth/refresh',
       {},
@@ -48,8 +47,8 @@ const refreshAccessToken = async () => {
 // 요청 인터셉터
 apiClient.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('token'); //accessToken
+    const refreshToken = localStorage.getItem('refreshToken'); //re
 
     if (accessToken) {
       config.headers['ACCESS-AUTH-KEY'] = `BEARER ${accessToken}`;
@@ -72,6 +71,7 @@ apiClient.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
+      //무한로딩
       originalRequest._retry = true;
 
       try {
