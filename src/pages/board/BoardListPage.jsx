@@ -1,23 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { fetchPosts, getBoards, getMembers } from '../../api/board';
-import axios from 'axios';
+import { getBoards } from "../../api/board";
 
 const BoardListPage = () => {
-  // 로딩 상태, 에러 상태, 데이터 상태 관리
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [postData, setPostData] = useState(null);
-
-  // 페이지네이션 등을 위해 page, size 상태를 관리할 수 있음.
+  const [boards, setBoards] = useState([]);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
 
   useEffect(() => {
-
+    getBoards(page, size);
   }, [page, size]);
 
   if (loading) return <div>로딩중...</div>;
