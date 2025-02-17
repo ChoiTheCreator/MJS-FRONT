@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Axios 인스턴스
 const apiClient = axios.create({
-  baseURL: process.env.BACKEND_API_URL, // 프록시 설정을 사용할 때는 빈 문자열 유지
+  baseURL: import.meta.env.VITE_API_URL, // 프록시 설정을 사용할 때는 빈 문자열 유지
   timeout: 5000,
   headers: {
     // 1. 디폴트타입
