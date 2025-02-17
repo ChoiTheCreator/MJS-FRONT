@@ -3,13 +3,13 @@ import { AuthProvider } from './context/AuthContext';
 import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
 import Layout from './components/Layout';
-import BoardPage from './pages/BoardPage';
+import BoardDetailPage from './pages/board/BoardDetailPage';
+import BoardListPage from './pages/board/BoardListPage';
+import BoardWritePage from './pages/board/BoardWritePage';
 import StartPage from './pages/StartPage';
 import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
-import BoardDetailPage from './pages/BoardDetailPage';
-import MarkdownEditor from './lib/util/MarkdownEditor';
 
 // 전역 스타일
 const globalStyle = css`
@@ -41,14 +41,13 @@ const App = () => {
           {/* Layout 적용되는 페이지 */}
           <Route element={<Layout />}>
             <Route path="/main" element={<MainPage />} />
-            <Route path="/board" element={<BoardPage />} />
-            <Route
-              path="/edit"
-              element={<MarkdownEditor></MarkdownEditor>}
-            ></Route>
+
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
+            <Route path="/board" element={<BoardListPage />} />
             <Route path="/board/:postId" element={<BoardDetailPage />} />{' '}
+            <Route path="/board/write" element={<BoardWritePage />} />
           </Route>
+
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}
