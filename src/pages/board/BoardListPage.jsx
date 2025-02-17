@@ -2,6 +2,66 @@
 import { css } from '@emotion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { fetchPosts, getBoards, getMembers } from '../../api/board';
+import axios from 'axios';
+
+const BoardListPage = () => {
+  // 로딩 상태, 에러 상태, 데이터 상태 관리
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [postData, setPostData] = useState(null);
+
+  // 페이지네이션 등을 위해 page, size 상태를 관리할 수 있음.
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+
+  useEffect(() => {
+
+  }, [page, size]);
+
+  if (loading) return <div>로딩중...</div>;
+  if (error) return <div>에러가 발생했습니다: {error}</div>;
+
+  const navigate = useNavigate();
+  return (
+    <div css={boardPageStyle}>
+      <div css={mainSectionStyle}>
+        <div css={headingContainerStyle}>
+          <h2 css={headingStyle}>자유 게시판</h2>
+          <Link to="/write" css={writeButtonStyle}>
+            <FaPen />
+            글쓰기
+          </Link>
+        </div>
+
+        <div css={postListStyle}>
+          {/* 더미 데이터임 */}
+          {[...Array(7)].map((_, index) => (
+            <div
+              onClick={() => navigate(`/board/${index + 1}`)}
+              key={index}
+              css={postItemStyle}
+            >
+              <h3>자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ</h3>
+              <p>
+                미리보기가 들어갑니다. 미리보기가 들어갑니다. 미리보기가
+                들어갑니다.
+              </p>
+              <div className="post-info">
+                <span>♥ 5</span>
+                <span>💬 15</span>
+                <span>👁 234</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default BoardListPage;
 
 const boardPageStyle = css`
   display: flex;
@@ -106,43 +166,3 @@ const postItemStyle = css`
     }
   }
 `;
-
-const BoardPage = () => {
-  const navigate = useNavigate();
-  return (
-    <div css={boardPageStyle}>
-      <div css={mainSectionStyle}>
-        <div css={headingContainerStyle}>
-          <h2 css={headingStyle}>자유 게시판</h2>
-          <Link to="/write" css={writeButtonStyle}>
-            <FaPen />
-            글쓰기
-          </Link>
-        </div>
-        <div css={postListStyle}>
-          {/* 더미 데이터임 */}
-          {[...Array(7)].map((_, index) => (
-            <div
-              onClick={() => navigate(`/board/${index + 1}`)}
-              key={index}
-              css={postItemStyle}
-            >
-              <h3>자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ</h3>
-              <p>
-                미리보기가 들어갑니다. 미리보기가 들어갑니다. 미리보기가
-                들어갑니다.
-              </p>
-              <div className="post-info">
-                <span>♥ 5</span>
-                <span>💬 15</span>
-                <span>👁 234</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default BoardPage;
