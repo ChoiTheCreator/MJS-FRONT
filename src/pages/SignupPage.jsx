@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // 눈 아이콘 추가
+import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
 import apiClient from '../api/apiClient';
 
 const modalOverlayStyle = css`
@@ -81,10 +81,16 @@ const passwordConfirmStyle = css`
   margin-bottom: 10px;
 `;
 
+const successIconStyle = css`
+  font-size: 3rem;
+  color: #001f5c;
+  margin-bottom: 1rem;
+`;
+
 const SignUpPage = ({ closeSignUpModal }) => {
   const { setUser } = useAuth();
-
   const [step, setStep] = useState(1);
+  const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
 
   // 입력 상태
   const [name, setName] = useState('');
@@ -107,7 +113,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
     if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
-      setPasswordError('비밀번호는 영문, 숫자 포함 8-16자여야 합니다.');
+      setPasswordError(
+        '비밀번호는 영문, 숫자, 특수문자 포함 8-16자여야 합니다.'
+      );
     } else {
       setPasswordError('');
     }
@@ -162,7 +170,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //서버에 보낼 객체값
+    //서버에 보낼 객체값가공
     const newUser = {
       name,
       email,
@@ -175,9 +183,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
     try {
       await apiClient.post('/members', newUser);
-      alert('회원가입이 완료되었습니다.'); //이것도 모달 글로벌 메세지가 더 적절함
       setUser(newUser);
-      closeSignUpModal();
+      //submit되면 새로운 모달로 바뀌야지
+      setIsSignUpcomplete(true);
     } catch (e) {
       alert('회원가입에 실패했습니다');
       console.log('회원가입 실패', e);
@@ -187,123 +195,133 @@ const SignUpPage = ({ closeSignUpModal }) => {
   return (
     <div css={modalOverlayStyle} onClick={closeSignUpModal}>
       <div css={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-        <h2>회원가입</h2>
-        <form onSubmit={handleSubmit}>
-          {step === 1 && (
-            <>
-              <input
-                type="text"
-                value={name}
-                placeholder="이름"
-                onChange={(e) => setName(e.target.value)}
-                css={inputStyle}
-              />
-              {showEmail && (
+        {isSignUpComplete ? (
+          <div>
+            <FaCheck css={successIconStyle} />
+            <h2>회원가입을 축하합니다!</h2>
+            <button onClick={closeSignUpModal} css={buttonStyle(true)}>
+              확인
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {step === 1 && (
+              <>
                 <input
-                  type="email"
-                  value={email}
-                  placeholder="이메일"
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={name}
+                  placeholder="이름"
+                  onChange={(e) => setName(e.target.value)}
                   css={inputStyle}
                 />
-              )}
-              {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
-              {passwordError && password.length > 1 ? (
-                <span css={passwordErrorStyle}>{passwordError}</span>
-              ) : null}
-              {showPasswordField && (
-                <div css={inputContainerStyle}>
+                {showEmail && (
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    placeholder="비밀번호"
-                    onChange={(e) => setPassword(e.target.value)}
+                    type="email"
+                    value={email}
+                    placeholder="이메일"
+                    onChange={(e) => setEmail(e.target.value)}
                     css={inputStyle}
                   />
-                  <span
-                    css={eyeIconStyle}
-                    onClick={() => setShowPassword((prev) => !prev)}
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </span>
-                </div>
-              )}
+                )}
+                {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
+                {passwordError && password.length > 1 ? (
+                  <span css={passwordErrorStyle}>{passwordError}</span>
+                ) : null}
+                {showPasswordField && (
+                  <div css={inputContainerStyle}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      placeholder="비밀번호"
+                      onChange={(e) => setPassword(e.target.value)}
+                      css={inputStyle}
+                    />
+                    <span
+                      css={eyeIconStyle}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                )}
 
-              {showConfirmPassword && (
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  placeholder="비밀번호 확인"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  css={inputStyle}
-                />
-              )}
+                {showConfirmPassword && (
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    placeholder="비밀번호 확인"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    css={inputStyle}
+                  />
+                )}
 
-              {/* 확인 비밀번호를 틀릴경우  */}
-              {confirmPassword && confirmPassword !== password ? (
-                <p css={passwordErrorStyle}>비밀번호가 일치하지 않습니다.</p>
-              ) : confirmPassword && confirmPassword === password ? (
-                <p css={passwordConfirmStyle}>확인되었습니다!</p>
-              ) : null}
-              <button
-                type="button"
-                onClick={handleNextStep}
-                disabled={!isStepOneValid}
-                css={buttonStyle(isStepOneValid)}
-              >
-                다음
-              </button>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <input
-                type="text"
-                value={department}
-                placeholder="학과"
-                onChange={(e) => setDepartment(e.target.value)}
-                css={inputStyle}
-              />
-              {showStudentId && (
-                <input
-                  type="text"
-                  value={studentId}
-                  placeholder="학번"
-                  onChange={(e) => setStudentId(e.target.value)}
-                  css={inputStyle}
-                />
-              )}
-              {showGender && (
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  css={inputStyle}
+                {/* 확인 비밀번호를 틀릴경우  */}
+                {confirmPassword && confirmPassword !== password ? (
+                  <p css={passwordErrorStyle}>비밀번호가 일치하지 않습니다.</p>
+                ) : confirmPassword && confirmPassword === password ? (
+                  <p css={passwordConfirmStyle}>확인되었습니다!</p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={!isStepOneValid}
+                  css={buttonStyle(isStepOneValid)}
                 >
-                  <option value="">성별 선택</option>
-                  <option value="남">남</option>
-                  <option value="여">여</option>
-                </select>
-              )}
-              {showNickname && (
+                  다음
+                </button>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
                 <input
                   type="text"
-                  value={nickname}
-                  placeholder="닉네임"
-                  onChange={(e) => setNickname(e.target.value)}
+                  value={department}
+                  placeholder="학과"
+                  onChange={(e) => setDepartment(e.target.value)}
                   css={inputStyle}
                 />
-              )}
-              <button
-                type="submit"
-                disabled={!isStepTwoValid}
-                css={buttonStyle(isStepTwoValid)}
-              >
-                회원가입
-              </button>
-            </>
-          )}
-        </form>
+                {showStudentId && (
+                  <input
+                    type="text"
+                    value={studentId}
+                    placeholder="학번"
+                    onChange={(e) => setStudentId(e.target.value)}
+                    css={inputStyle}
+                  />
+                )}
+                {showGender && (
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    css={inputStyle}
+                  >
+                    <option value="">성별 선택</option>
+                    <option value="MALE">남</option>
+                    <option value="FEMALE">여</option>
+                    <option value="OTHERS">Others</option>
+                  </select>
+                )}
+                {showNickname && (
+                  <input
+                    type="text"
+                    value={nickname}
+                    placeholder="닉네임"
+                    onChange={(e) => setNickname(e.target.value)}
+                    css={inputStyle}
+                  />
+                )}
+                <button
+                  type="submit"
+                  disabled={!isStepTwoValid}
+                  css={buttonStyle(isStepTwoValid)}
+                >
+                  회원가입
+                </button>
+              </>
+            )}
+          </form>
+        )}
       </div>
     </div>
   );
