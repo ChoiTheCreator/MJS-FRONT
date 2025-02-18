@@ -44,7 +44,7 @@ const App = () => {
 
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
             <Route path="/board" element={<BoardListPage />} />
-            <Route path="/board/:postId" element={<BoardDetailPage />} />{' '}
+            <Route path="/board/:uuid" element={<BoardDetailPage />} />{' '}
             <Route path="/board/write" element={<BoardWritePage />} />
           </Route>
 

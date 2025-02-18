@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-export const getBoards = async (page = 0, size = 10) => {
+export const getBoardContents = async (page = 0, size = 10) => {
   try {
     const response = await apiClient.get("/boards", {
       params: {
@@ -14,7 +14,7 @@ export const getBoards = async (page = 0, size = 10) => {
   }
 }
 
-export const getBoardView = async (uuid) => {
+export const getBoardContent = async (uuid) => {
   if (!uuid) {
     throw new Error("getBoardView 중 오류 발생: uuid가 지정되지 않았습니다.");
   }
@@ -27,7 +27,7 @@ export const getBoardView = async (uuid) => {
   }
 }
 
-export const postBoard = async (title, content, published, contentImage = []) => {
+export const postBoardContent = async (title, content, published, contentImage = []) => {
   if (!title)
     throw new Error("postBoard중 오류 발생: title이 지정되지 않았습니다");
   if (!content)
@@ -48,14 +48,14 @@ export const postBoard = async (title, content, published, contentImage = []) =>
   }
 }
 
-export const patchBoard = async (uuid, title, content, published, contentImage = []) => {
+export const patchBoardContent = async (uuid, title, content, published, contentImage = []) => {
   if (!uuid)
     throw new Error("patchBoard중 오류 발생: uuid가 지정되지 않았습니다");
   if (!title)
     throw new Error("patchBoard중 오류 발생: title이 지정되지 않았습니다");
   if (!content)
     throw new Error("patchBoard중 오류 발생: content가 지정되지 않았습니다");
-  if (typeof published !== "bolean")
+  if (typeof published !== "boolean")
     throw new Error("patchBoard중 오류 발생: published가 지정되지 않았습니다");
 
   try {
@@ -71,7 +71,7 @@ export const patchBoard = async (uuid, title, content, published, contentImage =
   }
 }
 
-export const deleteBoard = async (uuid) => {
+export const deleteBoardContent = async (uuid) => {
   if (!uuid)
     throw new Error("deleteBoard중 오류 발생: uuid가 지정되지 않았습니다")
 

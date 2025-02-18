@@ -14,7 +14,8 @@ import {
 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import MarkdownViewer from '../../components/MarkdownViewer';
-import { postBoard } from "../../api/boardApi";
+import { postBoardContent } from "../../api/boardApi";
+import { useNavigate } from "react-router-dom";
 
 const BoardWritePage = () => {
   const [title, setTitle] = useState("");
@@ -24,6 +25,7 @@ const BoardWritePage = () => {
   const titleBoxRef = useRef(null);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const toolbarIconSize = 20
 
@@ -283,13 +285,15 @@ const BoardWritePage = () => {
 
   const handleSave = async () => {
     try {
-      const response = await postBoard(title, content, true, []);
+      const response = await postBoardContent(title, content, true, []);
       console.log(response)
+
+      const responseId = response.data.uuid;
+      navigate(`/board/${responseId}`)
     } catch (error) {
       console.error(error)
     }
 
-    const responseId = response.data.uuid;
     // 상세 보기 페이지로 라우팅
 
     // DEBUG: 임시 로컬 저장 코드
