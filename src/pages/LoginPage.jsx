@@ -135,8 +135,6 @@ const signupTextStyle = css`
 `;
 
 const LoginPage = () => {
-  //더미 서버
-  const serverUrl = 'http://localhost:3000/users';
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

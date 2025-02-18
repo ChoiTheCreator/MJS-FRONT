@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
-
 import { css } from '@emotion/react';
 import axios from 'axios';
-//회원가입 페이지에는 setUser라는 user를 저장하는 글로벌 상태변경 함수만을 가져온다.
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
-import { use } from 'react';
+import { useEffect, useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // 눈 아이콘 추가
+
 const modalOverlayStyle = css`
   position: fixed;
   top: 0;
@@ -26,116 +25,245 @@ const modalContentStyle = css`
   width: 100%;
   max-width: 400px;
   text-align: center;
+  position: relative;
 `;
 
-const closeButtonStyle = css`
-  border: none;
-  background: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
+const inputContainerStyle = css`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+`;
+
+const inputStyle = css`
+  flex: 1;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+`;
+
+const errorMessageStyle = css`
+  color: red;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+  margin-top: -8px;
+  margin-bottom: 10px;
+`;
+
+const eyeIconStyle = css`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  right: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #007aff;
+`;
+
+const buttonStyle = (enabled) => css`
+  width: 100%;
+  padding: 1rem;
+  background-color: ${enabled ? '#001f5c' : '#aaa'};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: ${enabled ? 'pointer' : 'not-allowed'};
 `;
 
 const SignUpPage = ({ closeSignUpModal }) => {
   const serverUrl = 'http://localhost:3000/users';
-  //로딩 상태 명시하기
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [age, setAge] = useState('');
   const { setUser } = useAuth();
 
-  // **onChange 핸들러**
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
+  const [step, setStep] = useState(1);
+
+  // 입력 상태
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [department, setDepartment] = useState('');
+  const [studentId, setStudentId] = useState('');
+  const [gender, setGender] = useState('');
+  const [nickname, setNickname] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  // 상태 변경을 위한 useEffect
+  const [showEmail, setShowEmail] = useState(false);
+  const [showPasswordField, setShowPasswordField] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showStudentId, setShowStudentId] = useState(false);
+  const [showGender, setShowGender] = useState(false);
+  const [showNickname, setShowNickname] = useState(false);
+
+  useEffect(() => {
+    if (name.length > 1) setShowEmail(true);
+  }, [name]);
+
+  useEffect(() => {
+    if (email.includes('@')) setShowPasswordField(true);
+  }, [email]);
+
+  useEffect(() => {
+    if (password.length >= 8) setShowConfirmPassword(true);
+  }, [password]);
+
+  useEffect(() => {
+    if (department.length > 2) setShowStudentId(true);
+  }, [department]);
+
+  useEffect(() => {
+    if (studentId.length >= 6) setShowGender(true);
+  }, [studentId]);
+
+  useEffect(() => {
+    if (gender) setShowNickname(true);
+  }, [gender]);
+
+  const isStepOneValid =
+    name && email && password && confirmPassword === password;
+  const isStepTwoValid = department && studentId && gender && nickname;
+
+  const handleNextStep = () => {
+    if (step === 1 && isStepOneValid) {
+      setStep(2);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    //userId는 매우 고유한 Date.now() 활용
-    const userId = Date.now();
     const newUser = {
-      id: userId,
       name,
       email,
       password,
+      department,
+      studentId,
+      gender,
+      nickname,
     };
 
     try {
-      //서버에다가 저장
       await axios.post(serverUrl, newUser);
       alert('회원가입이 완료되었습니다.');
-
-      //1. context 변경함수를 활용하여 글로벌리 저장한다.
       setUser(newUser);
-
-      //2. 회원가입되고 나면 나머지 초기화
-      setName('');
-      setEmail('');
-      setPassword('');
-
-      //3. 모달 닫기.
       closeSignUpModal();
     } catch (e) {
       alert('회원가입에 실패했습니다');
       console.log('회원가입 실패', e);
-    } finally {
-      setLoading(false);
-      setName('');
-      setEmail('');
-      setPassword('');
     }
   };
+
   return (
     <div css={modalOverlayStyle} onClick={closeSignUpModal}>
       <div css={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-        <button css={closeButtonStyle} onClick={closeSignUpModal}>
-          &times;
-        </button>
         <h2>회원가입</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={name}
-            placeholder="이름"
-            onChange={handleNameChange}
-            css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
-          />
-          <input
-            type="email"
-            value={email}
-            placeholder="이메일"
-            onChange={handleEmailChange}
-            css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            placeholder="비밀번호"
-            css={{ width: '100%', marginBottom: '1rem', padding: '0.8rem' }}
-          />
-          <button
-            type="submit"
-            css={{
-              width: '100%',
-              padding: '1rem',
-              backgroundColor: loading ? '#aaa' : '#001f5c',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-            disabled={loading}
-          >
-            {loading ? '처리 중...' : '회원가입'}
-          </button>
+          {step === 1 && (
+            <>
+              <input
+                type="text"
+                value={name}
+                placeholder="이름"
+                onChange={(e) => setName(e.target.value)}
+                css={inputStyle}
+              />
+              {showEmail && (
+                <input
+                  type="email"
+                  value={email}
+                  placeholder="이메일"
+                  onChange={(e) => setEmail(e.target.value)}
+                  css={inputStyle}
+                />
+              )}
+              {showPasswordField && (
+                <div css={inputContainerStyle}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    placeholder="비밀번호"
+                    onChange={(e) => setPassword(e.target.value)}
+                    css={inputStyle}
+                  />
+                  <span
+                    css={eyeIconStyle}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+              )}
+              {showConfirmPassword && (
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  placeholder="비밀번호 확인"
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  css={inputStyle}
+                />
+              )}
+              <button
+                type="button"
+                onClick={handleNextStep}
+                disabled={!isStepOneValid}
+                css={buttonStyle(isStepOneValid)}
+              >
+                다음
+              </button>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <input
+                type="text"
+                value={department}
+                placeholder="학과"
+                onChange={(e) => setDepartment(e.target.value)}
+                css={inputStyle}
+              />
+              {showStudentId && (
+                <input
+                  type="text"
+                  value={studentId}
+                  placeholder="학번"
+                  onChange={(e) => setStudentId(e.target.value)}
+                  css={inputStyle}
+                />
+              )}
+              {showGender && (
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  css={inputStyle}
+                >
+                  <option value="">성별 선택</option>
+                  <option value="남">남</option>
+                  <option value="여">여</option>
+                </select>
+              )}
+              {showNickname && (
+                <input
+                  type="text"
+                  value={nickname}
+                  placeholder="닉네임"
+                  onChange={(e) => setNickname(e.target.value)}
+                  css={inputStyle}
+                />
+              )}
+              <button
+                type="submit"
+                disabled={!isStepTwoValid}
+                css={buttonStyle(isStepTwoValid)}
+              >
+                회원가입
+              </button>
+            </>
+          )}
         </form>
       </div>
     </div>
