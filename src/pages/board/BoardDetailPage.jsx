@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import MarkdownViewer from "../../components/board/MarkdownViewer";
+import MarkdownViewer from "../../components/MarkdownViewer";
 
 const BoardDetailPage = () => {
   const { postId } = useParams(); // URL 파라미터 활용
