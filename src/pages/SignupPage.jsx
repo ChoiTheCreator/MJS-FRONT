@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // 눈 아이콘 추가
+import apiClient from '../api/apiClient';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -45,15 +45,6 @@ const inputStyle = css`
   font-size: 16px;
 `;
 
-const errorMessageStyle = css`
-  color: red;
-  font-size: 12px;
-  text-align: left;
-  width: 100%;
-  margin-top: -8px;
-  margin-bottom: 10px;
-`;
-
 const eyeIconStyle = css`
   position: absolute;
   right: 10px;
@@ -72,8 +63,25 @@ const buttonStyle = (enabled) => css`
   cursor: ${enabled ? 'pointer' : 'not-allowed'};
 `;
 
+const passwordErrorStyle = css`
+  color: red;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+  margin-top: -8px;
+  margin-bottom: 10px;
+`;
+
+const passwordConfirmStyle = css`
+  color: #28a745; /* 연두색 */
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+  margin-top: -8px;
+  margin-bottom: 10px;
+`;
+
 const SignUpPage = ({ closeSignUpModal }) => {
-  const serverUrl = 'http://localhost:3000/users';
   const { setUser } = useAuth();
 
   const [step, setStep] = useState(1);
@@ -90,7 +98,20 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [nickname, setNickname] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
+  //비밀번호 검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
+  const PASSWORD_REGEX =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
+
+  //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
+  useEffect(() => {
+    if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
+      setPasswordError('비밀번호는 영문, 숫자 포함 8-16자여야 합니다.');
+    } else {
+      setPasswordError('');
+    }
+  }, [password]);
   // 상태 변경을 위한 useEffect
   const [showEmail, setShowEmail] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -99,8 +120,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showGender, setShowGender] = useState(false);
   const [showNickname, setShowNickname] = useState(false);
 
+  //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
   useEffect(() => {
-    if (name.length > 1) setShowEmail(true);
+    if (name.length > 2) setShowEmail(true);
   }, [name]);
 
   useEffect(() => {
@@ -123,8 +145,12 @@ const SignUpPage = ({ closeSignUpModal }) => {
     if (gender) setShowNickname(true);
   }, [gender]);
 
+  //요청한 스텝바이스텝을 위한 상태값 (1 상태)
   const isStepOneValid =
+    //첫번째 네개의 값이 다 채워지면 1상태
     name && email && password && confirmPassword === password;
+
+  //(2상태) 두번째 네개의 값이 다 채워지면 2상태
   const isStepTwoValid = department && studentId && gender && nickname;
 
   const handleNextStep = () => {
@@ -136,6 +162,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    //서버에 보낼 객체값
     const newUser = {
       name,
       email,
@@ -147,8 +174,8 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
-      await axios.post(serverUrl, newUser);
-      alert('회원가입이 완료되었습니다.');
+      await apiClient.post('/members', newUser);
+      alert('회원가입이 완료되었습니다.'); //이것도 모달 글로벌 메세지가 더 적절함
       setUser(newUser);
       closeSignUpModal();
     } catch (e) {
@@ -180,6 +207,10 @@ const SignUpPage = ({ closeSignUpModal }) => {
                   css={inputStyle}
                 />
               )}
+              {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
+              {passwordError && password.length > 1 ? (
+                <span css={passwordErrorStyle}>{passwordError}</span>
+              ) : null}
               {showPasswordField && (
                 <div css={inputContainerStyle}>
                   <input
@@ -197,6 +228,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
                   </span>
                 </div>
               )}
+
               {showConfirmPassword && (
                 <input
                   type="password"
@@ -206,6 +238,13 @@ const SignUpPage = ({ closeSignUpModal }) => {
                   css={inputStyle}
                 />
               )}
+
+              {/* 확인 비밀번호를 틀릴경우  */}
+              {confirmPassword && confirmPassword !== password ? (
+                <p css={passwordErrorStyle}>비밀번호가 일치하지 않습니다.</p>
+              ) : confirmPassword && confirmPassword === password ? (
+                <p css={passwordConfirmStyle}>확인되었습니다!</p>
+              ) : null}
               <button
                 type="button"
                 onClick={handleNextStep}
