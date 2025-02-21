@@ -31,6 +31,8 @@ export const login = async (userInfo) => {
     const response = await apiClient.post('/auth/login', userInfo);
     console.log('✅ 회원가입 성공!');
     console.log('📥 응답 데이터:', response.data);
+
+    //아마 여기서 키 두개 줘야함
     return response.data;
   } catch (error) {
     console.error('❌ 로그인 요청 실패!');
@@ -42,14 +44,16 @@ export const login = async (userInfo) => {
   }
 };
 
-// 로그인 요청
-// export const login = async (email, password) => {
-//   console.log('🚀 로그인 요청 시작...');
-//   console.log('🔗 요청 URL:', `${import.meta.env.VITE_API_URL}/members`);
-//   console.log('📤 요청 데이터:', userData);
-//   const response = await apiClient.post('/auth/login', {
-//     email,
-//     password,
-//   });
-//   return response.data;
-// };
+export const refreshAccessToken = async () => {
+  try {
+    const response = await apiClient.post(
+      '/auth/refresh',
+      {},
+      { withCredentials: true }
+    );
+    return response.data; // { accessToken }
+  } catch (error) {
+    console.error('🚨 Access Token 갱신 실패:', error);
+    throw error;
+  }
+};
