@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
 import apiClient from '../api/apiClient';
+import { useNavigate } from 'react-router-dom';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -95,7 +96,6 @@ const successIconStyle = css`
 `;
 
 const SignUpPage = ({ closeSignUpModal }) => {
-  const { setUser } = useAuth();
   const [step, setStep] = useState(1);
   const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
 
@@ -134,6 +134,8 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showStudentId, setShowStudentId] = useState(false);
   const [showGender, setShowGender] = useState(false);
   const [showNickname, setShowNickname] = useState(false);
+
+  const navigate = useNavigate();
 
   //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
   useEffect(() => {
@@ -190,9 +192,12 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
     try {
       await apiClient.post('/members', newUser);
-      setUser(newUser);
       //submit되면 새로운 모달로 바뀌야지
       setIsSignUpcomplete(true);
+      //회원가입 성공하면 로그인 페이지로 리다리엑션
+      setTimeout(() => {
+        navigate('/login');
+      }, 500);
     } catch (e) {
       alert('회원가입에 실패했습니다');
       console.log('회원가입 실패', e);
