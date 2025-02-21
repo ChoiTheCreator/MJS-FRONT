@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { css, Global, keyframes } from '@emotion/react';
 import logoImg from '../IMG/schoolLogoWithNewColor.png'; // 이미지 import
 import SignUpPage from './SignupPage';
-import axios from 'axios';
+import { login } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
+import apiClient from '../api/apiClient';
 
 // 더미 서버 실행 npx json-server --watch ./data/db.json --port 3001
 
@@ -154,26 +155,15 @@ const LoginPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      const response = await axios.get(serverUrl);
-      const users = response.data;
-
-      const user = users.find(
-        (user) => user.email === email && user.password === password
-      );
-
-      if (user) {
-        alert(`로그인에 성공했습니다 ${user.name} 님 환영합니다.`);
-        setIsLoggedIn(true);
-        setUser(user);
-        navigate('/main');
-      } else {
-        setError('아이디 또는 비밀번호가 틀렸습니다');
-      }
+      const userInfo = {
+        email,
+        password,
+      };
+      await apiClient.post('/auth/login', userInfo);
+      navigate('/main');
     } catch (e) {
-      alert('로그인에 실패했습니다');
-      console.log('에러 발생', e);
+      alert('로그인에 실패했습니다.');
     }
   };
 

@@ -65,7 +65,7 @@ apiClient.interceptors.response.use(
         const newAccessToken = await refreshAccessToken();
         originalRequest.headers['ACCESS-AUTH-KEY'] = `BEARER ${newAccessToken}`;
         return apiClient(originalRequest); // 🔄 재요청
-      } catch (refreshError) {
+    } catch (refreshError) {
         console.error('❌ 토큰 갱신 실패:', refreshError);
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');

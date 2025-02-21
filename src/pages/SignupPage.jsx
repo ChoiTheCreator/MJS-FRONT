@@ -45,6 +45,13 @@ const inputStyle = css`
   font-size: 16px;
 `;
 
+const signupModalTitle = css`
+  color: navy;
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+`;
+
 const eyeIconStyle = css`
   position: absolute;
   right: 10px;
@@ -204,123 +211,128 @@ const SignUpPage = ({ closeSignUpModal }) => {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
-            {step === 1 && (
-              <>
-                <input
-                  type="text"
-                  value={name}
-                  placeholder="이름"
-                  onChange={(e) => setName(e.target.value)}
-                  css={inputStyle}
-                />
-                {showEmail && (
+          <>
+            <form onSubmit={handleSubmit}>
+              <div css={signupModalTitle}>회원가입</div>
+              {step === 1 && (
+                <>
                   <input
-                    type="email"
-                    value={email}
-                    placeholder="이메일"
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    value={name}
+                    placeholder="이름"
+                    onChange={(e) => setName(e.target.value)}
                     css={inputStyle}
                   />
-                )}
-                {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
-                {passwordError && password.length > 1 ? (
-                  <span css={passwordErrorStyle}>{passwordError}</span>
-                ) : null}
-                {showPasswordField && (
-                  <div css={inputContainerStyle}>
+                  {showEmail && (
                     <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      placeholder="비밀번호"
-                      onChange={(e) => setPassword(e.target.value)}
+                      type="email"
+                      value={email}
+                      placeholder="이메일"
+                      onChange={(e) => setEmail(e.target.value)}
                       css={inputStyle}
                     />
-                    <span
-                      css={eyeIconStyle}
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                  </div>
-                )}
+                  )}
+                  {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
+                  {passwordError && password.length > 1 ? (
+                    <span css={passwordErrorStyle}>{passwordError}</span>
+                  ) : null}
+                  {showPasswordField && (
+                    <div css={inputContainerStyle}>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        placeholder="비밀번호"
+                        onChange={(e) => setPassword(e.target.value)}
+                        css={inputStyle}
+                      />
+                      <span
+                        css={eyeIconStyle}
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </span>
+                    </div>
+                  )}
 
-                {showConfirmPassword && (
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    placeholder="비밀번호 확인"
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    css={inputStyle}
-                  />
-                )}
+                  {showConfirmPassword && (
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      placeholder="비밀번호 확인"
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      css={inputStyle}
+                    />
+                  )}
 
-                {/* 확인 비밀번호를 틀릴경우  */}
-                {confirmPassword && confirmPassword !== password ? (
-                  <p css={passwordErrorStyle}>비밀번호가 일치하지 않습니다.</p>
-                ) : confirmPassword && confirmPassword === password ? (
-                  <p css={passwordConfirmStyle}>확인되었습니다!</p>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  disabled={!isStepOneValid}
-                  css={buttonStyle(isStepOneValid)}
-                >
-                  다음
-                </button>
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <input
-                  type="text"
-                  value={department}
-                  placeholder="학과"
-                  onChange={(e) => setDepartment(e.target.value)}
-                  css={inputStyle}
-                />
-                {showStudentId && (
-                  <input
-                    type="text"
-                    value={studentId}
-                    placeholder="학번"
-                    onChange={(e) => setStudentId(e.target.value)}
-                    css={inputStyle}
-                  />
-                )}
-                {showGender && (
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    css={inputStyle}
+                  {/* 확인 비밀번호를 틀릴경우  */}
+                  {confirmPassword && confirmPassword !== password ? (
+                    <p css={passwordErrorStyle}>
+                      비밀번호가 일치하지 않습니다.
+                    </p>
+                  ) : confirmPassword && confirmPassword === password ? (
+                    <p css={passwordConfirmStyle}>확인되었습니다!</p>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    disabled={!isStepOneValid}
+                    css={buttonStyle(isStepOneValid)}
                   >
-                    <option value="">성별 선택</option>
-                    <option value="MALE">남</option>
-                    <option value="FEMALE">여</option>
-                    <option value="OTHERS">Others</option>
-                  </select>
-                )}
-                {showNickname && (
+                    다음
+                  </button>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
                   <input
                     type="text"
-                    value={nickname}
-                    placeholder="닉네임"
-                    onChange={(e) => setNickname(e.target.value)}
+                    value={department}
+                    placeholder="학과"
+                    onChange={(e) => setDepartment(e.target.value)}
                     css={inputStyle}
                   />
-                )}
-                <button
-                  type="submit"
-                  disabled={!isStepTwoValid}
-                  css={buttonStyle(isStepTwoValid)}
-                >
-                  회원가입
-                </button>
-              </>
-            )}
-          </form>
+                  {showStudentId && (
+                    <input
+                      type="text"
+                      value={studentId}
+                      placeholder="학번"
+                      onChange={(e) => setStudentId(e.target.value)}
+                      css={inputStyle}
+                    />
+                  )}
+                  {showGender && (
+                    <select
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      css={inputStyle}
+                    >
+                      <option value="">성별 선택</option>
+                      <option value="MALE">남</option>
+                      <option value="FEMALE">여</option>
+                      <option value="OTHERS">Others</option>
+                    </select>
+                  )}
+                  {showNickname && (
+                    <input
+                      type="text"
+                      value={nickname}
+                      placeholder="닉네임"
+                      onChange={(e) => setNickname(e.target.value)}
+                      css={inputStyle}
+                    />
+                  )}
+                  <button
+                    type="submit"
+                    disabled={!isStepTwoValid}
+                    css={buttonStyle(isStepTwoValid)}
+                  >
+                    회원가입
+                  </button>
+                </>
+              )}
+            </form>
+          </>
         )}
       </div>
     </div>
