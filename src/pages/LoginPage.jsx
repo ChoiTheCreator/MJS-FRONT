@@ -149,10 +149,8 @@ const LoginPage = () => {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  //1. AuthContext의 상태를 로그인 성공하면 변경하여 Global한 로그읜 성공 여부 상태를 다룬다.
-  //2. 여기에서도 setUser라는 상태변경함수를 Globally 저장한다.
-  const { setIsLoggedIn, setUser } = useAuth(); //
-
+  //authContext에서 구현한 로그인 함수들을 가져옴
+  const { login, setIsLoggedIn } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -160,10 +158,15 @@ const LoginPage = () => {
         email,
         password,
       };
-      await apiClient.post('/auth/login', userInfo);
+
+      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
+
+      await login(userInfo);
+      setIsLoggedIn(true);
       navigate('/main');
     } catch (e) {
       alert('로그인에 실패했습니다.');
+      console.error('❌ 로그인 오류:', e);
     }
   };
 
