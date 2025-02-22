@@ -1,15 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { css, Global, keyframes } from '@emotion/react';
 import logoImg from '../IMG/schoolLogoWithNewColor.png'; // 이미지 import
 import SignUpPage from './SignupPage';
-import { login } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
-
+import SuccessModal from '../components/message/SuccessModal';
 import { useAuth } from '../context/AuthContext';
-import apiClient from '../api/apiClient';
-
-// 더미 서버 실행 npx json-server --watch ./data/db.json --port 3001
 
 const globalStyle = css`
   body,
@@ -140,6 +136,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSucceesMessageModalOpen, setIsSuccessMessageModalOpen] =
+    useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   const openSignUpModal = () => setIsSignUpModalOpen(true);
@@ -163,11 +161,17 @@ const LoginPage = () => {
 
       await login(userInfo);
       setIsLoggedIn(true);
+      setIsSuccessMessageModalOpen(true);
       navigate('/main');
     } catch (e) {
       alert('로그인에 실패했습니다.');
       console.error('❌ 로그인 오류:', e);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessMessageModalOpen(false);
+    navigate('/main');
   };
 
   return (
@@ -207,6 +211,12 @@ const LoginPage = () => {
       {/* 모달처럼 보여야 하므로, navigating이 아닌 ChildBlockAppending */}
       {isSignUpModalOpen && (
         <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
+      )}
+      {isSucceesMessageModalOpen && (
+        <SuccessModal
+          message="로그인에 성공했습니다! 메인페이지로 이동합니다."
+          onClose={handleSuccessModalClose}
+        ></SuccessModal>
       )}
     </>
   );
