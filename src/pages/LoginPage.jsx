@@ -136,7 +136,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isSucceesMessageModalOpen, setIsSuccessMessageModalOpen] =
+  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] =
     useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
@@ -162,7 +162,6 @@ const LoginPage = () => {
       await login(userInfo);
       setIsLoggedIn(true);
       setIsSuccessMessageModalOpen(true);
-      navigate('/main');
     } catch (e) {
       alert('로그인에 실패했습니다.');
       console.error('❌ 로그인 오류:', e);
@@ -212,9 +211,10 @@ const LoginPage = () => {
       {isSignUpModalOpen && (
         <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
       )}
-      {isSucceesMessageModalOpen && (
+      {isSuccessMessageModalOpen && (
         <SuccessModal
           message="로그인에 성공했습니다! 메인페이지로 이동합니다."
+          //successmodal에서 타임아웃으로 자동으로 닫게 했음요
           onClose={handleSuccessModalClose}
         ></SuccessModal>
       )}

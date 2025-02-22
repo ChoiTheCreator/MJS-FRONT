@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { css } from '@emotion/react';
 import logoImg from '../../IMG/schoolLogoWithNewColor.png';
-import { useNavigate } from 'react-router-dom';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -18,13 +17,12 @@ const modalOverlayStyle = css`
 `;
 
 const modalContentStyle = css`
-  background-color: #002f6c; /* 남색 배경 */
+  background-color: white;
   padding: 2rem;
   border-radius: 10px;
   width: 100%;
-  max-width: 400px;
+  max-width: 700px;
   text-align: center;
-  color: white; /* 흰색 글씨 */
   position: relative;
 `;
 
@@ -34,33 +32,25 @@ const logoStyle = css`
   margin-bottom: 1rem;
 `;
 
-const closeButtonStyle = css`
-  background-color: white;
-  color: #002f6c; /* 남색 */
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
+const modalMessageStyle = css`
   font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 1rem;
+  color: navy;
 `;
 
 const SuccessModal = ({ message, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 500);
+    }, 1000); // 1초 후 자동 닫힘
+
     return () => clearTimeout(timer);
-  }, [onclose]);
+  }, [onClose]);
+
   return (
-    <div css={modalOverlayStyle} onClick={onClose}>
-      <div css={modalContentStyle} onClick={(e) => e.stopPropagation()}>
+    <div css={modalOverlayStyle}>
+      <div css={modalContentStyle}>
         <img src={logoImg} alt="학교 로고" css={logoStyle} />
-        <h2>{message}</h2>
-        <button onClick={onClose} css={closeButtonStyle}>
-          확인
-        </button>
+        <h2 css={modalMessageStyle}>{message}</h2>
       </div>
     </div>
   );
