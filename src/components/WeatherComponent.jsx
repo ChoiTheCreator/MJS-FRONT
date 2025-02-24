@@ -1,7 +1,37 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
+import { weatherFetch } from '../api/weatherApi';
+
+const loadingContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  color: #555;
+`;
+
+const spinnerStyle = css`
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 31, 92, 0.3);
+  border-top: 4px solid #001f5c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 const weatherContainerStyle = css`
   background-color: white;
@@ -42,7 +72,6 @@ const weatherContainerStyle = css`
   .temperature-container {
     display: flex;
     margin-right: 170px;
-
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -76,54 +105,19 @@ const weatherContainerStyle = css`
 `;
 
 const WeatherComponent = () => {
+  //영은이로부터 받아올 상태 저장
   const [weatherData, setWeatherData] = useState(null);
-  const [dailyMaxTemp, setDailyMaxTemp] = useState(null);
-  const [dailyMinTemp, setDailyMinTemp] = useState(null);
-  const [precipitationProbability, setPrecipitationProbability] =
-    useState(null);
-  const [airQuality, setAirQuality] = useState('');
+
+  //현재시간은 영은이가 안줌 ㅠ;
   const [currentTime, setCurrentTime] = useState('');
-  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const responseCurrent = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=37.5826&lon=126.9139&units=metric&appid=${apiKey}`
-        );
-        setWeatherData(responseCurrent.data);
-
-        const responseForecast = await axios.get(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=37.5826&lon=126.9139&units=metric&appid=${apiKey}`
-        );
-        const todayDate = new Date().toISOString().split('T')[0];
-        const todayForecasts = responseForecast.data.list.filter((item) =>
-          item.dt_txt.startsWith(todayDate)
-        );
-
-        if (todayForecasts.length > 0) {
-          setDailyMaxTemp(
-            Math.max(...todayForecasts.map((item) => item.main.temp_max))
-          );
-          setDailyMinTemp(
-            Math.min(...todayForecasts.map((item) => item.main.temp_min))
-          );
-          const avgPop =
-            todayForecasts.reduce((acc, item) => acc + (item.pop || 0), 0) /
-            todayForecasts.length;
-          setPrecipitationProbability(Math.round(avgPop * 100));
-        }
-
-        const responseAir = await axios.get(
-          `https://api.openweathermap.org/data/2.5/air_pollution?lat=37.5826&lon=126.9139&appid=${apiKey}`
-        );
-        const aqi = responseAir.data.list[0].main.aqi;
-        setAirQuality(
-          ['좋음', '보통', '민감군주의보', '나쁨', '매우나쁨'][aqi - 1] ||
-            '정보없음'
-        );
+        const data = await weatherFetch();
+        setWeatherData(data);
       } catch (error) {
-        console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
+        console.error('❌ 날씨 데이터를 불러오지 못했습니다.', error);
       }
     };
 
@@ -139,42 +133,48 @@ const WeatherComponent = () => {
 
     fetchWeather();
     updateTime();
-  }, [apiKey]);
+    //dep -> 초기 한번만 서버에서 fetching
+  }, []);
 
-  if (
-    !weatherData ||
-    dailyMaxTemp === null ||
-    dailyMinTemp === null ||
-    precipitationProbability === null
-  ) {
-    return <p>날씨 정보를 불러오는 중...</p>;
+  if (!weatherData) {
+    return (
+      <div css={loadingContainerStyle}>
+        <div css={spinnerStyle}></div>
+        <p style={{ color: 'navy', fontWeight: 'bold' }}>
+          날씨 정보를 불러오는 중...
+        </p>
+      </div>
+    );
   }
 
   return (
     <div css={weatherContainerStyle}>
-      <div className="weather-header">서대문구 남가좌동</div>
+      <div className="weather-header">{weatherData.location}</div>
       <div className="current-time">현재 시간: {currentTime}</div>
-      <div className="icon-container"></div>
       <div className="weather-info">
-        <img
-          className="weather-icon"
-          src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
-          alt="날씨 아이콘"
-        />
+        <div className="weather-icon-container">
+          <img
+            className="weather-icon"
+            src={weatherData.weatherIcon}
+            alt="날씨 아이콘"
+          />
+        </div>
         <div className="temperature-container">
-          <div className="temperature">{weatherData.main.temp}°C</div>
+          <div className="temperature">{weatherData.temperature}°C</div>
           <div className="temp-range">
-            최고: {dailyMaxTemp}°C | 최저: {dailyMinTemp}°C
+            최고: {weatherData.maxTemperature}°C | 최저:{' '}
+            {weatherData.minTemperature}°C
           </div>
         </div>
       </div>
       <div className="weather-details">
-        <div>강수확률: {precipitationProbability}%</div>
-        <div>습도: {weatherData.main.humidity}%</div>
-        <div>풍속: {weatherData.wind.speed} m/s</div>
+        <div>체감 온도: {weatherData.feelsLike}°C</div>
+        <div>습도: {weatherData.humidity}%</div>
+        <div>날씨: {weatherData.weatherDescription}</div>
       </div>
       <div className="air-quality">
-        미세먼지: {airQuality} | 초미세먼지: {airQuality}
+        미세먼지: {weatherData.pm10Category} ({weatherData.pm10}) | 초미세먼지:{' '}
+        {weatherData.pm2_5Category} ({weatherData.pm2_5})
       </div>
     </div>
   );
