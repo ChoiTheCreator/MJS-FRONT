@@ -162,7 +162,7 @@ const LoginPage = () => {
       await login(userInfo);
       setIsLoggedIn(true);
       setIsSuccessMessageModalOpen(true);
-    } catch (e) {
+      } catch (e) {
       alert('로그인에 실패했습니다.');
       console.error('❌ 로그인 오류:', e);
     }
