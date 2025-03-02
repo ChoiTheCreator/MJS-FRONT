@@ -5,7 +5,7 @@ console.log('🚀 API Base URL:', import.meta.env.VITE_API_BASE_URL);
 
 // ✅ Axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL, // ✅ 환경변수 적용 (Vite)
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ apiClient.interceptors.response.use(
         const newAccessToken = await refreshAccessToken();
         originalRequest.headers['ACCESS-AUTH-KEY'] = `BEARER ${newAccessToken}`;
         return apiClient(originalRequest); // 🔄 재요청
-    } catch (refreshError) {
+      } catch (refreshError) {
         console.error('❌ 토큰 갱신 실패:', refreshError);
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');

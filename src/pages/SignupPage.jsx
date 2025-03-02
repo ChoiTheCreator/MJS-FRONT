@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useAuth } from '../context/AuthContext';
+
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
-import apiClient from '../api/apiClient';
 import { useNavigate } from 'react-router-dom';
+import { signup } from '../api/authApi';
+import { useAuth } from '../context/AuthContext';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -98,6 +99,7 @@ const successIconStyle = css`
 const SignUpPage = ({ closeSignUpModal }) => {
   const [step, setStep] = useState(1);
   const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
+  const { setUuid } = useAuth();
 
   // 입력 상태
   const [name, setName] = useState('');
@@ -191,8 +193,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
-      await apiClient.post('/members', newUser);
-      //submit되면 새로운 모달로 바뀌야지
+      const response = await signup(newUser);
+      const uuid = response.data.uuid;
+      setUuid(uuid);
       setIsSignUpcomplete(true);
       //회원가입 성공하면 로그인 페이지로 리다리엑션
       setTimeout(() => {
@@ -210,7 +213,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
         {isSignUpComplete ? (
           <div>
             <FaCheck css={successIconStyle} />
-            <h2>회원가입을 축하합니다!</h2>
+            <h2>회원가입을 성공하였습니다!</h2>
             <button onClick={closeSignUpModal} css={buttonStyle(true)}>
               확인
             </button>
