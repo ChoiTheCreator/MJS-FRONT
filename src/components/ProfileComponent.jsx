@@ -134,12 +134,13 @@ const ProfileComponent = () => {
   useEffect(() => {
     console.log('현재 uuid:', uuid); // uuid 값 확인
     const fetchUserData = async () => {
-      if (isLoggedIn && user?.id) {
+      if (isLoggedIn) {
         try {
-          const response = apiClient.get(`/members/${uuid}`);
-          console.log(response.data);
-          const currentUserData = response.data;
-          setUser(currentUserData);
+          const response = await apiClient.get(`/members/${uuid}`);
+          console.log('시발데이터는', response.data);
+
+          setUser(response.data.data);
+          console.log(user.name);
         } catch (error) {
           console.error('서버 통신 오류:', error);
         }
