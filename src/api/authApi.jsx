@@ -9,7 +9,8 @@ export const signup = async (userData) => {
     const response = await apiClient.post('/members', userData);
     console.log('✅ 회원가입 성공!');
     console.log('📥 응답 데이터:', response.data);
-    return response.data;
+    console.log('📥 응답 내부 데이터:', response.data.data);
+    return response.data.data;
   } catch (error) {
     console.error('❌ 회원가입 요청 실패!');
     console.error('🔗 요청 URL:', `${import.meta.env.VITE_API_URL}/members`);
@@ -32,7 +33,7 @@ export const login = async (userInfo) => {
     console.log('✅ 회원가입 성공!');
     console.log('📥 응답 데이터:', response.data);
 
-    //아마 여기서 키 두개 줘야함
+    //아마 여기서 키 두개 줘야
     return response.data;
   } catch (error) {
     console.error('❌ 로그인 요청 실패!');

@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       const data = await signupApi(userData);
-      const uuid = data.data.uuid;
+      const uuid = data.uuid;
+      console.log('uuid 저장완료 ', uuid);
       setUuid(uuid);
     } catch (error) {
       console.log('x 회원가입 실패', error);

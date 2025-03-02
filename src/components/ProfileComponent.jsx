@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import dummyImg from '../IMG/Myself.jpeg';
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import apiClient from '../api/apiClient';
 
 const profileContainerStyle = css`
   display: flex;
@@ -106,15 +107,15 @@ const loginButtonStyle = css`
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
-  transition: all 0.3s ease-in-out; /* ✅ 애니메이션 적용 */
+  transition: all 0.3s ease-in-out;
 
   &:hover {
-    transform: scale(1.1); /* ✅ hover 시 크기 증가 */
+    transform: scale(1.1);
     background-color: darkblue;
   }
 
   &:active {
-    transform: scale(0.95); /* ✅ 클릭 시 크기 감소 */
+    transform: scale(0.95);
   }
 `;
 
@@ -128,19 +129,17 @@ const ProfileComponent = () => {
   };
 
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, user, setUser } = useAuth();
+  const { isLoggedIn, setIsLoggedIn, user, setUser, uuid } = useAuth();
 
   useEffect(() => {
+    console.log('현재 uuid:', uuid); // uuid 값 확인
     const fetchUserData = async () => {
       if (isLoggedIn && user?.id) {
         try {
-          const response = await axios.get('http://localhost:3000/users');
-          const currentUser = response.data.find((u) => u.id === user.id);
-          if (currentUser) {
-            setUser(currentUser); // 사용자 정보 업데이트
-          } else {
-            console.error('사용자를 찾을 수 없습니다.');
-          }
+          const response = apiClient.get(`/members/${uuid}`);
+          console.log(response.data);
+          const currentUserData = response.data;
+          setUser(currentUserData);
         } catch (error) {
           console.error('서버 통신 오류:', error);
         }
@@ -148,7 +147,7 @@ const ProfileComponent = () => {
     };
 
     fetchUserData();
-  }, [isLoggedIn, user?.id, setUser]);
+  }, [isLoggedIn, user?.id, setUser, uuid]);
 
   return (
     <>

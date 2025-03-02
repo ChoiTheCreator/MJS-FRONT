@@ -4,7 +4,7 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
 import { useNavigate } from 'react-router-dom';
-import { signup } from '../api/authApi';
+
 import { useAuth } from '../context/AuthContext';
 
 const modalOverlayStyle = css`
@@ -99,7 +99,7 @@ const successIconStyle = css`
 const SignUpPage = ({ closeSignUpModal }) => {
   const [step, setStep] = useState(1);
   const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
-  const { setUuid } = useAuth();
+  const { signup } = useAuth();
 
   // 입력 상태
   const [name, setName] = useState('');
@@ -193,9 +193,8 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
-      const response = await signup(newUser);
-      const uuid = response.data.uuid;
-      setUuid(uuid);
+      const data = await signup(newUser);
+
       setIsSignUpcomplete(true);
       //회원가입 성공하면 로그인 페이지로 리다리엑션
       setTimeout(() => {
