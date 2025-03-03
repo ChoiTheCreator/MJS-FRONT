@@ -49,13 +49,36 @@ const MealPlan = () => {
 
         return response.data;
       } catch (error) {
-        console.log('식단 조회 오류남 ㅅㄱㅇ', error);
+        console.log('식단 조회 오류', error);
       }
     };
     fetchMealPlan();
   }, []);
 
-  const firstMeal = mealInfo.length > 0 ? mealInfo[1] : null;
+  //요일 기준으로 맞춤
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+  const todayDayName = dayNames[new Date().getDay()];
+
+  //24 시간 3교대로 타임마다, 아침, 점심 , 저녁 fetching
+  const currentHour = new Date().getHours();
+  let mealCategory = 'BREAKFAST';
+
+  if (currentHour >= 8 && currentHour < 16) {
+    mealCategory = 'LUNCH';
+  } else if (currentHour >= 16) {
+    mealCategory = 'DINNER';
+  }
+
+  const todayMeals = mealInfo.filter((meal) =>
+    meal.date.includes(`( ${todayDayName} )`)
+  );
+
+  const firstMeal =
+    todayMeals.find((meal) => meal.menuCategory === mealCategory) ||
+    todayMeals.find((meal) => meal.menuCategory === 'LUNCH') ||
+    todayMeals.find((meal) => meal.menuCategory === 'BREAKFAST') ||
+    todayMeals.find((meal) => meal.menuCategory === 'DINNER') ||
+    null;
 
   if (loading) {
     return (
