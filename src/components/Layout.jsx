@@ -13,8 +13,12 @@ const pageLayout = css`
 `;
 
 const containerLayout = css`
-  padding-left: 8%;
-  padding-right: 8%;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  // padding-left: 8%;
+  // padding-right: 8%;
 `;
 
 const Layout = () => {
