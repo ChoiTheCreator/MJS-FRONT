@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import apiClient from '../api/apiClient';
+import { useEffect, useState } from 'react';
+import LoadingComponent from './util/LoadingComponent';
 
 const mealPlanStyle = css`
   display: flex;
@@ -33,13 +36,44 @@ const mealPlanStyle = css`
 `;
 
 const MealPlan = () => {
+  //빈 배열로 초기값 설정
+  const [mealInfo, setMealInfo] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchMealPlan = async () => {
+      try {
+        const response = await apiClient.get('/weeklymenu/get');
+        console.log(response.data.data);
+        setMealInfo(response.data.data || []);
+        setLoading(false);
+
+        return response.data;
+      } catch (error) {
+        console.log('식단 조회 오류남 ㅅㄱㅇ', error);
+      }
+    };
+    fetchMealPlan();
+  }, []);
+
+  const firstMeal = mealInfo.length > 0 ? mealInfo[1] : null;
+
+  if (loading) {
+    return (
+      <LoadingComponent message="식단 정보를 불러오는 중입니다."></LoadingComponent>
+    );
+  }
+
   return (
     <div css={mealPlanStyle}>
-      <h4>오늘의 식단 | 점심</h4>
+      <h4>오늘의 식단 </h4>
       <ul>
-        <li>자장밥, 순두부김치찌개</li>
-        <li>맛초킹닭강정, 야채볶음</li>
-        <li>배추김치, 매실차</li>
+        <li>
+          <strong>{firstMeal.date}</strong>
+        </li>
+        <li>{firstMeal.menuCategory}</li>
+        {firstMeal.meals.map((menu, index) => (
+          <li key={index}>{menu}</li>
+        ))}
       </ul>
     </div>
   );
