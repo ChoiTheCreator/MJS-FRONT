@@ -10,6 +10,9 @@ export default defineConfig({
           '@emotion/babel-plugin', // Emotion Babel 플러그인 추가
         ],
       },
+      server: {
+        historyApiFallback: true, // Vite에서 SPA 라우팅을 지원하도록 설정
+      },
     }),
   ],
 });

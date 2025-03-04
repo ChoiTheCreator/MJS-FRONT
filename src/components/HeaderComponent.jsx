@@ -11,14 +11,13 @@ const headerContainerStyle = css`
   width: 100%;
   padding: 20px;
   background-color: white;
-  border-bottom: 1px solid #ddd;
 
   .left-section {
     width: 50%;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-left: 150px;
+    margin-left: 0px;
     margin-top: 70px;
   }
 
@@ -83,10 +82,9 @@ const headerContainerStyle = css`
   }
 
   .profile-wrapper {
-    margin-right: 150px;
     margin-top: 70px;
     flex-shrink: 0;
-    width: 25%;
+    width: 40%;
     height: 150px; /* 기본 높이 설정 */
     flex-grow: 1; /* 가능한 공간을 차지하도록 설정 */
     display: flex; /* 내부 요소(ProfileComponent) 정렬을 위해 */

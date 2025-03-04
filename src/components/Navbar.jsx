@@ -146,7 +146,13 @@ const Navbar = () => {
             <Link to="/reviews">취업후기</Link>
           </li>
           <li>
-            <Link to="/fun">띵지위키</Link>
+            <a
+              href="https://namu.wiki/w/%EB%AA%85%EC%A7%80%EB%8C%80%ED%95%99%EA%B5%90"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              띵지위키
+            </a>
           </li>
         </ul>
       </div>

@@ -1,14 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { css, Global, keyframes } from '@emotion/react';
 import logoImg from '../IMG/schoolLogoWithNewColor.png'; // 이미지 import
 import SignUpPage from './SignupPage';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import SuccessModal from '../components/message/SuccessModal';
 import { useAuth } from '../context/AuthContext';
-
-// 더미 서버 실행 npx json-server --watch ./data/db.json --port 3001
 
 const globalStyle = css`
   body,
@@ -135,12 +132,12 @@ const signupTextStyle = css`
 `;
 
 const LoginPage = () => {
-  //더미 서버
-  const serverUrl = 'http://localhost:3000/users';
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] =
+    useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   const openSignUpModal = () => setIsSignUpModalOpen(true);
@@ -150,33 +147,30 @@ const LoginPage = () => {
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  //1. AuthContext의 상태를 로그인 성공하면 변경하여 Global한 로그읜 성공 여부 상태를 다룬다.
-  //2. 여기에서도 setUser라는 상태변경함수를 Globally 저장한다.
-  const { setIsLoggedIn, setUser } = useAuth(); //
-
+  //authContext에서 구현한 로그인 함수들을 가져옴
+  const { login, setIsLoggedIn } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      const response = await axios.get(serverUrl);
-      const users = response.data;
+      const userInfo = {
+        email,
+        password,
+      };
 
-      const user = users.find(
-        (user) => user.email === email && user.password === password
-      );
+      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
 
-      if (user) {
-        alert(`로그인에 성공했습니다 ${user.name} 님 환영합니다.`);
-        setIsLoggedIn(true);
-        setUser(user);
-        navigate('/main');
-      } else {
-        setError('아이디 또는 비밀번호가 틀렸습니다');
-      }
+      await login(userInfo);
+      setIsLoggedIn(true);
+      setIsSuccessMessageModalOpen(true);
     } catch (e) {
-      alert('로그인에 실패했습니다');
-      console.log('에러 발생', e);
+      alert('로그인에 실패했습니다.');
+      console.error('❌ 로그인 오류:', e);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessMessageModalOpen(false);
+    navigate('/main');
   };
 
   return (
@@ -216,6 +210,13 @@ const LoginPage = () => {
       {/* 모달처럼 보여야 하므로, navigating이 아닌 ChildBlockAppending */}
       {isSignUpModalOpen && (
         <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
+      )}
+      {isSuccessMessageModalOpen && (
+        <SuccessModal
+          message="로그인에 성공했습니다! 메인페이지로 이동합니다."
+          //successmodal에서 타임아웃으로 자동으로 닫게 했음요
+          onClose={handleSuccessModalClose}
+        ></SuccessModal>
       )}
     </>
   );

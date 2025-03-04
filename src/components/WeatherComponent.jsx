@@ -1,7 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
+import { weatherFetch } from '../api/weatherApi';
+import LoadingComponent from './util/LoadingComponent';
+
+const loadingContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  color: #555;
+`;
 
 const weatherContainerStyle = css`
   background-color: white;
@@ -22,38 +35,41 @@ const weatherContainerStyle = css`
     font-size: 0.9rem;
     color: #555;
     margin-bottom: 10px;
+    text-align: right;
   }
 
   .weather-info {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    justify-content: center;
     gap: 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
 
-    .weather-icon {
-      width: 100px; /* 아이콘 크기 */
-      height: 100px; /* 아이콘 크기 */
+  .weather-icon {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    left: 0;
+  }
+
+  .temperature-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+
+    .temperature {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
     }
 
-    .temperature-container {
-      position: relative;
-      right: 180px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      .temperature {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-
-      .temp-range {
-        font-size: 1rem;
-        color: #555;
-      }
+    .temp-range {
+      font-size: 1rem;
+      color: #555;
     }
   }
 
@@ -62,14 +78,8 @@ const weatherContainerStyle = css`
     color: #333;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 5px;
-    text-align: left;
-    margin: 0 auto;
-    width: fit-content;
-
-    .detail-item {
-      margin: 5px 0;
-    }
   }
 
   .air-quality {
@@ -82,78 +92,61 @@ const weatherContainerStyle = css`
 const WeatherComponent = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
-  const [dailyMaxTemp, setDailyMaxTemp] = useState(null);
-  const [dailyMinTemp, setDailyMinTemp] = useState(null);
-  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const response = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=37.5826&lon=126.9139&units=metric&appid=${apiKey}`
-        );
-        setWeatherData(response.data);
+        const data = await weatherFetch();
+        setWeatherData(data);
       } catch (error) {
-        console.error('날씨 정보를 가져오는 데 실패했습니다:', error);
+        console.error('❌ 날씨 데이터를 불러오지 못했습니다.', error);
       }
     };
 
     const updateTime = () => {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      setCurrentTime(`${hours}:${minutes}`);
+      setCurrentTime(
+        `${now.getHours().toString().padStart(2, '0')}:${now
+          .getMinutes()
+          .toString()
+          .padStart(2, '0')}`
+      );
     };
 
     fetchWeather();
     updateTime();
-  }, [apiKey]);
+  }, []);
 
   if (!weatherData) {
-    return <p>날씨 정보를 불러오는 중...</p>;
+    return <LoadingComponent message="날씨 정보를 불러오는 중..." />;
   }
-
-  // 미세먼지 및 추가 데이터 (API에 추가 요청 필요 시 별도로 처리)
-  const airQuality = '좋음'; // 예시로 '좋음' 값 설정 (추가 데이터 필요 시 API 연결)
-  const precipitation = '70%'; // 강수확률 (예시)
-  const humidity = `${weatherData.main.humidity}%`; // 습도
-  const windSpeed = `${weatherData.wind.speed} m/s`; // 풍속
-  const maxTemp = weatherData.main.temp_max;
-  const minTemp = weatherData.main.temp_min;
 
   return (
     <div css={weatherContainerStyle}>
-      <div className="weather-header">서대문구 남가좌동</div>
-      <div
-        className="current-time"
-        style={{
-          marginLeft: 'auto',
-          textAlign: 'right',
-          display: 'block',
-        }}
-      >
-        현재 시간: {currentTime}
-      </div>
+      <div className="weather-header">{weatherData.location}</div>
+      <div className="current-time">현재 시간: {currentTime}</div>
       <div className="weather-info">
         <img
           className="weather-icon"
-          src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
+          src={weatherData.weatherIcon}
           alt="날씨 아이콘"
         />
         <div className="temperature-container">
-          <div className="temperature">{weatherData.main.temp}°C</div>
+          <div className="temperature">{weatherData.temperature}°C</div>
           <div className="temp-range">
-            최고: {maxTemp}°C | 최저: {minTemp}°C
+            최고: {weatherData.maxTemperature}°C | 최저:{' '}
+            {weatherData.minTemperature}°C
           </div>
         </div>
       </div>
       <div className="weather-details">
-        <div className="detail-item">강수확률: {precipitation}</div>
-        <div className="detail-item">습도: {humidity}</div>
-        <div className="detail-item">풍속: {windSpeed}</div>
+        <div>체감 온도: {weatherData.feelsLike}°C</div>
+        <div>습도: {weatherData.humidity}%</div>
+        <div>날씨: {weatherData.weatherDescription}</div>
       </div>
       <div className="air-quality">
-        미세먼지: {airQuality} | 초미세먼지: {airQuality}
+        미세먼지: {weatherData.pm10Category} ({weatherData.pm10}) | 초미세먼지:{' '}
+        {weatherData.pm2_5Category} ({weatherData.pm2_5})
       </div>
     </div>
   );
