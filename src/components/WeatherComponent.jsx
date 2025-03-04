@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import { weatherFetch } from '../api/weatherApi';
+import LoadingComponent from './util/LoadingComponent';
 
 const loadingContainerStyle = css`
   display: flex;
@@ -13,24 +14,6 @@ const loadingContainerStyle = css`
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 1rem;
   color: #555;
-`;
-
-const spinnerStyle = css`
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(0, 31, 92, 0.3);
-  border-top: 4px solid #001f5c;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
 `;
 
 const weatherContainerStyle = css`
@@ -58,23 +41,25 @@ const weatherContainerStyle = css`
   .weather-info {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 20px;
     margin-bottom: 20px;
+    position: relative;
   }
 
   .weather-icon {
     width: 80px;
     height: 80px;
-    margin-right: auto;
+    position: absolute;
+    left: 0;
   }
 
   .temperature-container {
     display: flex;
-    margin-right: 170px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex: 1;
 
     .temperature {
       font-size: 2rem;
@@ -105,10 +90,7 @@ const weatherContainerStyle = css`
 `;
 
 const WeatherComponent = () => {
-  //영은이로부터 받아올 상태 저장
   const [weatherData, setWeatherData] = useState(null);
-
-  //현재시간은 영은이가 안줌 ㅠ;
   const [currentTime, setCurrentTime] = useState('');
 
   useEffect(() => {
@@ -133,18 +115,10 @@ const WeatherComponent = () => {
 
     fetchWeather();
     updateTime();
-    //dep -> 초기 한번만 서버에서 fetching
   }, []);
 
   if (!weatherData) {
-    return (
-      <div css={loadingContainerStyle}>
-        <div css={spinnerStyle}></div>
-        <p style={{ color: 'navy', fontWeight: 'bold' }}>
-          날씨 정보를 불러오는 중...
-        </p>
-      </div>
-    );
+    return <LoadingComponent message="날씨 정보를 불러오는 중..." />;
   }
 
   return (
@@ -152,13 +126,11 @@ const WeatherComponent = () => {
       <div className="weather-header">{weatherData.location}</div>
       <div className="current-time">현재 시간: {currentTime}</div>
       <div className="weather-info">
-        <div className="weather-icon-container">
-          <img
-            className="weather-icon"
-            src={weatherData.weatherIcon}
-            alt="날씨 아이콘"
-          />
-        </div>
+        <img
+          className="weather-icon"
+          src={weatherData.weatherIcon}
+          alt="날씨 아이콘"
+        />
         <div className="temperature-container">
           <div className="temperature">{weatherData.temperature}°C</div>
           <div className="temp-range">

@@ -69,6 +69,7 @@ const MealPlan = () => {
     mealCategory = 'DINNER';
   }
 
+  //요일꺼를 타겟팅해서 찾는다.
   const todayMeals = mealInfo.filter((meal) =>
     meal.date.includes(`( ${todayDayName} )`)
   );
