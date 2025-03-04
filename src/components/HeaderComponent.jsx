@@ -11,7 +11,6 @@ const headerContainerStyle = css`
   width: 100%;
   padding: 20px;
   background-color: white;
-  border-bottom: 1px solid #ddd;
 
   .left-section {
     width: 50%;

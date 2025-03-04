@@ -1,29 +1,32 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import HeaderComponent from './HeaderComponent';
 
 //test 주석 for clone repo
-const layoutContainerStyle = css`
+const pageLayout = css`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+`;
 
-  .main-content {
-    flex: 1;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-  }
+const containerLayout = css`
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  min-width: 1280px;
+  margin: 0 auto;
+  // padding-left: 8%;
+  // padding-right: 8%;
 `;
 
 const Layout = () => {
   return (
-    <div css={layoutContainerStyle}>
+    <div css={pageLayout}>
       <Navbar />
-      <div className="main-content">
+      <div css={containerLayout}>
         <HeaderComponent />
         <Outlet />
       </div>

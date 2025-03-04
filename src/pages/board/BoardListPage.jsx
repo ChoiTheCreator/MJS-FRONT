@@ -1,165 +1,171 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
 import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { getBoards } from '../../api/boardApi';
+import { getBoardContents } from '../../api/boardApi';
+import { Eye, Heart, MessageSquareText } from 'lucide-react';
 
 const BoardListPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [boards, setBoards] = useState([]);
+  const [contents, setContents] = useState([]);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
 
+  const iconSize = 14;
+
   useEffect(() => {
-    getBoards(page, size);
+    const getData = async () => {
+      setLoading(true);
+      try {
+        const response = await getBoardContents(page, size);
+
+        setContents(response.data.content);
+        console.log(response.data.content);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getData();
   }, [page, size]);
 
-  if (loading) return <div>로딩중...</div>;
-  if (error) return <div>에러가 발생했습니다: {error}</div>;
+  // const PostTitle =
 
   const navigate = useNavigate();
   return (
-    <div css={boardPageStyle}>
-      <div css={mainSectionStyle}>
-        <div css={headingContainerStyle}>
-          <h2 css={headingStyle}>자유 게시판</h2>
-          <Link to="/write" css={writeButtonStyle}>
+    <div css={pageStyle}>
+      <div css={pageHeadingStyle}>
+        <h1>자유 게시판</h1>
+        <Link to="/board/write">
+          <button>
             <FaPen />
             글쓰기
-          </Link>
-        </div>
-
-        <div css={postListStyle}>
-          {/* 더미 데이터임 */}
-          {[...Array(7)].map((_, index) => (
-            <div
-              onClick={() => navigate(`/board/${index + 1}`)}
-              key={index}
-              css={postItemStyle}
-            >
-              <h3>자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ</h3>
-              <p>
-                미리보기가 들어갑니다. 미리보기가 들어갑니다. 미리보기가
-                들어갑니다.
-              </p>
-              <div className="post-info">
-                <span>♥ 5</span>
-                <span>💬 15</span>
-                <span>👁 234</span>
-              </div>
-            </div>
-          ))}
-        </div>
+          </button>
+        </Link>
       </div>
-    </div>
+      <div css={pageContentsStyle}>
+        {contents.map((content) => (
+          <div
+            onClick={() => navigate(`/board/${content.uuid}`)}
+            className='content'
+            key={content.uuid}>
+            <div className='title-wrapper'>
+              <h3>{content.title}</h3>
+              <p>{content.content.length > 40 ? content.content.slice(0, 40) + " ..." : content.content}</p>
+            </div>
+            <div className='info-wrapper'>
+              <span>
+                <Heart className='icon' size={iconSize} />
+                {content.likeCount === undefined ? "null" : content.likeCount}
+              </span>
+              <span>
+                <MessageSquareText className='icon' size={iconSize} />
+                {content.commentCount === undefined ? "null" : content.commentCount}
+              </span>
+              <span>
+                <Eye className='icon' size={iconSize} />
+                {content.viewCount === undefined ? "null" : content.viewCount}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div >
   );
 };
 
 export default BoardListPage;
 
-const boardPageStyle = css`
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  min-height: calc(100vh - 150px); // 화면 높이를 최소 100vh로 설정
-  padding: 0;
-  margin: 0;
-  overflow-y: hidden;
-  background-color: #f9f9f9;
+const pageStyle = css`
+  padding: 2%;
 `;
 
-const mainSectionStyle = css`
-  flex-grow: 1;
-  width: 86%;
-  max-width: 2000px;
-  margin: 20px auto;
-  padding: 40px 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  position: relative;
-`;
+const pageHeadingStyle = css`
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
 
-const headingContainerStyle = css`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const headingStyle = css`
-  color: #001f5c;
-  font-size: 2rem;
-`;
-
-const writeButtonStyle = css`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: #001f5c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none;
-
-  &:hover {
-    background-color: #003cb3;
-  }
-
-  svg {
-    font-size: 1.2rem;
-  }
-`;
-
-const postListStyle = css`
-  display: flex;
-  flex-direction: column;
-
-  gap: 20px;
-`;
-
-const postItemStyle = css`
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  transition: box-shadow 0.2s ease-in-out;
-  background-color: #f9f9f9;
-
-  &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  h3 {
-    margin: 0 0 10px;
-    font-size: 1.5rem;
+  h1 {
     color: #001f5c;
+    margin: 4px;
   }
 
-  p {
-    margin-bottom: 10px;
-    color: #333;
-    font-size: 1rem;
-  }
-
-  .post-info {
+  button {
     display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    font-size: 0.9rem;
-    color: #777;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #001f5c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
 
+    &:hover {
+      background-color: #003cb3;
+    }
+
+    svg {
+      font-size: 1.2rem;
+    }
+  }
+`;
+
+const pageContentsStyle = css`
+  display: flex; 
+  flex-direction: column;  
+  margin: 8px;
+
+  .content {
+    width: 100%;
+    height: auto;
+    margin: 8px;
+    padding: 4px;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    border-bottom: 1px solid #e0e0e0;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    
+    .title-wrapper {
+      padding: 4px; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column;
+    }
+    
+    .info-wrapper {
+      flex: 0 0 auto; 
+      display: flex; 
+      flex-direction: row; 
+      align-items:center;
+    }
+    
+    h3 {
+      margin: 8px;
+    }
+    p {
+      margin: 8px;
+    }
     span {
       display: flex;
       align-items: center;
-      gap: 5px;
+      margin: 8px;
     }
-  }
+    .icon {
+      margin: 4px;
+    }
+  }  
 `;

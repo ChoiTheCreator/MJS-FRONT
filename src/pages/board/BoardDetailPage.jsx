@@ -1,92 +1,151 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import MarkdownViewer from "../../components/board/MarkdownViewer";
+import MarkdownViewer from "../../components/MarkdownViewer";
+import { getBoardContent } from '../../api/boardApi';
+import { Eye, Heart, MessageSquareText } from 'lucide-react';
+import Comment from '../../components/Comment';
 
 const BoardDetailPage = () => {
-  const { postId } = useParams(); // URL 파라미터 활용
+  const { uuid } = useParams(); // URL 파라미터 활용
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
-  const [content, setContent] = useState(dummyPosts[postId].content);
+  const [content, setContent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [comments, setComments] = useState([]);
 
-  // 게시글 ID에 해당하는 더미 데이터 가져오기
+  const iconSize = 16;
+
   useEffect(() => {
-    const foundPost = dummyPosts.find((p) => p.id === postId);
-    if (foundPost) {
-      setPost(foundPost);
-    } else {
-      setPost(null); // 해당 ID가 없을 경우
+    const getData = async () => {
+      setLoading(true);
+      try {
+        const responseContent = await getBoardContent(uuid);
+        console.log(responseContent.data);
+        setContent(responseContent.data);
+
+
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [postId]);
+    getData();
+  }, [uuid])
 
-  if (!post) {
+  if (loading) {
     return (
-      <div css={pageContainerStyle}>
-        <p>게시글을 찾을 수 없습니다.</p>
-        <button css={backButtonStyle} onClick={() => navigate('/board')}>
-          뒤로 가기
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div css={pageContainerStyle}>
-      <div css={postContainerStyle}>
-        <h1 css={titleStyle}>{post.title}</h1>
-        <p css={contentStyle}>{post.content}</p>
-        <div css={postInfoStyle}>
-          <span>♥ {post.likes} </span>
-          <span>💬 {post.comments} </span>
-          <span>👁 {post.views} </span>
+      <PageContainer>
+        <ErrorMessageWrapper>
+          <h1>
+            게시글을 불러오는 중입니다.
+          </h1>
+        </ErrorMessageWrapper>
+      </PageContainer>
+    )
+  } else if (content) {
+    return (
+      <PageContainer>
+        <div css={css`display: flex; flex-direction: column;`}>
+          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc;`}>
+            <h2 css={css`padding: 4px; flex: 1;`}>
+              {content.title}
+            </h2>
+            <div css={css`display: flex; flex-direction: row;`}>
+              <TextButton>
+                수정
+              </TextButton>
+              <TextButton>
+                삭제
+              </TextButton>
+            </div>
+          </div>
+          <div css={css`display: flex; justify-content: flex-end;`}>
+            <DetailInfo css={css`color: #D00392;`}>
+              <Heart size={iconSize} />
+              {content.likeCount === undefined ? "null" : content.likeCount}
+            </DetailInfo>
+            <DetailInfo css={css`color: #0386D0;`}>
+              <MessageSquareText size={iconSize} />
+              {content.commentCount === undefined ? "null" : content.commentCount}
+            </DetailInfo>
+            <DetailInfo css={css`color: #1103D0;`}>
+              <Eye size={iconSize} />
+              {content.viewCount === undefined ? "null" : content.viewCount}
+            </DetailInfo>
+          </div>
         </div>
-        <div>
+        <div css={css`padding: 32px;`}>
           <MarkdownViewer>
-            {content}
+            {content.content}
           </MarkdownViewer>
         </div>
-        <button css={backButtonStyle} onClick={() => navigate('/board')}>
-          뒤로 가기
-        </button>
-      </div>
-    </div>
-  );
+        <div css={css`width: 100%; border: 1px solid black;`}>
+          <div css={css`
+            padding: 8px; 
+            display: flex; 
+            border: 1px solid black; 
+            align-items: center;
+            border-bottom: 1px solid #ccc;`}>
+            <img
+              src="https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjZfMjM1/MDAxNzExMzgyMDQ3Mzcy.KEHy_SCpkdrmxR5snlfM-O_KBK6eZMUcYqUhdjpaAgUg.2--tdZ4zRKNuXl01U19DwC6onpvn7HERFNt2bD-tDhwg.PNG/5.png?type=w400"
+              alt="임시 이미지"
+              css={css`width: 64px; height: 64px; border-radius: 20px; margin: 8px;`} />
+            <div css={css`display: flex; flex-direction: column;`}>
+              <span css={css`
+                font-size: 18px;
+                font-weight: 700;
+                margin: 4px;`}>
+                작성자
+              </span>
+              <span css={css`margin: 4px;`}>
+                2025년 3월 1일
+              </span>
+            </div>
+          </div>
+          <div css={css`display: flex; flex-direction: column; padding: 8px;`}>
+            <span>
+              댓글 수 10
+            </span>
+            <Comment />
+          </div>
+        </div>
+      </PageContainer>
+    );
+  } else {
+    return (
+      <PageContainer>
+        <ErrorMessageWrapper>
+          <h1>게시글을 찾을 수 없습니다.</h1>
+          <button css={backButtonStyle} onClick={() => navigate('/board')}>
+            뒤로 가기
+          </button>
+        </ErrorMessageWrapper>
+      </PageContainer>
+    );
+  }
 };
 
 export default BoardDetailPage;
 
-const pageContainerStyle = css`
+const ErrorMessageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100vw;
+`;
+
+const PageContainer = styled.div`
+  width: 100%;
+  height: 100%;
   min-height: 100vh;
-  background-color: #f9f9f9;
-  padding: 20px;
-`;
-
-const postContainerStyle = css`
-  background-color: white;
-  padding: 30px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 800px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const titleStyle = css`
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #001f5c;
-  margin-bottom: 15px;
-`;
-
-const contentStyle = css`
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.6;
+  padding: 4%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 16px;
 `;
 
 const postInfoStyle = css`
@@ -113,30 +172,22 @@ const backButtonStyle = css`
   }
 `;
 
-// 더미 데이터 (실제 API 연동 시 변경)
-const dummyPosts = [
-  {
-    id: '1',
-    title: '자전거 타고 꿈 가는 방법 알려준다 ㅋㅋ',
-    content: '여기서부터 본문 내용이 들어갑니다. 긴 글을 입력해 주세요.',
-    likes: 5,
-    comments: 15,
-    views: 234,
-  },
-  {
-    id: '2',
-    title: '명지대 앞 맛집 추천 좀 해줘요!',
-    content: '# 이 근처에 괜찮은 식당 있을까요? 추천 부탁드립니다.\n## 안녕하세요\n\n신입생인데요 좀,,,,,,,',
-    likes: 10,
-    comments: 30,
-    views: 512,
-  },
-  {
-    id: '3',
-    title: '시험기간에 공부하기 좋은 카페 어디?',
-    content: '조용하고 집중하기 좋은 카페 추천 좀 해주세요.',
-    likes: 8,
-    comments: 20,
-    views: 400,
-  },
-];
+const TextButton = styled.button`
+  background: transparent;
+  color: gray;
+  border: none;
+  cursor: pointer;
+  &:hover {
+  text-decoration: underline;
+  }
+`
+
+const DetailInfo = styled.span`
+  display: flex;
+  align-items: center;
+  margin: 8px;
+
+  & > * {
+    margin: 4px;
+  }
+`
