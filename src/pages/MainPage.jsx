@@ -11,9 +11,9 @@ import MealPlan from '../components/MealPlan';
 import MyongjiNews from '../components/MyoungjiNews';
 
 const mainPageContainerStyle = css`
-  width: 100vw;
+  width: 100%;
   padding: 40px 0;
-  background-color: #f5f5f5;
+  background-color: white;
   display: grid;
   grid-template-columns: 2fr 1fr; /* 왼쪽 2/3, 오른쪽 1/3 */
   gap: 20px;
