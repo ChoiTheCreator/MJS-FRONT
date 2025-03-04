@@ -134,7 +134,7 @@ const MyongjiNews = () => {
     return <LoadingComponent message="명대신문 컨텐츠를 불러오는 중..." />;
   }
 
-  const displayedNews = newsData[activeTab].slice(0, 4);
+  const displayedNews = (newsData[activeTab] || []).slice(0, 4);
 
   return (
     <div css={newsContainerStyle}>
