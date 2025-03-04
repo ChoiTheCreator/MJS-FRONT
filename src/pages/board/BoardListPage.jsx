@@ -80,11 +80,7 @@ const BoardListPage = () => {
 export default BoardListPage;
 
 const pageStyle = css`
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
   padding: 2%;
-  background-color: white;
 `;
 
 const pageHeadingStyle = css`

@@ -16,6 +16,7 @@ const containerLayout = css`
   box-sizing: border-box;
   width: 100%;
   max-width: 1280px;
+  min-width: 1280px;
   margin: 0 auto;
   // padding-left: 8%;
   // padding-right: 8%;
