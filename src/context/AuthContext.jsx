@@ -19,16 +19,15 @@ export const AuthProvider = ({ children }) => {
   //2. uuid
   useEffect(() => {
     const storedToken = sessionStorage.getItem('accessToken');
-    const storedUuid = localStorage.getItem(uuid);
+    const storedUuid = localStorage.getItem('uuid');
 
     setAccessToken(storedToken);
-
+    setUuid(storedUuid);
     if (storedToken) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
-    setUuid(storedUuid);
   }, []);
 
   //글로벌 회원가입 함수

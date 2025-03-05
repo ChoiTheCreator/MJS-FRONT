@@ -3,10 +3,12 @@ import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 
 import dummyImg from '../IMG/Myself.jpeg';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import apiClient from '../api/apiClient';
+import LoadingComponent from './util/LoadingComponent';
 
 const profileContainerStyle = css`
   display: flex;
@@ -122,12 +124,13 @@ const loginButtonStyle = css`
 const ProfileComponent = () => {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, user, setUser, uuid, logout } = useAuth();
-
+  const [loading, setLoading] = useState(true);
   const handleLoginClick = () => {
     navigate('/login');
   };
 
   const handleLogoutClick = () => {
+    //실제 활용하는 로그아웃
     logout();
     setIsLoggedIn(false);
   };
@@ -141,6 +144,7 @@ const ProfileComponent = () => {
           console.log('uuid 데이터는', response.data);
 
           setUser(response.data.data);
+          setLoading(false);
           console.log(user.name);
         } catch (error) {
           console.error('서버 통신 오류:', error);
@@ -150,6 +154,12 @@ const ProfileComponent = () => {
 
     fetchUserData();
   }, [isLoggedIn, user?.id, setUser, uuid]);
+
+  if (loading) {
+    return (
+      <LoadingComponent message="프로필 정보를 로딩중입니다."></LoadingComponent>
+    );
+  }
 
   return (
     <>
