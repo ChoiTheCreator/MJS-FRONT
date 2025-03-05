@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+
 import dummyImg from '../IMG/Myself.jpeg';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import apiClient from '../api/apiClient';
@@ -120,16 +120,17 @@ const loginButtonStyle = css`
 `;
 
 const ProfileComponent = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn, user, setUser, uuid, logout } = useAuth();
+
   const handleLoginClick = () => {
     navigate('/login');
   };
 
   const handleLogoutClick = () => {
+    logout();
     setIsLoggedIn(false);
   };
-
-  const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, user, setUser, uuid } = useAuth();
 
   useEffect(() => {
     console.log('현재 uuid:', uuid); // uuid 값 확인
@@ -137,7 +138,7 @@ const ProfileComponent = () => {
       if (isLoggedIn) {
         try {
           const response = await apiClient.get(`/members/${uuid}`);
-          console.log('시발데이터는', response.data);
+          console.log('uuid 데이터는', response.data);
 
           setUser(response.data.data);
           console.log(user.name);

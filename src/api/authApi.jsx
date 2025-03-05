@@ -45,16 +45,22 @@ export const login = async (userInfo) => {
 };
 
 //로그아웃 기능
-export const logout = async () => {
+export const logout = async (accessToken) => {
   try {
-    //쿠키 기반 인증을 지원해놨기에 (url,data,config(추가적인 설정))
-    //이 부분에서 로그아웃을 할때 withCredentials : true를 설정함
     console.log('🚀 로그아웃 요청 시작...');
+    console.log('로그아웃 요청에 사용된 토큰:', accessToken);
+    //body -> blank 따라서 두번째 인자에 {} 비운다.
     const response = await apiClient.post(
       '/auth/logout',
       {},
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
+
+    return response; //메세지 (로그아웃 완료)
   } catch (error) {
     console.error('❌ 로그아웃 요청 실패!');
     console.error('❌ HTTP 상태 코드:', error.response?.status || '알 수 없음');
