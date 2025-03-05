@@ -7,6 +7,7 @@ import MarkdownViewer from "../../components/MarkdownViewer";
 import { getBoardContent } from '../../api/boardApi';
 import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
+import { getBoardComments } from '../../api/commentApi';
 
 const BoardDetailPage = () => {
   const { uuid } = useParams(); // URL 파라미터 활용
@@ -14,7 +15,13 @@ const BoardDetailPage = () => {
   const [post, setPost] = useState(null);
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState(null);
+  const [comment, setComment] = useState('');
+  const [isHidden, setIsHidden] = useState(false);
+
+  function handleCommentSubmit() {
+
+  }
 
   const iconSize = 16;
 
@@ -23,10 +30,11 @@ const BoardDetailPage = () => {
       setLoading(true);
       try {
         const responseContent = await getBoardContent(uuid);
-        console.log(responseContent.data);
+        const responseComments = await getBoardComments(uuid);
+        console.log('getBoardContent 결과', responseContent.data);
+        console.log('getBoardComments 결과', responseComments.data);
         setContent(responseContent.data);
-
-
+        setComments(responseComments.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -63,54 +71,109 @@ const BoardDetailPage = () => {
               </TextButton>
             </div>
           </div>
-          <div css={css`display: flex; justify-content: flex-end;`}>
-            <DetailInfo css={css`color: #D00392;`}>
+          <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 16px;`}>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #D00392;`}>
               <LuHeart size={iconSize} />
               {content.likeCount === undefined ? "null" : content.likeCount}
-            </DetailInfo>
-            <DetailInfo css={css`color: #0386D0;`}>
+            </span>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
               <LuMessageSquare size={iconSize} />
               {content.commentCount === undefined ? "null" : content.commentCount}
-            </DetailInfo>
-            <DetailInfo css={css`color: #1103D0;`}>
+            </span>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
               <LuEye size={iconSize} />
               {content.viewCount === undefined ? "null" : content.viewCount}
-            </DetailInfo>
+            </span>
           </div>
         </div>
-        <div css={css`padding: 32px;`}>
+        <div css={css`padding: 16px;`}>
           <MarkdownViewer>
             {content.content}
           </MarkdownViewer>
         </div>
-        <div css={css`width: 100%; border: 1px solid black;`}>
+        <div css={css`width: 100%;`}>
           <div css={css`
-            padding: 8px; 
+            padding: 16px; 
+            gap: 16px;
             display: flex; 
-            border: 1px solid black; 
             align-items: center;
             border-bottom: 1px solid #ccc;`}>
             <img
-              src="https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjZfMjM1/MDAxNzExMzgyMDQ3Mzcy.KEHy_SCpkdrmxR5snlfM-O_KBK6eZMUcYqUhdjpaAgUg.2--tdZ4zRKNuXl01U19DwC6onpvn7HERFNt2bD-tDhwg.PNG/5.png?type=w400"
+              src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
               alt="임시 이미지"
-              css={css`width: 64px; height: 64px; border-radius: 20px; margin: 8px;`} />
-            <div css={css`display: flex; flex-direction: column;`}>
+              css={css`width: 64px; height: 64px; border-radius: 20px;`} />
+            <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
               <span css={css`
                 font-size: 18px;
-                font-weight: 700;
-                margin: 4px;`}>
+                font-weight: 700;`}>
                 작성자
               </span>
-              <span css={css`margin: 4px;`}>
-                2025년 3월 1일
+              <span>
+                {content.publishedAt}
               </span>
             </div>
           </div>
-          <div css={css`display: flex; flex-direction: column; padding: 8px;`}>
+          <div css={css`
+            display: flex; 
+            flex-direction: column; 
+            padding: 16px;
+            gap: 16px;
+          `}>
             <span>
-              댓글 수 10
+              댓글 수 {comments.numberOfElements}
             </span>
-            <Comment />
+            <div css={css`padding: 8px; gap: 16px;`}>
+              <Comment />
+            </div>
+
+            <div css={css`
+              margin: 16px;
+              padding: 16px;
+              display: flex;
+              flex-direction: row;
+              gap: 16px;
+            `}>
+              <div css={css`display: flex; flex-direction: row;`}>
+                <div css={css`display:flex; flex-direction: column; gap: 16px;`}>
+                  <img
+                    src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
+                    alt="임시 이미지"
+                    css={css`width: 64px; height: 64px; border-radius: 20px;`} />
+                  <div css={css`display: flex; flex-direction: row; gap: 4px;`}>
+                    <input
+                      type='checkbox'
+                      onChange={(e) => setIsHidden(e.target.checked)} />
+                    <span>
+                      공개
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <input
+                css={css`
+                  flex: 1;
+                  padding: 16px;
+                  border: 1px solid #ccc;
+                  border-radius: 8px;
+                  background-color: #f9f9f9;
+                  `}
+                type='text'
+                placeholder='댓글을 남겨주세요'
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <button
+                css={css`
+                  background-color: #0d2864;
+                  color: white;
+                  text-align: center;
+                  border-radius: 10px;
+                  border: none;
+                  padding: 10px 20px;
+                  cursor: pointer;  
+              `}>
+                남기기
+              </button>
+            </div>
           </div>
         </div>
       </PageContainer>
@@ -146,14 +209,6 @@ const PageContainer = styled.div`
   flex-direction: column;
   border: 1px solid #ddd;
   border-radius: 16px;
-`;
-
-const postInfoStyle = css`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #777;
 `;
 
 const backButtonStyle = css`
