@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { UserRound } from 'lucide-react';
+import { FaRegUser } from "react-icons/fa";
 
-const Avatar = ({ src = UserRound, alt = 'Avatar', size = 40, style, ...props }) => {
+const Avatar = ({ src = FaRegUser, alt = 'Avatar', size = 40, style, ...props }) => {
   const avatarStyle = {
     width: size,
     height: size,

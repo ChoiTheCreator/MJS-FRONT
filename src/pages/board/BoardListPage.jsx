@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { getBoardContents } from '../../api/boardApi';
-import { Eye, Heart, MessageSquareText } from 'lucide-react';
+import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 
 const BoardListPage = () => {
   const [loading, setLoading] = useState(false);
@@ -58,15 +58,15 @@ const BoardListPage = () => {
             </div>
             <div className='info-wrapper'>
               <span>
-                <Heart className='icon' size={iconSize} />
+                <LuHeart className='icon' size={iconSize} />
                 {content.likeCount === undefined ? "null" : content.likeCount}
               </span>
               <span>
-                <MessageSquareText className='icon' size={iconSize} />
+                <LuMessageSquare className='icon' size={iconSize} />
                 {content.commentCount === undefined ? "null" : content.commentCount}
               </span>
               <span>
-                <Eye className='icon' size={iconSize} />
+                <LuEye className='icon' size={iconSize} />
                 {content.viewCount === undefined ? "null" : content.viewCount}
               </span>
             </div>

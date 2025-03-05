@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import MarkdownViewer from "../../components/MarkdownViewer";
 import { getBoardContent } from '../../api/boardApi';
-import { Eye, Heart, MessageSquareText } from 'lucide-react';
+import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
 
 const BoardDetailPage = () => {
@@ -65,15 +65,15 @@ const BoardDetailPage = () => {
           </div>
           <div css={css`display: flex; justify-content: flex-end;`}>
             <DetailInfo css={css`color: #D00392;`}>
-              <Heart size={iconSize} />
+              <LuHeart size={iconSize} />
               {content.likeCount === undefined ? "null" : content.likeCount}
             </DetailInfo>
             <DetailInfo css={css`color: #0386D0;`}>
-              <MessageSquareText size={iconSize} />
+              <LuMessageSquare size={iconSize} />
               {content.commentCount === undefined ? "null" : content.commentCount}
             </DetailInfo>
             <DetailInfo css={css`color: #1103D0;`}>
-              <Eye size={iconSize} />
+              <LuEye size={iconSize} />
               {content.viewCount === undefined ? "null" : content.viewCount}
             </DetailInfo>
           </div>
