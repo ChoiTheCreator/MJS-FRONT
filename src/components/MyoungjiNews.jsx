@@ -42,7 +42,7 @@ const tabStyle = (isActive) => css`
 const newsCardStyle = css`
   display: flex;
   flex-direction: row;
-  background: #fff;
+  background: white;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

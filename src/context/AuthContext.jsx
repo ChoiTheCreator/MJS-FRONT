@@ -14,11 +14,15 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null); //빠른 접근을 위해 일단 메모리 (상태에다가 저장한다)
   const [uuid, setUuid] = useState(null);
   //글로벌 회원가입 함수
+
+  //서버에서 현재 로그인을 할때는 uuid를 주지 않으므로 따로 로컬스토리지에다가 저장한다.
   const signup = async (userData) => {
     try {
       const data = await signupApi(userData);
       const uuid = data.uuid;
+      localStorage.setItem('uuid', uuid);
       console.log('uuid 저장완료 ', uuid);
+
       setUuid(uuid);
     } catch (error) {
       console.log('x 회원가입 실패', error);
@@ -34,6 +38,13 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(data.accessToken);
       setIsLoggedIn(true);
 
+      const storedUuid = localStorage.getItem('uuid');
+
+      if (storedUuid) {
+        setUuid(storedUuid);
+      } else {
+        console.warn('로그인은 성공했지만, uuid가 없습니다.');
+      }
       console.log(
         '✅ 로그인 성공 현재 사용자의 접근토큰은 메모리에 안전하게 저장되었습니다. :',
         data.accessToken
