@@ -25,7 +25,6 @@ export const signup = async (userData) => {
 
 export const login = async (userInfo) => {
   console.log('🚀 로그인 요청 시작...');
-  console.log('🔗 요청 URL:', `${import.meta.env.VITE_API_URL}/members`);
   console.log('📤 요청 데이터:', userInfo);
 
   try {
