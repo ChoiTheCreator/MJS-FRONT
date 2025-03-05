@@ -155,9 +155,12 @@ const ProfileComponent = () => {
     fetchUserData();
   }, [isLoggedIn, user?.id, setUser, uuid]);
 
+  //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
   if (loading) {
     return (
-      <LoadingComponent message="프로필 정보를 로딩중입니다."></LoadingComponent>
+      <div style={{ marginLeft: '300px' }}>
+        <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
+      </div>
     );
   }
 
@@ -213,3 +216,4 @@ const ProfileComponent = () => {
 };
 
 export default ProfileComponent;
+// 방금 이렇게 local storage에 uuid (사용자 파라미터) 로그인 상태 를 각 로컬 스토리지, 세션 스트로지에 저장하여 리렌더링 시의 상태를 유지하는 과정, 그 상태를 통해 useEffect로 fetching을 하고난 후, Ux 증진을 위해
