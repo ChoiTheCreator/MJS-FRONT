@@ -278,9 +278,10 @@ const BoardWritePage = () => {
       console.log(response)
 
       const responseId = response.data.uuid;
-      navigate(`/board/${responseId}`)
+      navigate(`/board/${responseId}`);
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      window.alert(`서버와의 통신 중 오류가 발생했습니다.\n${error}`);
     }
 
     // 상세 보기 페이지로 라우팅
