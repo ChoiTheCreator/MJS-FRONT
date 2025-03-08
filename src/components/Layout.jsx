@@ -5,24 +5,20 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import HeaderComponent from './HeaderComponent';
 
-//test 주석 for clone repo
-const pageLayout = css`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-`;
-
-const containerLayout = css`
-  box-sizing: border-box;
-  width: 1280px;
-  margin: 0 auto;
-`;
-
 const Layout = () => {
   return (
-    <div css={pageLayout}>
+    <div css={css`display: flex; flex-direction: column; min-height: 100vh;`}>
       <Navbar />
-      <div css={containerLayout}>
+      <div
+        css={css`
+          flex: 1; 
+          width: 1280px; 
+          display: flex;
+          flex-direction: column;
+          margin: 0 auto; 
+          box-sizing: border-box;
+        `}
+      >
         <HeaderComponent />
         <Outlet />
       </div>
