@@ -53,7 +53,6 @@ const reducedHeightBoxStyle = css`
 `;
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useAuth(); // 로그인 상태와 상태 변경 함수
 
   const handleLogout = () => {
