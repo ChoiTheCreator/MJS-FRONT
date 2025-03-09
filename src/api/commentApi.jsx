@@ -15,6 +15,9 @@ export const getBoardComments = async (boardUuid, page, size) => {
 }
 
 export const postBoardComment = async (boardUuid, memberUuid, content) => {
+  if (!content)
+    throw new Error("내용을 입력해 주세요");
+
   try {
     const response = await apiClient.post(`/boards/${boardUuid}/comments/member/${memberUuid}`, {
       content

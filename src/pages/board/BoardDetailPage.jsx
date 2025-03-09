@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MarkdownViewer from "../../components/MarkdownViewer";
 import { deleteBoardContent, getBoardContent } from '../../api/boardApi';
 import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
-import { getBoardComments } from '../../api/commentApi';
+import { getBoardComments, postBoardComment } from '../../api/commentApi';
+import LoadingComponent from '../../components/util/LoadingComponent';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
@@ -15,11 +16,20 @@ const BoardDetailPage = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState(null);
-  const [comment, setComment] = useState('');
   const [isHidden, setIsHidden] = useState(false);
+  const commentBox = useRef(null);
 
-  function handleCommentSubmit() {
-
+  const handleSubmitComment = async () => {
+    setLoading(true);
+    try {
+      console.log(commentBox.current.value)
+      const response = await postBoardComment(uuid, "abcde", commentBox.current.value);
+      console.log(response);
+    } catch (error) {
+      window.alert(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleDeletePost = async () => {
@@ -59,9 +69,7 @@ const BoardDetailPage = () => {
     return (
       <div css={pageStyle}>
         <div css={errorStyle}>
-          <h1>
-            게시글을 불러오는 중입니다.
-          </h1>
+          <LoadingComponent message='게시글을 불러오는 중입니다' />
         </div>
       </div>
     )
@@ -170,8 +178,7 @@ const BoardDetailPage = () => {
                   `}
                 type='text'
                 placeholder='댓글을 남겨주세요'
-                onChange={(e) => setComment(e.target.value)}
-              />
+                ref={commentBox} />
               <button
                 css={css`
                   background-color: #0d2864;
@@ -181,7 +188,9 @@ const BoardDetailPage = () => {
                   border: none;
                   padding: 10px 20px;
                   cursor: pointer;  
-              `}>
+              `}
+                onClick={handleSubmitComment}
+              >
                 남기기
               </button>
             </div>
