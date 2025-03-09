@@ -12,7 +12,6 @@ import LoadingComponent from '../../components/util/LoadingComponent';
 const BoardDetailPage = () => {
   const navigate = useNavigate();
   const { uuid } = useParams(); // URL 파라미터 활용
-  const [post, setPost] = useState(null);
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState(null);
@@ -128,7 +127,11 @@ const BoardDetailPage = () => {
                 작성자
               </span>
               <span>
-                {content.publishedAt}
+                {(() => {
+                  const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
+                  const timePart = content.publishedAt.substring(11, 16);
+                  return `${datePart} ${timePart}`;
+                })()}
               </span>
             </div>
           </div>
@@ -139,12 +142,17 @@ const BoardDetailPage = () => {
             gap: 16px;
           `}>
             <span>
-              댓글 수 {comments.numberOfElements}
+              댓글 수 {comments.totalElements}
             </span>
             <div css={css`padding: 8px; gap: 16px;`}>
-              <Comment />
+              {comments.content.map((comment) => (
+                <Comment
+                  key={comment.uuid}
+                  userName={comment.nickname}
+                  likeCount={comment.likes}
+                  content={comment.content} />
+              ))}
             </div>
-
             <div css={css`
               margin: 16px;
               padding: 16px;
@@ -163,7 +171,7 @@ const BoardDetailPage = () => {
                       type='checkbox'
                       onChange={(e) => setIsHidden(e.target.checked)} />
                     <span>
-                      공개
+                      익명
                     </span>
                   </div>
                 </div>

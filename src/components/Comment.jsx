@@ -1,17 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const Comment = () => {
+const Comment = (props) => {
   return (
-    <div css={css`
-      width: 100%;
-      height: auto;
-      box-sizing: border-box;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    `}>
+    <div
+      css={css`
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      `}
+      key={props.key}
+    >
       <div css={css`
         display: flex;
         align-items: center;
@@ -26,14 +29,17 @@ const Comment = () => {
           font-weight: 700;
           margin: 4px;
         `}>
-          작성자
+          {props.userName}
         </span>
-        <span css={css`font-size: 14px; margin: 4px;`}>
-          2025년 3월 1일
+        <span css={css`font-size: 14px; margin: 4px; color: red;`}>
+          작성일
+        </span>
+        <span css={css`font-size: 14px; margin: 4px; color: #999;`}>
+          {`좋아요 ${props.likeCount}`}
         </span>
       </div>
       <span>
-        ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ누구냐 진짜 ㅋㅋ 개또라이새끼 ㅋㅋ
+        {props.content}
       </span>
     </div>
   );
