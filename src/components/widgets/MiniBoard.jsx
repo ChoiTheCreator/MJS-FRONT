@@ -2,8 +2,8 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoadingComponent from '../components/util/LoadingComponent';
-import { getBoardContents } from '../api/boardApi';
+import LoadingComponent from '../util/LoadingComponent';
+import { getBoardContents } from '../../api/boardApi';
 
 export default function MiniBoard() {
   const navigate = useNavigate()
