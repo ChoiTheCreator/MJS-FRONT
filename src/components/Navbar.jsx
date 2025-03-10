@@ -110,7 +110,7 @@ const Navbar = () => {
         {/* 로고 */}
         <div className="logo">
           <img src={logo} alt="Logo" />
-          <Link to={'/main'}>
+          <Link to={'/main'} style={{ textDecoration: 'none' }}>
             <span className="logo-text">
               MJ<span style={{ color: 'skyblue' }}>S</span>
             </span>
