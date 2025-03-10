@@ -67,7 +67,6 @@ const noticeInfoStyle = css`
 const TabComponent = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [notices, setNotices] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const tabs = [
     { label: '일반공지', category: 'general' },
@@ -80,22 +79,16 @@ const TabComponent = () => {
 
   useEffect(() => {
     const fetchNotices = async () => {
-      setLoading(true);
       try {
         const data = await getNotice({ category: tabs[activeTab].category });
         setNotices(data);
       } catch (error) {
         console.error('공지사항 실제 Fetching 중 오류 발생', error);
       } finally {
-        setLoading(false);
       }
     };
     fetchNotices();
   }, [activeTab]);
-
-  if (loading) {
-    return <LoadingComponent message="공지사항을 불러오고 있습니다." />;
-  }
 
   return (
     <div css={tabContainerStyle}>
