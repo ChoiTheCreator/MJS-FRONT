@@ -5,12 +5,14 @@ import { useRef, useState } from 'react';
 import MarkdownViewer from '../../components/MarkdownViewer';
 import { postBoardContent } from "../../api/boardApi";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BoardWritePage = () => {
   const [title, setTitle] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [link, setLink] = useState("");
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const titleBoxRef = useRef(null);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -273,30 +275,23 @@ const BoardWritePage = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const response = await postBoardContent(title, content, true, []);
-      console.log(response)
-
-      const responseId = response.data.uuid;
-      navigate(`/board/${responseId}`);
-    } catch (error) {
-      console.error(error);
-      window.alert(`서버와의 통신 중 오류가 발생했습니다.\n${error}`);
+    if (isLoading) {
+      toast.error('잠시 기다려주세요')
+      return;
     }
 
-    // 상세 보기 페이지로 라우팅
-
-    // DEBUG: 임시 로컬 저장 코드
-    // const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
-    // const url = URL.createObjectURL(blob);
-    // const link = document.createElement('a');
-    // link.href = url;
-    // link.download = 'content.md';
-    // document.body.appendChild(link); // Firefox 대응
-    // link.click();
-    // document.body.removeChild(link);
-    // URL.revokeObjectURL(url);
-  };
+    setIsLoading(true);
+    try {
+      const response = await postBoardContent(title, content, true, []);
+      const responseId = response.data.uuid;
+      navigate(`/board/${responseId}`);
+      toast.info('게시글 업로드 완료')
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div css={editorWrapper}>

@@ -8,6 +8,7 @@ import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
 import { getBoardComments, postBoardComment } from '../../api/commentApi';
 import LoadingComponent from '../../components/util/LoadingComponent';
+import { toast } from 'react-toastify';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
