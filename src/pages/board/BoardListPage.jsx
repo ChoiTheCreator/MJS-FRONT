@@ -5,6 +5,7 @@ import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { getBoardContents } from '../../api/boardApi';
 import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
+import LoadingComponent from '../../components/util/LoadingComponent';
 
 const BoardListPage = () => {
   const navigate = useNavigate();
@@ -49,9 +50,7 @@ const BoardListPage = () => {
       <div css={css`flex: 1; display: flex; flex-direction: column; margin: 8px;`}>
         {loading ? (
           <div css={css`flex: 1; display: flex; justify-content: center; align-items: center;`}>
-            <h2>
-              게시글 목록을 불러오는 중입니다
-            </h2>
+            <LoadingComponent message='게시글 목록을 불러오는 중입니다' />
           </div>
         ) : contents.length === 0 ? (
           <div css={css`flex: 1; display: flex; justify-content: center; align-items: center;`}>
