@@ -47,7 +47,8 @@ const App = () => {
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
 
-            <Route path="/meal" element={MealPage} />
+            {/* 식단 상세조회 페이지 */}
+            <Route path="/meal" element={<MealPage />} />
           </Route>
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
