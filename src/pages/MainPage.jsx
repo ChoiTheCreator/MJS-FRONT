@@ -9,6 +9,7 @@ import RankingComponent from '../components/RankingComponent';
 import AdBanner from '../components/AdBanner';
 import MealPlan from '../components/MealPlan';
 import MyongjiNews from '../components/MyoungjiNews';
+import MiniBoard from '../components/widgets/MiniBoard';
 
 const mainPageContainerStyle = css`
   width: 100%;
@@ -91,6 +92,9 @@ const MainPage = () => {
         </div>
         <div css={contentBoxStyle}>
           <RankingComponent /> {/* 검색 순위 */}
+        </div>
+        <div css={contentBoxStyle}>
+          <MiniBoard />
         </div>
       </div>
     </div>

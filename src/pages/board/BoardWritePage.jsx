@@ -1,17 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import {
-  Bold,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  Image,
-  Italic,
-  Link2,
-  Quote,
-  Strikethrough,
-} from 'lucide-react';
+import { LuBold, LuCode, LuHeading1, LuHeading2, LuHeading3, LuImage, LuItalic, LuLink2, LuQuote, LuStrikethrough } from "react-icons/lu";
 import { useRef, useState } from 'react';
 import MarkdownViewer from '../../components/MarkdownViewer';
 import { postBoardContent } from "../../api/boardApi";
@@ -289,9 +278,10 @@ const BoardWritePage = () => {
       console.log(response)
 
       const responseId = response.data.uuid;
-      navigate(`/board/${responseId}`)
+      navigate(`/board/${responseId}`);
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      window.alert(`서버와의 통신 중 오류가 발생했습니다.\n${error}`);
     }
 
     // 상세 보기 페이지로 라우팅
@@ -321,24 +311,24 @@ const BoardWritePage = () => {
       </div>
       <div css={toolbarContainer}>
         <div css={toolbar}>
-          <button css={toolbarButton} onClick={() => insertHeading('#')}><Heading1 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHeading('##')}><Heading2 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHeading('###')}><Heading3 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('#')}><LuHeading1 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('##')}><LuHeading2 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('###')}><LuHeading3 size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
-          <button css={toolbarButton} onClick={() => insertTextStyle('**')}><Bold size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertTextStyle(' _', '_ ')}><Italic size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertTextStyle('~~')}><Strikethrough size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle('**')}><LuBold size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle(' _', '_ ')}><LuItalic size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle('~~')}><LuStrikethrough size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
-          <button css={toolbarButton} onClick={() => insertQuote()}><Quote size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHyperlink()}><Link2 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => handleImageUploadClick()}><Image size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertQuote()}><LuQuote size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHyperlink()}><LuLink2 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => handleImageUploadClick()}><LuImage size={toolbarIconSize} /></button>
           <input
             type="file"
             accept="image/*"
             style={{ display: 'none' }}
             ref={fileInputRef}
             onChange={handleFileChange} />
-          <button css={toolbarButton} onClick={() => insertCode()}><Code size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertCode()}><LuCode size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
           <button onClick={handleSave}>저장</button>
         </div>

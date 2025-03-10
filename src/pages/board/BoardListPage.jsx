@@ -4,15 +4,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { getBoardContents } from '../../api/boardApi';
-import { Eye, Heart, MessageSquareText } from 'lucide-react';
+import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
+import LoadingComponent from '../../components/util/LoadingComponent';
 
 const BoardListPage = () => {
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [contents, setContents] = useState([]);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-
   const iconSize = 14;
 
   useEffect(() => {
@@ -20,7 +21,6 @@ const BoardListPage = () => {
       setLoading(true);
       try {
         const response = await getBoardContents(page, size);
-
         setContents(response.data.content);
         console.log(response.data.content);
       } catch (error) {
@@ -32,56 +32,67 @@ const BoardListPage = () => {
     getData();
   }, [page, size]);
 
-  // const PostTitle =
-
-  const navigate = useNavigate();
   return (
-    <div css={pageStyle}>
+    <div css={css`flex: 1; padding: 2%; display: flex; flex-direction: column;`}>
       <div css={pageHeadingStyle}>
-        <h1>자유 게시판</h1>
-        <Link to="/board/write">
-          <button>
-            <FaPen />
-            글쓰기
-          </button>
-        </Link>
+        <h1 css={css`color: #001f5c; margin: 4px;`}>
+          자유 게시판
+        </h1>
+        {!loading && (
+          <Link to="/board/write">
+            <button>
+              <FaPen />
+              글쓰기
+            </button>
+          </Link>
+        )}
       </div>
-      <div css={pageContentsStyle}>
-        {contents.map((content) => (
-          <div
-            onClick={() => navigate(`/board/${content.uuid}`)}
-            className='content'
-            key={content.uuid}>
-            <div className='title-wrapper'>
-              <h3>{content.title}</h3>
-              <p>{content.content.length > 40 ? content.content.slice(0, 40) + " ..." : content.content}</p>
-            </div>
-            <div className='info-wrapper'>
-              <span>
-                <Heart className='icon' size={iconSize} />
-                {content.likeCount === undefined ? "null" : content.likeCount}
-              </span>
-              <span>
-                <MessageSquareText className='icon' size={iconSize} />
-                {content.commentCount === undefined ? "null" : content.commentCount}
-              </span>
-              <span>
-                <Eye className='icon' size={iconSize} />
-                {content.viewCount === undefined ? "null" : content.viewCount}
-              </span>
-            </div>
+      <div css={css`flex: 1; display: flex; flex-direction: column; margin: 8px;`}>
+        {loading ? (
+          <div css={css`flex: 1; display: flex; justify-content: center; align-items: center;`}>
+            <LoadingComponent message='게시글 목록을 불러오는 중입니다' />
           </div>
-        ))}
+        ) : contents.length === 0 ? (
+          <div css={css`flex: 1; display: flex; justify-content: center; align-items: center;`}>
+            <h1>
+              텅
+            </h1>
+          </div>
+        ) : (
+          <div css={pageContentsStyle}>
+            {contents.map((content) => (
+              <div
+                onClick={() => navigate(`/board/${content.uuid}`)}
+                className='content'
+                key={content.uuid}>
+                <div className='title-wrapper'>
+                  <h3>{content.title}</h3>
+                  <p>{content.content.length > 40 ? content.content.slice(0, 40) + " ..." : content.content}</p>
+                </div>
+                <div className='info-wrapper'>
+                  <span>
+                    <LuHeart className='icon' size={iconSize} />
+                    {content.likeCount === undefined ? "null" : content.likeCount}
+                  </span>
+                  <span>
+                    <LuMessageSquare className='icon' size={iconSize} />
+                    {content.commentCount === undefined ? "null" : content.commentCount}
+                  </span>
+                  <span>
+                    <LuEye className='icon' size={iconSize} />
+                    {content.viewCount === undefined ? "null" : content.viewCount}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div >
+    </div>
   );
 };
 
 export default BoardListPage;
-
-const pageStyle = css`
-  padding: 2%;
-`;
 
 const pageHeadingStyle = css`
   display: flex; 
@@ -89,11 +100,6 @@ const pageHeadingStyle = css`
   align-items: center; 
   padding: 16px;
   border-bottom: 1px solid #e0e0e0;
-
-  h1 {
-    color: #001f5c;
-    margin: 4px;
-  }
 
   button {
     display: flex;
@@ -120,9 +126,7 @@ const pageHeadingStyle = css`
 `;
 
 const pageContentsStyle = css`
-  display: flex; 
-  flex-direction: column;  
-  margin: 8px;
+
 
   .content {
     width: 100%;
