@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TabComponent from '../components/TabComponent';
 import WeatherComponent from '../components/WeatherComponent';
-import RankingComponent from '../components/RankingComponent';
+
 import AdBanner from '../components/AdBanner';
 import MealPlan from '../components/MealPlan';
 import MyongjiNews from '../components/MyoungjiNews';
@@ -90,9 +89,9 @@ const MainPage = () => {
         <div css={contentBoxStyle}>
           <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
         </div>
-        <div css={contentBoxStyle}>
-          <RankingComponent /> {/* 검색 순위 */}
-        </div>
+        {/* <div css={contentBoxStyle}>
+          <RankingComponent /> 검색
+        </div> */}
         <div css={contentBoxStyle}>
           <MiniBoard />
         </div>

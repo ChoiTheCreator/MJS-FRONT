@@ -2,12 +2,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import adBannerImage from '../IMG/Myself.jpeg'; // 이미지 파일 import
+
 const adBannerStyle = css`
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #ffe5e5;
   padding: 0; /* 이미지와 간격 없이 꽉 차도록 설정 */
+  
   border-radius: 8px;
   overflow: hidden; /* 컨테이너에서 넘치는 이미지 잘라내기 */
   height: 150px; /* 배너 높이 */

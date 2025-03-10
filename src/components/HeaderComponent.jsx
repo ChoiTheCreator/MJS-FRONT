@@ -124,7 +124,7 @@ const HeaderComponent = () => {
         <div className="highlight-and-search">
           <div className="highlight-banner">
             <FaBullhorn className="highlight-icon" />
-            <span>현재 Version1 작업중입니다.</span>
+            <span>현재 Version1 작업중입니다 _ MJS 일동</span>
           </div>
 
           <div className="search-bar">
