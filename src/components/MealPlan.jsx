@@ -7,10 +7,11 @@ import LoadingComponent from './util/LoadingComponent';
 const mealPlanStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  text-align: center;
+  gap: 6px;
   font-size: 0.9rem;
   color: #333;
-  height: 200px; /* 고정 높이 설정 */
+  height: 200px;
   overflow-y: auto; /* 내부 스크롤 활성화 */
   padding: 10px;
   box-sizing: border-box; /* 패딩 포함하여 높이 계산 */
@@ -19,17 +20,20 @@ const mealPlanStyle = css`
     font-size: 1.1rem;
     font-weight: bold;
     color: #001f5c;
-    margin-bottom: 10px; /* 제목과 내용 간 여백 추가 */
+    margin-bottom: 7px;
   }
 
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
 
     li {
-      margin: 5px 0;
+      flex: 1 1 calc(33.33% - 5px);
       word-wrap: break-word; /* 긴 단어 줄바꿈 처리 */
     }
   }
@@ -89,10 +93,9 @@ const MealPlan = () => {
 
   return (
     <div css={mealPlanStyle}>
-      <h4>오늘의 식단 </h4>
+      <h4>오늘의 식단 | {firstMeal.menuCategory} </h4>
+      {<strong style={{ marginBottom: '7px' }}>{firstMeal.date}</strong>}
       <ul>
-        <li>{<strong>{firstMeal.date}</strong>}</li>
-        <li>{firstMeal.menuCategory}</li>
         {firstMeal.meals.map((menu, index) => (
           <li key={index}>{menu}</li>
         ))}
