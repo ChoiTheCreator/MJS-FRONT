@@ -3,6 +3,8 @@ import { css } from '@emotion/react';
 import apiClient from '../api/apiClient';
 import { useEffect, useState } from 'react';
 import LoadingComponent from './util/LoadingComponent';
+import { getWeeklyMenu } from '../api/mealApi';
+import { useNavigate } from 'react-router-dom';
 
 const mealPlanStyle = css`
   display: flex;
@@ -43,15 +45,17 @@ const MealPlan = () => {
   //빈 배열로 초기값 설정
   const [mealInfo, setMealInfo] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const handleMealPlanClick = () => {
+    navigate('/meal');
+  };
   useEffect(() => {
     const fetchMealPlan = async () => {
       try {
-        const response = await apiClient.get('/weeklymenus');
-        console.log(response.data.data);
-        setMealInfo(response.data.data || []);
+        const data = await getWeeklyMenu();
+        console.log(data);
+        setMealInfo(data || []);
         setLoading(false);
-
-        return response.data;
       } catch (error) {
         console.log('식단 조회 오류', error);
       }
@@ -92,7 +96,7 @@ const MealPlan = () => {
   }
 
   return (
-    <div css={mealPlanStyle}>
+    <div css={mealPlanStyle} onClick={handleMealPlanClick}>
       <h4>오늘의 식단 | {firstMeal.menuCategory} </h4>
       {<strong style={{ marginBottom: '7px' }}>{firstMeal.date}</strong>}
       <ul>

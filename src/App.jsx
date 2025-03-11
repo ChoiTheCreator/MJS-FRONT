@@ -33,6 +33,7 @@ const globalStyle = css`
 `;
 
 const App = () => {
+  
   return (
     <>
       <AuthProvider>
