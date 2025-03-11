@@ -42,7 +42,7 @@ const MealPlan = () => {
   useEffect(() => {
     const fetchMealPlan = async () => {
       try {
-        const response = await apiClient.get('/weeklymenu/get');
+        const response = await apiClient.get('/weeklymenus');
         console.log(response.data.data);
         setMealInfo(response.data.data || []);
         setLoading(false);
@@ -71,7 +71,7 @@ const MealPlan = () => {
 
   //요일꺼를 타겟팅해서 찾는다.
   const todayMeals = mealInfo.filter((meal) =>
-    meal.date.includes(`( ${todayDayName} )`)
+    meal.date.includes(`(${todayDayName})`)
   );
 
   const firstMeal =
@@ -91,9 +91,7 @@ const MealPlan = () => {
     <div css={mealPlanStyle}>
       <h4>오늘의 식단 </h4>
       <ul>
-        <li>
-          <strong>{firstMeal.date}</strong>
-        </li>
+        <li>{<strong>{firstMeal.date}</strong>}</li>
         <li>{firstMeal.menuCategory}</li>
         {firstMeal.meals.map((menu, index) => (
           <li key={index}>{menu}</li>
