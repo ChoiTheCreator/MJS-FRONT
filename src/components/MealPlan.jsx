@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import apiClient from '../api/apiClient';
+
 import { useEffect, useState } from 'react';
 import LoadingComponent from './util/LoadingComponent';
 import { getWeeklyMenu } from '../api/mealApi';
