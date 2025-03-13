@@ -6,8 +6,10 @@ import LoadingComponent from '../../components/util/LoadingComponent';
 import { useTable } from 'react-table';
 const mealTableStyle = css`
   display: flex;
+
   flex-direction: column;
-  width: 80vw;
+  width: 1280px;
+
   font-family: 'Arial', sans-serif;
 
   table {
@@ -16,6 +18,7 @@ const mealTableStyle = css`
     border-collapse: collapse;
     margin-top: 10px;
     border-radius: 10px;
+    height: 50vh;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
@@ -26,7 +29,7 @@ const mealTableStyle = css`
     padding: 12px;
     text-align: center;
     vertical-align: middle;
-    font-size: 14px;
+    font-size: 17px;
   }
 
   th {
