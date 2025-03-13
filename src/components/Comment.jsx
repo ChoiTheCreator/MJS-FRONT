@@ -11,9 +11,8 @@ const Comment = (props) => {
         padding: 8px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 12px; 
       `}
-      key={props.key}
     >
       <div css={css`
         display: flex;

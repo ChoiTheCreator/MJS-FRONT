@@ -14,41 +14,62 @@ const BoardDetailPage = () => {
   const navigate = useNavigate();
   const { uuid } = useParams(); // URL 파라미터 활용
   const [content, setContent] = useState(null);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState(null);
   const [isHidden, setIsHidden] = useState(false);
   const commentBox = useRef(null);
+  const iconSize = 16;
 
   const handleSubmitComment = async () => {
-    setLoading(true);
+    if (loading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    setLoading(true)
     try {
-      console.log(commentBox.current.value)
-      const response = await postBoardComment(uuid, "abcde", commentBox.current.value);
-      console.log(response);
+      const response = await postBoardComment(uuid, "abcde", commentBox.current.value)
     } catch (error) {
-      window.alert(error);
+      toast.error(error.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const handleDeletePost = async () => {
+    if (loading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
     if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      setLoading(true)
       try {
-        const response = await deleteBoardContent(uuid);
-        console.log(response);
+        const response = await deleteBoardContent(uuid)
+        navigate('/board')
       } catch (error) {
-        console.error(error);
+        toast.error(error.message)
+      } finally {
+        setLoading(false)
       }
-      navigate('/board');
     }
   }
 
-  const iconSize = 16;
+  const handleSubmitLike = async () => {
+    if (loading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    setLoading(true)
+    toast.info('게시글에 좋아요를 표시했습니다!')
+    setLoading(false)
+  }
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setPageLoading(true);
       try {
         const responseContent = await getBoardContent(uuid);
         const responseComments = await getBoardComments(uuid);
@@ -57,15 +78,15 @@ const BoardDetailPage = () => {
         setContent(responseContent.data);
         setComments(responseComments.data);
       } catch (error) {
-        console.error(error);
+        toast.error(error.message)
       } finally {
-        setLoading(false);
+        setPageLoading(false);
       }
     }
     getData();
   }, [uuid])
 
-  if (loading) {
+  if (pageLoading) {
     return (
       <div css={pageStyle}>
         <div css={errorStyle}>
@@ -78,10 +99,10 @@ const BoardDetailPage = () => {
       <div css={pageStyle}>
         <div css={css`display: flex; flex-direction: column;`}>
           <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc;`}>
-            <h2 css={css`padding: 4px; flex: 1;`}>
+            <span css={css`font-size: 1.5em; font-weight: bold; padding: 4px; margin: 8px; flex: 1;`}>
               {content.title}
-            </h2>
-            <div css={css`display: flex; flex-direction: row;`}>
+            </span>
+            <div css={css`display: flex; flex-direction: row; gap: 8px;`}>
               <button css={textButtonStyle}>
                 수정
               </button>
@@ -90,18 +111,18 @@ const BoardDetailPage = () => {
               </button>
             </div>
           </div>
-          <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 16px;`}>
+          <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 20px;`}>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #D00392;`}>
               <LuHeart size={iconSize} />
               {content.likeCount === undefined ? "null" : content.likeCount}
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
               <LuMessageSquare size={iconSize} />
-              {content.commentCount === undefined ? "null" : content.commentCount}
+              {comments.totalElements}
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
               <LuEye size={iconSize} />
-              {content.viewCount === undefined ? "null" : content.viewCount}
+              {content.viewCount}
             </span>
           </div>
         </div>
@@ -113,28 +134,46 @@ const BoardDetailPage = () => {
         <div css={css`width: 100%;`}>
           <div css={css`
             padding: 16px; 
-            gap: 16px;
             display: flex; 
+            justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #ccc;`}>
-            <img
-              src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-              alt="임시 이미지"
-              css={css`width: 48px; height: 48px; border-radius: 20px;`} />
-            <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
-              <span css={css`
+            <div css={css`display: flex; gap: 16px; align-items: center;`}>
+              <img
+                src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
+                alt="임시 이미지"
+                css={css`width: 48px; height: 48px; border-radius: 20px;`} />
+              <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
+                <span css={css`
                 font-size: 18px;
                 font-weight: 700;`}>
-                작성자
-              </span>
-              <span>
-                {(() => {
-                  const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
-                  const timePart = content.publishedAt.substring(11, 16);
-                  return `${datePart} ${timePart}`;
-                })()}
-              </span>
+                  작성자
+                </span>
+                <span>
+                  {(() => {
+                    const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
+                    const timePart = content.publishedAt.substring(11, 16);
+                    return `${datePart} ${timePart}`;
+                  })()}
+                </span>
+              </div>
             </div>
+            <button
+              css={css`
+                background-color: #D00392;
+                color: white;
+                text-align: center;
+                border-radius: 10px;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px; `}
+              onClick={handleSubmitLike}>
+              <LuHeart />
+              좋아요
+            </button>
           </div>
           <div css={css`
             display: flex; 
@@ -148,7 +187,7 @@ const BoardDetailPage = () => {
             <div css={css`padding: 8px; gap: 16px;`}>
               {comments.content.map((comment) => (
                 <Comment
-                  key={comment.uuid}
+                  key={comment.commentUUID}
                   userName={comment.nickname}
                   likeCount={comment.likes}
                   content={comment.content} />
@@ -205,7 +244,7 @@ const BoardDetailPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     );
   } else {
     return (
@@ -226,9 +265,8 @@ export default BoardDetailPage;
 const pageStyle = css`
   width: 100%;
   height: 100%;
-  min-height: 100vh;
-  padding: 4%;
-  gap: 64px;
+  padding: 3%;
+  gap: 40px;
   display: flex;
   flex-direction: column;
   border: 1px solid #ddd;
