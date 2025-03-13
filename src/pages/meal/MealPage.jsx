@@ -27,6 +27,7 @@ const mealTableStyle = css`
   td {
     border: 1px solid #ddd;
     padding: 12px;
+    color: gray;
     text-align: center;
     vertical-align: middle;
     font-size: 17px;
@@ -36,16 +37,14 @@ const mealTableStyle = css`
     background-color: #316090;
     color: white;
     font-weight: bold;
-    padding: 15px;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
+    padding: 17px;
   }
 
   tr:hover {
     background-color: #e6f7ff;
-    transition: background-color 0.3s ease-in-out;
+  }
+  .highlight {
+    background-color: #e6f7ff !important;
   }
 `;
 
@@ -58,12 +57,13 @@ const mealTitleStyle = css`
     font-size: 20px;
     flex-direction: row;
     justify-content: start;
-    color: navy;
+    color: black;
     margin-right: 15px;
   }
 
   span {
-    font-weight: bold;
+    color: gray;
+
     font-size: 20px;
   }
 `;
@@ -129,11 +129,37 @@ const MealPage = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data: tableData });
 
+  const firstDate = tableData.length > 0 ? tableData[0].date : '';
+  const lastDate = tableData.length > 0 ? tableData[4].date : '';
+
+  // 오늘 날짜 가져오기 (YYYY-MM-DD)
+  const today = new Date().toISOString().split('T')[0];
+
+  const formatDate = (dateString) => {
+    const parts = dateString.split(' ')[0].split('.');
+    //03.10 (월) 을 03 10 (공백 기준으로 먼저 나누고, 03.10 (월)
+    //그 이후 .으로 나누면 03 10 이라는 값이 배열에 박힘 마지막에 (월)은 버려짐
+
+    const date = new Date();
+    const year = date.getFullYear(); //현재년도
+
+    //2025-03-10 (이런 형식을 갖추기 위해 padStart(앞에다가 pad를 댄다))
+    const compareDate = `${year}-${parts[0].padStart(
+      2,
+      '0'
+    )}-${parts[1].padStart(2, '0')}`;
+
+    return compareDate;
+  };
+
   return (
     <div css={mealTableStyle}>
       <div css={mealTitleStyle}>
-        <strong>식단 | </strong>
-        <span>인문캠퍼스 학생회관 3층</span>
+        <strong>식단 </strong>
+        <span>인문캠퍼스 학생회관 3층 </span>
+        <span style={{ marginLeft: '10px' }}>
+          [{firstDate} - {lastDate}]
+        </span>
       </div>
       {loading ? (
         <LoadingComponent message="식단 정보를 불러오고 있습니다." />
@@ -157,8 +183,18 @@ const MealPage = () => {
           <tbody {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row);
+              const rowData = row.original; //tableDate ORG
+              const compareDate = formatDate(rowData.date);
+              const isToday = today === compareDate;
+              compareDate === console.log('오늘 날짜는', compareDate);
+              console.log('Row Data:', rowData);
+
               return (
-                <tr key={row.id} {...row.getRowProps()}>
+                <tr
+                  key={rowData.date}
+                  {...row.getRowProps()}
+                  className={isToday ? 'highlight' : ''}
+                >
                   {row.cells.map((cell) => (
                     <td key={cell.column.id} {...cell.getCellProps()}>
                       {cell.render('Cell')}
