@@ -6,36 +6,16 @@ import MarkdownViewer from "../../components/MarkdownViewer";
 import { deleteBoardContent, getBoardContent } from '../../api/boardApi';
 import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
-import { getBoardComments, postBoardComment } from '../../api/commentApi';
 import LoadingComponent from '../../components/util/LoadingComponent';
 import { toast } from 'react-toastify';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
-  const { uuid } = useParams(); // URL 파라미터 활용
+  const { uuid } = useParams();
   const [content, setContent] = useState(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [comments, setComments] = useState(null);
-  const [isHidden, setIsHidden] = useState(false);
-  const commentBox = useRef(null);
   const iconSize = 16;
-
-  const handleSubmitComment = async () => {
-    if (loading) {
-      toast.error('잠시 기다려주세요')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await postBoardComment(uuid, "abcde", commentBox.current.value)
-    } catch (error) {
-      toast.error(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleDeletePost = async () => {
     if (loading) {
@@ -71,12 +51,9 @@ const BoardDetailPage = () => {
     const getData = async () => {
       setPageLoading(true);
       try {
-        const responseContent = await getBoardContent(uuid);
-        const responseComments = await getBoardComments(uuid);
-        console.log('getBoardContent 결과', responseContent.data);
-        console.log('getBoardComments 결과', responseComments.data);
-        setContent(responseContent.data);
-        setComments(responseComments.data);
+        const response = await getBoardContent(uuid);
+        // console.log('getBoardContent 결과', response.data);
+        setContent(response.data);
       } catch (error) {
         toast.error(error.message)
       } finally {
@@ -118,7 +95,8 @@ const BoardDetailPage = () => {
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
               <LuMessageSquare size={iconSize} />
-              {comments.totalElements}
+              게시판 댓글수를 GET Board api에서도 주세요
+              {/* {comments.totalElements} */}
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
               <LuEye size={iconSize} />
@@ -175,74 +153,7 @@ const BoardDetailPage = () => {
               좋아요
             </button>
           </div>
-          <div css={css`
-            display: flex; 
-            flex-direction: column; 
-            padding: 16px;
-            gap: 16px;
-          `}>
-            <span>
-              댓글 수 {comments.totalElements}
-            </span>
-            <div css={css`padding: 8px; gap: 16px;`}>
-              {comments.content.map((comment) => (
-                <Comment
-                  key={comment.commentUUID}
-                  userName={comment.nickname}
-                  likeCount={comment.likes}
-                  content={comment.content} />
-              ))}
-            </div>
-            <div css={css`
-              margin: 16px;
-              padding: 16px;
-              display: flex;
-              flex-direction: row;
-              gap: 16px;
-            `}>
-              <div css={css`display: flex; flex-direction: row;`}>
-                <div css={css`display:flex; flex-direction: column; gap: 16px;`}>
-                  <img
-                    src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-                    alt="임시 이미지"
-                    css={css`width: 64px; height: 64px; border-radius: 20px;`} />
-                  <div css={css`display: flex; flex-direction: row; gap: 4px;`}>
-                    <input
-                      type='checkbox'
-                      onChange={(e) => setIsHidden(e.target.checked)} />
-                    <span>
-                      익명
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <input
-                css={css`
-                  flex: 1;
-                  padding: 16px;
-                  border: 1px solid #ccc;
-                  border-radius: 8px;
-                  background-color: #f9f9f9;
-                  `}
-                type='text'
-                placeholder='댓글을 남겨주세요'
-                ref={commentBox} />
-              <button
-                css={css`
-                  background-color: #0d2864;
-                  color: white;
-                  text-align: center;
-                  border-radius: 10px;
-                  border: none;
-                  padding: 10px 20px;
-                  cursor: pointer;  
-              `}
-                onClick={handleSubmitComment}
-              >
-                남기기
-              </button>
-            </div>
-          </div>
+          <Comment uuid={uuid} />
         </div>
       </div >
     );

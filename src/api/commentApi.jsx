@@ -1,13 +1,8 @@
 import apiClient from "./apiClient";
 
-export const getBoardComments = async (boardUuid, page, size) => {
+export const getBoardComments = async (boardUuid) => {
   try {
-    const response = await apiClient.get(`/boards/${boardUuid}/comments`, {
-      params: {
-        page,
-        size,
-      },
-    });
+    const response = await apiClient.get(`/boards/${boardUuid}/comments`);
     return response.data;
   } catch (error) {
     throw error;
