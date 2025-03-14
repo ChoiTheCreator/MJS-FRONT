@@ -29,11 +29,11 @@ export const getBoardContent = async (uuid) => {
 
 export const postBoardContent = async (title, content, published, contentImage = []) => {
   if (!title)
-    throw new Error("제목을 입력해 주세요.");
+    throw new Error("제목을 입력해 주세요");
   if (!content)
-    throw new Error("본문 내용을 입력해주세요.");
+    throw new Error("본문 내용을 입력해주세요");
   if (typeof published !== "boolean")
-    throw new Error("postBoard중 오류 발생: published가 지정되지 않았습니다");
+    throw new Error("공개 여부가 지정되지 않았습니다");
 
   try {
     const response = await apiClient.post("/boards", {
