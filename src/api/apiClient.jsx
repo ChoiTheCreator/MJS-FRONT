@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 // ✅ 환경변수 값 확인 (서버 실행 후 브라우저 콘솔에서 확인)
-console.log('🚀 API Base URL:', import.meta.env.VITE_API_BASE_URL);
 
 // ✅ Axios 인스턴스 생성
 const apiClient = axios.create({
@@ -11,8 +10,6 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-console.log('🛠 Axios Client 생성됨:', apiClient);
 
 // ✅ 요청 인터셉터 (API 요청 전에 실행)
 apiClient.interceptors.request.use(
@@ -27,13 +24,6 @@ apiClient.interceptors.request.use(
       config.headers['REFRESH-AUTH-KEY'] = `BEARER ${refreshToken}`;
     }
 
-    // 📡 API 요청 로그
-    console.log(
-      '📡 API 요청:',
-      config.method.toUpperCase(),
-      config.baseURL + config.url,
-      config.headers
-    );
     return config;
   },
   (error) => {
