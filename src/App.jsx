@@ -2,6 +2,7 @@
 import { AuthProvider } from './context/AuthContext';
 import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
+import ScrollToTop from '@components/scrollToTop';
 import Layout from './components/Layout';
 import BoardDetailPage from '@pages/board/BoardDetailPage';
 import BoardListPage from '@pages/board/BoardListPage';
@@ -12,6 +13,7 @@ import MainPage from '@pages/MainPage';
 import LoginPage from '@pages/LoginPage';
 import ProfilePage from '@pages/profile';
 import ProfileEditPage from '@pages/profile/edit';
+import InqueryPage from '@pages/profile/inquery';
 
 
 // 전역 스타일
@@ -38,6 +40,7 @@ const App = () => {
   return (
     <>
       <AuthProvider>
+        <ScrollToTop />
         <Global styles={globalStyle} /> {/* 전역 스타일 적용 */}
         <Routes>
           {/* Layout 적용되는 페이지 */}
@@ -49,8 +52,9 @@ const App = () => {
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
 
-            <Route path='/profile/:userId' element={<ProfilePage />} />
-            <Route path='/profile/:userId/edit' element={<ProfileEditPage />} />
+            <Route path='/profile/' element={<ProfilePage />} />
+            <Route path='/profile/edit' element={<ProfileEditPage />} />
+            <Route path='/profile/inquery' element={<InqueryPage />} />
           </Route>
 
           {/* Layout 미적용 페이지 */}
