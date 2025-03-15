@@ -133,8 +133,4 @@ const linkStyle = css`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `

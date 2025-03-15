@@ -14,6 +14,8 @@ import LoginPage from '@pages/LoginPage';
 import ProfilePage from '@pages/profile';
 import ProfileEditPage from '@pages/profile/edit';
 import InqueryPage from '@pages/profile/inquery';
+import InqueryWritePage from '@pages/profile/inquery/write';
+import WithDrawalPage from '@pages/profile/withdrawal';
 
 
 // 전역 스타일
@@ -55,6 +57,8 @@ const App = () => {
             <Route path='/profile/' element={<ProfilePage />} />
             <Route path='/profile/edit' element={<ProfileEditPage />} />
             <Route path='/profile/inquery' element={<InqueryPage />} />
+            <Route path='/profile/inquery/write' element={<InqueryWritePage />} />
+            <Route path='/profile/withdrawal' element={<WithDrawalPage />} />
           </Route>
 
           {/* Layout 미적용 페이지 */}

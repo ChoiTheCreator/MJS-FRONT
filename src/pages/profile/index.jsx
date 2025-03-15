@@ -58,6 +58,36 @@ export default function ProfilePage() {
         </div>
         <div css={boxLayout}>
           <span css={headingStyle}>
+            회원 정보 수정
+          </span>
+          <Link css={linkStyle}>
+            <span>
+              비밀번호 변경
+            </span>
+          </Link>
+          <Link css={linkStyle}>
+            <span>
+              닉네임 설정
+            </span>
+          </Link>
+          <Link css={linkStyle}>
+            <span>
+              학과 설정
+            </span>
+          </Link>
+          <Link css={linkStyle}>
+            <span>
+              학적 처리 내역
+            </span>
+          </Link>
+          <Link css={linkStyle}>
+            <span>
+              이용 제한 내역
+            </span>
+          </Link>
+        </div>
+        <div css={boxLayout}>
+          <span css={headingStyle}>
             이용안내
           </span>
           <div css={css`display: flex; flex-direction: column; gap: 1.5rem; padding: 0.25rem;`}>
@@ -80,6 +110,16 @@ export default function ProfilePage() {
               <span>이용 제한 내역</span>
             </Link>
           </div>
+        </div>
+        <div css={css`width: 100%; display:flex; justify-content: flex-end;`}>
+          <Link
+            css={css`font-size: 0.75rem; color: #999; text-decoration: none;`}
+            to={'/profile/withdrawal'}
+          >
+            <span>
+              회원 탈퇴
+            </span>
+          </Link>
         </div>
       </div>
     </div >
