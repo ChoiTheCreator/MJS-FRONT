@@ -3,13 +3,16 @@ import { AuthProvider } from './context/AuthContext';
 import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
 import Layout from './components/Layout';
-import BoardDetailPage from './pages/board/BoardDetailPage';
-import BoardListPage from './pages/board/BoardListPage';
-import BoardWritePage from './pages/board/BoardWritePage';
-import StartPage from './pages/StartPage';
-import NotFoundPage from './pages/NotFoundPage';
-import MainPage from './pages/MainPage';
-import LoginPage from './pages/LoginPage';
+import BoardDetailPage from '@pages/board/BoardDetailPage';
+import BoardListPage from '@pages/board/BoardListPage';
+import BoardWritePage from '@pages/board/BoardWritePage';
+import StartPage from '@pages/StartPage';
+import NotFoundPage from '@pages/NotFoundPage';
+import MainPage from '@pages/MainPage';
+import LoginPage from '@pages/LoginPage';
+import ProfilePage from '@pages/profile';
+import ProfileEditPage from '@pages/profile/edit';
+
 
 // 전역 스타일
 const globalStyle = css`
@@ -45,6 +48,9 @@ const App = () => {
             <Route path="/board" element={<BoardListPage />} />
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
+
+            <Route path='/profile/:userId' element={<ProfilePage />} />
+            <Route path='/profile/:userId/edit' element={<ProfileEditPage />} />
           </Route>
 
           {/* Layout 미적용 페이지 */}
