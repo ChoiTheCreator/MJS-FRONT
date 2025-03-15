@@ -54,7 +54,6 @@ const MealPlan = () => {
     const fetchMealPlan = async () => {
       try {
         const data = await getWeeklyMenu();
-        console.log('mealPlan에서 fetching되는 ', data);
         setMealInfo(data || []);
         setLoading(false);
       } catch (error) {
@@ -75,7 +74,7 @@ const MealPlan = () => {
     return (
       <div css={mealPlanStyle}>
         <strong style={{ marginBottom: '7px', color: 'red' }}>
-          주말이기에 식단이 존재하지 않습니다.
+          주말은 식단이 존재하지 않습니다!
         </strong>
       </div>
     );
@@ -93,7 +92,6 @@ const MealPlan = () => {
   const todayMeals = mealInfo.filter((meal) => {
     const match = meal.date.match(/\(([^)]+)\)/); // 괄호 안의 문자 추출
     const mealDay = match ? match[1].trim() : ''; // 공백 제거
-    console.log('mealDay:', mealDay, 'todayDayName:', todayDayName);
     return mealDay === todayDayName;
   });
 
@@ -103,8 +101,6 @@ const MealPlan = () => {
     todayMeals.find((meal) => meal.menuCategory === 'BREAKFAST') ||
     todayMeals.find((meal) => meal.menuCategory === 'DINNER') ||
     null;
-
-  console.log('식단에 넣을 데이터', firstMeal);
 
   if (loading) {
     return (

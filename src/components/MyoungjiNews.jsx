@@ -111,14 +111,22 @@ const loadMoreButtonStyle = css`
 const MyongjiNews = () => {
   const [newsData, setNewsData] = useState({ REPORT: [], SOCIETY: [] });
   const [loading, setLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState('REPORT');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNewsInfo = async (category) => {
       try {
+        //EndPoint -> /news?category={}
         const response = await apiClient.get('/news', { params: { category } });
-        setNewsData((prevData) => ({ ...prevData, [category]: response.data }));
+        console.log('뉴스 컴포넌트 Fetching', response.data.data.content);
+        setNewsData((prevData) => ({
+          ...prevData,
+          //아래 보면 Fetching을 두번 하므로, 새로운 카테고리 속성을 추가해줘야함
+          //[category]는 동적 key임 , 배열이 아님 헷갈리지 말 것 (포스팅)
+          [category]: response.data.data.content,
+        }));
       } catch (error) {
         console.log('명대신문 데이터 서버 오류', error);
       } finally {
