@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import LoadingComponent from './util/LoadingComponent';
 import { getWeeklyMenu } from '../api/mealApi';
 import { useNavigate } from 'react-router-dom';
+import { CgLogOff } from 'react-icons/cg';
+import { IoIosSad } from 'react-icons/io';
 
 const mealPlanStyle = css`
   display: flex;
@@ -52,7 +54,7 @@ const MealPlan = () => {
     const fetchMealPlan = async () => {
       try {
         const data = await getWeeklyMenu();
-        console.log(data);
+        console.log('mealPlan에서 fetching되는 ', data);
         setMealInfo(data || []);
         setLoading(false);
       } catch (error) {
@@ -66,6 +68,18 @@ const MealPlan = () => {
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const todayDayName = dayNames[new Date().getDay()];
 
+  //주말일 경우 학교 식단이 Null이기에 Null 방지
+  const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+
+  if (isWeekend) {
+    return (
+      <div css={mealPlanStyle}>
+        <strong style={{ marginBottom: '7px', color: 'red' }}>
+          주말이기에 식단이 존재하지 않습니다.
+        </strong>
+      </div>
+    );
+  }
   //24 시간 3교대로 타임마다, 아침, 점심 , 저녁 fetching
   const currentHour = new Date().getHours();
   let mealCategory = 'BREAKFAST';
@@ -76,10 +90,12 @@ const MealPlan = () => {
     mealCategory = 'DINNER';
   }
 
-  //요일꺼를 타겟팅해서 찾는다.
-  const todayMeals = mealInfo.filter((meal) =>
-    meal.date.includes(`(${todayDayName})`)
-  );
+  const todayMeals = mealInfo.filter((meal) => {
+    const match = meal.date.match(/\(([^)]+)\)/); // 괄호 안의 문자 추출
+    const mealDay = match ? match[1].trim() : ''; // 공백 제거
+    console.log('mealDay:', mealDay, 'todayDayName:', todayDayName);
+    return mealDay === todayDayName;
+  });
 
   const firstMeal =
     todayMeals.find((meal) => meal.menuCategory === mealCategory) ||
@@ -87,6 +103,8 @@ const MealPlan = () => {
     todayMeals.find((meal) => meal.menuCategory === 'BREAKFAST') ||
     todayMeals.find((meal) => meal.menuCategory === 'DINNER') ||
     null;
+
+  console.log('식단에 넣을 데이터', firstMeal);
 
   if (loading) {
     return (
@@ -96,7 +114,7 @@ const MealPlan = () => {
 
   return (
     <div css={mealPlanStyle} onClick={handleMealPlanClick}>
-      <h4>오늘의 식단 | {firstMeal.menuCategory} </h4>
+      {/* <h4>오늘의 식단 | {firstMeal.menuCategory} </h4> */}
       {<strong style={{ marginBottom: '7px' }}>{firstMeal.date}</strong>}
       <ul>
         {firstMeal.meals.map((menu, index) => (
