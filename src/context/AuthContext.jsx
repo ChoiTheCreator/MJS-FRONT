@@ -5,6 +5,7 @@ import {
   logout as logoutApi,
   signup as signupApi,
 } from '../api/authApi';
+import { useCookies } from 'react-cookie';
 
 const AuthContext = createContext();
 
@@ -13,13 +14,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // 로그인한 사용자 정보 저장
   const [accessToken, setAccessToken] = useState(null); //빠른 접근을 위해 일단 메모리 (상태에다가 저장한다)
   const [uuid, setUuid] = useState(null);
+  const [cookies, setCookies, removeCookies] = useCookies(['accessToken', 'refreshToken', 'uuid']);
 
   //새로고침 시 로그인흔적을 파악하는 부분임 -> sessionStorage
   //1. 로그인 상태 (토큰)
   //2. uuid
   useEffect(() => {
-    const storedToken = sessionStorage.getItem('accessToken');
-    const storedUuid = localStorage.getItem('uuid');
+    // const storedToken = sessionStorage.getItem('accessToken');
+    // const storedUuid = localStorage.getItem('uuid');
+    const storedToken = cookies.accessToken;
+    const storedUuid = cookies.uuid;
 
     setAccessToken(storedToken);
     setUuid(storedUuid);
@@ -35,11 +39,12 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       const data = await signupApi(userData);
-      const uuid = data.uuid;
-      localStorage.setItem('uuid', uuid);
-      console.log('uuid 저장완료 ', uuid);
+      // const uuid = data.uuid;
+      // localStorage.setItem('uuid', uuid);
+      // console.log('uuid 저장완료 ', uuid);
+      setCookies('uuid', data.uuid)
 
-      setUuid(uuid);
+      setUuid(data.uuid);
     } catch (error) {
       console.log('x 회원가입 실패', error);
       throw error;
@@ -56,21 +61,27 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(data.accessToken);
       setIsLoggedIn(true);
 
-      sessionStorage.setItem('accessToken', data.accessToken);
+      setCookies('accessToken', data.accessToken)
+      setCookies('refreshToken', data.refreshToken)
 
-      const storedUuid = localStorage.getItem('uuid');
+      // sessionStorage.setItem('accessToken', data.accessToken);
+
+      // const storedUuid = localStorage.getItem('uuid');
+      const storedUuid = cookies.uuid;
 
       if (storedUuid) {
         setUuid(storedUuid);
       } else {
         console.warn('로그인은 성공했지만, uuid가 없습니다.');
       }
-      console.log(
-        '✅ 로그인 성공 현재 사용자의 접근토큰은 메모리에 안전하게 저장되었습니다. :',
-        data.accessToken
-      );
+      // console.log(
+      //   '✅ 로그인 성공 현재 사용자의 접근토큰은 메모리에 안전하게 저장되었습니다. :',
+      //   data.accessToken
+      // );
+
+      console.log('쿠키 로그 찍는다 시발', cookies.accessToken)
     } catch (error) {
-      console.error('❌ 로그인 실패:', error);
+      // console.error('❌ 로그인 실패:', error);
       throw error;
     }
   };
@@ -80,15 +91,17 @@ export const AuthProvider = ({ children }) => {
     try {
       await logoutApi(accessToken); // 서버에 로그아웃 요청 -> 로컬스토로지를 헤더에 넣어줘야하므로, 요래함
 
-      sessionStorage.removeItem('accessToken'); // 만약 localStorage에 저장했다면 제거
+      removeCookies('accessToken');
+      removeCookies('refreshToken');
+      // sessionStorage.removeItem('accessToken'); // 만약 localStorage에 저장했다면 제거
       setAccessToken(null);
       setUser(null);
       setIsLoggedIn(false);
       setUuid(null);
 
-      console.log('👋 로그아웃 완료');
+      // console.log('👋 로그아웃 완료');
     } catch (error) {
-      console.error('❌ 로그아웃 context logout 함수의 실패:', error);
+      // console.error('❌ 로그아웃 context logout 함수의 실패:', error);
     }
   };
 
