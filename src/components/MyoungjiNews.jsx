@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingComponent from './util/LoadingComponent';
+import { getNews } from '../api/newsApi';
 import apiClient from '../api/apiClient';
 
 const newsContainerStyle = css`
@@ -111,21 +112,21 @@ const loadMoreButtonStyle = css`
 const MyongjiNews = () => {
   const [newsData, setNewsData] = useState({ REPORT: [], SOCIETY: [] });
   const [loading, setLoading] = useState(true);
-
   const [activeTab, setActiveTab] = useState('REPORT');
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNewsInfo = async (category) => {
       try {
         //EndPoint -> /news?category={}
-        const response = await apiClient.get('/news', { params: { category } });
-        console.log('뉴스 컴포넌트 Fetching', response.data.data.content);
+
+        const response = await getNews(category);
+        console.log('뉴스 컴포넌트 Fetching', response.data.content);
         setNewsData((prevData) => ({
           ...prevData,
-          //아래 보면 Fetching을 두번 하므로, 새로운 카테고리 속성을 추가해줘야함
-          //[category]는 동적 key임 , 배열이 아님 헷갈리지 말 것 (포스팅)
-          [category]: response.data.data.content,
+
+          [category]: response.data.content,
         }));
       } catch (error) {
         console.log('명대신문 데이터 서버 오류', error);

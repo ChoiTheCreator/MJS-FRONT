@@ -11,6 +11,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import MealPage from './pages/meal/MealPage';
+import NewsPage from './pages/news/NewsPage';
 
 // 전역 스타일
 const globalStyle = css`
@@ -33,7 +34,6 @@ const globalStyle = css`
 `;
 
 const App = () => {
-  
   return (
     <>
       <AuthProvider>
@@ -50,6 +50,7 @@ const App = () => {
 
             {/* 식단 상세조회 페이지 */}
             <Route path="/meal" element={<MealPage />} />
+            <Route path="/news" element={<NewsPage />}></Route>
           </Route>
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
