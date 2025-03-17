@@ -64,7 +64,7 @@ const mealTitleStyle = css`
   span {
     color: gray;
 
-    font-size: 20px;
+    font-size: 17px;
   }
 `;
 
