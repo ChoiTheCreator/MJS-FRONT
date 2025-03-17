@@ -1,12 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { postBoardComment } from '../../api/commentApi'
 
-export default function CommentForm({ uuid }) {
-  const navigate = useNavigate()
+export default function CommentForm({ uuid, onCommentAdded }) {
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -18,9 +16,13 @@ export default function CommentForm({ uuid }) {
 
     setIsLoading(true)
     try {
-      const response = await postBoardComment(uuid, "abcde", content)
+      await postBoardComment(uuid, content)
+      onCommentAdded();
     } catch (error) {
-      toast.error(error.message)
+      if (error.status == 403)
+        toast.error('댓글 작성 권한이 없습니다')
+      else
+        toast.error(error.message)
     } finally {
       setIsLoading(false)
     }

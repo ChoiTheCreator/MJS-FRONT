@@ -1,36 +1,35 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getBoardComments } from '../../api/commentApi';
 import LoadingComponent from '../util/LoadingComponent';
-import { useNavigate } from 'react-router-dom';
 import CommentItem from './CommentItem';
 import { toast } from 'react-toastify';
 import CommentForm from './CommentForm';
 
 export default function Comment({ uuid }) {
-  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [comments, setComments] = useState(null)
 
-  useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true)
-      try {
-        const response = await getBoardComments(uuid)
-        console.log('getBoardComments 결과', response.data)
-        setComments(response.data)
-      } catch (error) {
-        setIsError(true)
-        console.error(error)
-        toast.error('댓글을 불러오는 중 문제가 발생했습니다')
-      } finally {
-        setIsLoading(false)
-      }
+  const fetchComments = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getBoardComments(uuid)
+      console.log('getBoardComments 결과', response.data)
+      setComments(response.data)
+    } catch (error) {
+      setIsError(true)
+      console.error(error)
+      toast.error('댓글을 불러오는 중 문제가 발생했습니다')
+    } finally {
+      setIsLoading(false)
     }
-    getData()
   }, [uuid])
+
+  useEffect(() => {
+    fetchComments()
+  }, [fetchComments])
 
   if (isLoading) {
     return (
@@ -62,7 +61,7 @@ export default function Comment({ uuid }) {
               content={comment.content} />
           ))}
         </div>
-        <CommentForm uuid={uuid} />
+        <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
       </div>
     )
   }
