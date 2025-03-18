@@ -16,7 +16,6 @@ export default function MiniBoard() {
       try {
         const response = await getBoardContents()
         setContents(response.data.content)
-        console.log(response.data.content)
       } catch (error) {
         console.error(error)
       } finally {
@@ -79,6 +78,7 @@ export default function MiniBoard() {
                   }
                 `}
               onClick={() => navigate(`/board/${content.uuid}`)}
+              key={content.uuid}
             >
               <HotBadge />
               <span>
