@@ -24,12 +24,12 @@ apiClient.interceptors.request.use(
     //   config.headers['REFRESH-AUTH-KEY'] = `Bearer ${refreshToken}`;
     // }
 
-    console.log(
-      'API 요청:',
-      config.method,
-      config.baseURL + config.url,
-      config.headers
-    );
+    // console.log(
+    //   'API 요청:',
+    //   config.method,
+    //   config.baseURL + config.url,
+    //   config.headers
+    // );
     return config;
   },
   (error) => {

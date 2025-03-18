@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
@@ -125,33 +125,34 @@ const ProfileComponent = () => {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn, user, setUser, uuid, logout } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false)
   const handleLoginClick = () => {
     navigate('/login');
   };
 
-  const handleLogoutClick = () => {
-    //실제 활용하는 로그아웃
-    logout();
+  const handleLogoutClick = async () => {
+    await logout();
     setIsLoggedIn(false);
+    window.location.reload();
   };
 
   useEffect(() => {
-    console.log('현재 uuid:', uuid); // uuid 값 확인
     const fetchUserData = async () => {
       if (isLoggedIn) {
         try {
-          const response = await apiClient.get(`/members/${uuid}`);
-          console.log('uuid 데이터는', response.data);
-
+          const response = await apiClient.get(`/members/info`);
+          console.log(response.data);
           setUser(response.data.data);
-          setLoading(false);
-          console.log(user.name);
         } catch (error) {
           console.error('서버 통신 오류:', error);
+          setIsError(true)
+        } finally {
+          setLoading(false)
         }
+      } else {
+        setLoading(false)
       }
     };
-
     fetchUserData();
   }, [isLoggedIn, user?.id, setUser, uuid]);
 
@@ -164,6 +165,18 @@ const ProfileComponent = () => {
     );
   }
 
+  if (isError) {
+    return (
+      <div css={profileContainerStyle}>
+        <div css={css`display: flex; flex-direction: column; justify-content: center; align-items: center;`}>
+          <span css={css`text-size: 2rem;`}>
+            오류가 발생했습니다
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       {isLoggedIn ? (
@@ -173,7 +186,7 @@ const ProfileComponent = () => {
             <div css={profileInfoStyle}>
               <img css={profileImageStyle} src={dummyImg} alt="Profile" />
               <div css={userDetailsStyle}>
-                <span css={userNameStyle}>{user?.name || '이름 없음'}</span>
+                <span css={userNameStyle}>{user?.nickname || '이름 없음'}</span>
                 <span css={userEmailStyle}>{user?.email || '이메일 없음'}</span>
               </div>
             </div>
@@ -187,10 +200,18 @@ const ProfileComponent = () => {
 
           {/* 네비게이션 메뉴 */}
           <div css={navigationStyle}>
-            <span>MSI</span>
-            <span>MYiCap</span>
-            <span>Office365</span>
-            <span>MyPage</span>
+            <a href='https://msi.mju.ac.kr' target="_blank" rel="noopener noreferrer">
+              <span>MSI</span>
+            </a>
+            <a href='https://myicap.mju.ac.kr' target="_blank" rel="noopener noreferrer">
+              <span>MYiCap</span>
+            </a>
+            <a href='https://mcloud.mju.ac.kr' target="_blank" rel="noopener noreferrer">
+              <span>Office365</span>
+            </a>
+            <Link to={'/profile'}>
+              <span>MyPage</span>
+            </Link>
           </div>
         </div>
       ) : (
