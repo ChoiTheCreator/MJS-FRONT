@@ -16,7 +16,7 @@ import ProfileEditPage from '@pages/profile/edit';
 import InqueryPage from '@pages/profile/inquery';
 import InqueryWritePage from '@pages/profile/inquery/write';
 import WithDrawalPage from '@pages/profile/withdrawal';
-
+import MealPage from './pages/meal/MealPage';
 
 // 전역 스타일
 const globalStyle = css`
@@ -39,6 +39,7 @@ const globalStyle = css`
 `;
 
 const App = () => {
+  
   return (
     <>
       <AuthProvider>
@@ -59,8 +60,10 @@ const App = () => {
             <Route path='/profile/inquery' element={<InqueryPage />} />
             <Route path='/profile/inquery/write' element={<InqueryWritePage />} />
             <Route path='/profile/withdrawal' element={<WithDrawalPage />} />
-          </Route>
 
+            {/* 식단 상세조회 페이지 */}
+            <Route path="/meal" element={<MealPage />} />
+          </Route>
           {/* Layout 미적용 페이지 */}
           <Route path="/" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}

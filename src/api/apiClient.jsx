@@ -11,7 +11,6 @@ const apiClient = axios.create({
   },
 });
 
-// 요청 인터셉터 (API 요청 전에 실행)
 apiClient.interceptors.request.use(
   (config) => {
     const accessToken = cookies.get('accessToken');
@@ -25,7 +24,6 @@ apiClient.interceptors.request.use(
     //   config.headers['REFRESH-AUTH-KEY'] = `Bearer ${refreshToken}`;
     // }
 
-    // API 요청 로그
     console.log(
       'API 요청:',
       config.method,
@@ -82,7 +80,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// ✅ 토큰 갱신 함수
 const refreshAccessToken = async () => {
   try {
     const accessToken = cookies.get('accessToken');

@@ -128,7 +128,7 @@ const Navbar = () => {
             <Link to="/info">학과정보</Link>
           </li>
           <li>
-            <Link to="/cafeteria">식단</Link>
+            <Link to="/meal">식단</Link>
           </li>
           <li>
             <Link to="/market">벼룩시장</Link>
