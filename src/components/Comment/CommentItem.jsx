@@ -1,7 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const Comment = (props) => {
+export default function CommentItem(props) {
+  function formatDate(input) {
+    const [datePart, timePart] = input.split('T');
+    const [year, month, day] = datePart.split('-');
+    const [hour, minute] = timePart.split(':');
+
+    const formattedYear = year.slice(2);
+    return `${formattedYear}/${month}/${day} ${hour}:${minute}`;
+  }
+
+  const createdAt = formatDate(props.createdAt)
+
   return (
     <div
       css={css`
@@ -11,28 +22,19 @@ const Comment = (props) => {
         padding: 8px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 12px; 
       `}
-      key={props.key}
     >
-      <div css={css`
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      `}>
+      <div css={css`display: flex; align-items: center; gap: 8px;`}>
         <img
           src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
           alt="임시 이미지"
           css={css`width: 38px; height: 38px; border-radius: 14px;`} />
-        <span css={css`
-          font-size: 16px;
-          font-weight: 700;
-          margin: 4px;
-        `}>
+        <span css={css`font-size: 16px; font-weight: 700; margin: 4px;`}>
           {props.userName}
         </span>
-        <span css={css`font-size: 14px; margin: 4px; color: red;`}>
-          작성일
+        <span css={css`font-size: 14px; margin: 4px; color: #999;`}>
+          {createdAt}
         </span>
         <span css={css`font-size: 14px; margin: 4px; color: #999;`}>
           {`좋아요 ${props.likeCount}`}
@@ -42,7 +44,6 @@ const Comment = (props) => {
         {props.content}
       </span>
     </div>
-  );
-}
+  )
 
-export default Comment;
+}
