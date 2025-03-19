@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import Avatar from '@components/Avatar';
 import { css } from '@emotion/react';
 
 export default function CommentItem(props) {
@@ -26,10 +27,7 @@ export default function CommentItem(props) {
       `}
     >
       <div css={css`display: flex; align-items: center; gap: 8px;`}>
-        <img
-          src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-          alt="임시 이미지"
-          css={css`width: 38px; height: 38px; border-radius: 14px;`} />
+        <Avatar size={38} />
         <span css={css`font-size: 16px; font-weight: 700; margin: 4px;`}>
           {props.userName}
         </span>

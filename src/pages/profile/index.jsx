@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import Avatar from '@components/Avatar';
 import { css } from '@emotion/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -21,10 +22,7 @@ export default function ProfilePage() {
             </Link>
           </div>
           <div css={css`width: 100%; padding: 0.5rem; display: flex; gap: 1rem;`}>
-            <img
-              src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-              alt="임시 이미지"
-              css={css`width: 64px; height: 64px; border-radius: 20px;`} />
+            <Avatar size={64} />
             <div css={css`flex: 1; display: flex; flex-direction: column; gap: 0.5rem;`}>
               <span css={css`font-weight: 600;`}>
                 박재욱

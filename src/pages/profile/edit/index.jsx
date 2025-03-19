@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import Avatar from '@components/Avatar';
 import { css } from '@emotion/react';
 
 export default function ProfileEditPage() {
@@ -15,10 +16,7 @@ export default function ProfileEditPage() {
               <span css={css`font-size: 1.125rem; font-weight: 600;`}>
                 프로필 사진
               </span>
-              <img
-                src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-                alt="임시 이미지"
-                css={css`width: 64px; height: 64px; border-radius: 20px;`} />
+              <Avatar size={64} />
             </div>
           </div>
           <div css={css`display: flex; flex-direction: column; gap: 0.5rem;`}>
