@@ -58,7 +58,9 @@ export default function Comment({ uuid }) {
               userName={comment.nickname}
               createdAt={comment.createdAt}
               likeCount={comment.likeCount}
-              content={comment.content} />
+              content={comment.content}
+              boardUuid={uuid}
+              commentUuid={comment.commentUUID} />
           ))}
         </div>
         <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
