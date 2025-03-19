@@ -29,8 +29,10 @@ const BoardDetailPage = () => {
       try {
         const response = await deleteBoardContent(uuid)
         navigate('/board')
-      } catch (error) {
-        toast.error(error.message)
+        toast.info('게시글이 삭제되었습니다')
+      } catch (e) {
+        console.error('error BoardDetailPage.jsx', e)
+        toast.error(e.message)
       } finally {
         setLoading(false)
       }
@@ -44,7 +46,7 @@ const BoardDetailPage = () => {
     }
 
     setLoading(true)
-    toast.info('게시글에 좋아요를 표시했습니다!')
+    toast.info('게시글에 좋아요를 표시했습니다')
     setLoading(false)
   }
 

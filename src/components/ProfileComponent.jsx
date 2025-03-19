@@ -4,51 +4,48 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
-import dummyImg from '../IMG/Myself.jpeg'
 import { FaExternalLinkAlt } from 'react-icons/fa'
-import apiClient from '../api/apiClient'
 import LoadingComponent from './util/LoadingComponent'
 import Avatar from './Avatar'
+import { getUserInfo } from '@api/userApi'
 
 const ProfileComponent = () => {
   const navigate = useNavigate()
-  const { isLoggedIn, setIsLoggedIn, user, setUser, logout } = useAuth()
-  const [loading, setLoading] = useState(true)
+  const { isLoggedIn, logout } = useAuth()
+  const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
   const handleLoginClick = () => {
     navigate('/login')
   }
 
   const handleLogoutClick = async () => {
     await logout()
-    setIsLoggedIn(false)
     window.location.reload()
   }
 
   useEffect(() => {
-    console.log(isLoggedIn)
-
     const fetchUserData = async () => {
       if (isLoggedIn) {
         try {
-          const response = await apiClient.get(`/members/info`)
-          console.log(response.data)
-          setUser(response.data.data)
-        } catch (error) {
-          console.error('서버 통신 오류:', error)
+          const response = await getUserInfo()
+          setUserInfo(response.data)
+        } catch (e) {
+          console.error('서버 통신 오류:', e)
           await logout()
         } finally {
-          setLoading(false)
+          setIsLoading(false)
         }
       } else {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
     fetchUserData()
-  }, [isLoggedIn, user?.id, setUser])
+  }, [isLoggedIn])
 
   //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
-  if (loading) {
+  if (isLoading) {
     return (
       <div style={{ marginLeft: '300px' }}>
         <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
@@ -77,10 +74,10 @@ const ProfileComponent = () => {
                 <Avatar size={50} />
                 <div css={userDetailsStyle}>
                   <span css={userNameStyle}>
-                    {user?.nickname}
+                    {userInfo?.nickname}
                   </span>
                   <span css={userEmailStyle}>
-                    {user?.email}
+                    {userInfo?.email}
                   </span>
                 </div>
               </div>
