@@ -110,7 +110,7 @@ const Navbar = () => {
         {/* 로고 */}
         <div className="logo">
           <img src={logo} alt="Logo" />
-          <Link to={'/main'}>
+          <Link to={'/main'} style={{ textDecoration: 'none' }}>
             <span className="logo-text">
               MJ<span style={{ color: 'skyblue' }}>S</span>
             </span>
@@ -128,7 +128,7 @@ const Navbar = () => {
             <Link to="/info">학과정보</Link>
           </li>
           <li>
-            <Link to="/cafeteria">식단</Link>
+            <Link to="/meal">식단</Link>
           </li>
           <li>
             <Link to="/market">벼룩시장</Link>

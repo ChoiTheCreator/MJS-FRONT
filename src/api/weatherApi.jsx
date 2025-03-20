@@ -1,11 +1,11 @@
 import apiClient from './apiClient';
 
 export const weatherFetch = async () => {
-  console.log('🚀 날씨 요청 시작...');
+  // console.log('🚀 날씨 요청 시작...');
 
   try {
     const response = await apiClient.get('/weather');
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('❌ 날씨 요청 실패!');

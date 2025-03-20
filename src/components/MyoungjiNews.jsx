@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingComponent from './util/LoadingComponent';
-import apiClient from '../api/apiClient';
+import { getNews } from '../api/newsApi';
 
 const newsContainerStyle = css`
   display: flex;
@@ -42,7 +42,7 @@ const tabStyle = (isActive) => css`
 const newsCardStyle = css`
   display: flex;
   flex-direction: row;
-  background: #fff;
+  background: white;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -112,13 +112,21 @@ const MyongjiNews = () => {
   const [newsData, setNewsData] = useState({ REPORT: [], SOCIETY: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('REPORT');
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNewsInfo = async (category) => {
       try {
-        const response = await apiClient.get('/news', { params: { category } });
-        setNewsData((prevData) => ({ ...prevData, [category]: response.data }));
+        //EndPoint -> /news?category={}
+
+        const response = await getNews(category);
+        // console.log('뉴스 컴포넌트 Fetching', response.data.content);
+        setNewsData((prevData) => ({
+          ...prevData,
+
+          [category]: response.data.content,
+        }));
       } catch (error) {
         console.log('명대신문 데이터 서버 오류', error);
       } finally {
@@ -134,7 +142,7 @@ const MyongjiNews = () => {
     return <LoadingComponent message="명대신문 컨텐츠를 불러오는 중..." />;
   }
 
-  const displayedNews = newsData[activeTab].slice(0, 4);
+  const displayedNews = (newsData[activeTab] || []).slice(0, 4);
 
   return (
     <div css={newsContainerStyle}>

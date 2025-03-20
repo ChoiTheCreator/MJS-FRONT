@@ -1,159 +1,195 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import styled from '@emotion/styled';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MarkdownViewer from "../../components/MarkdownViewer";
-import { getBoardContent } from '../../api/boardApi';
-import { Eye, Heart, MessageSquareText } from 'lucide-react';
+import { deleteBoardContent, getBoardContent } from '../../api/boardApi';
+import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
+import LoadingComponent from '../../components/util/LoadingComponent';
+import { toast } from 'react-toastify';
+import Avatar from '@components/Avatar';
 
 const BoardDetailPage = () => {
-  const { uuid } = useParams(); // URL 파라미터 활용
   const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const { uuid } = useParams();
   const [content, setContent] = useState(null);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [comments, setComments] = useState([]);
-
   const iconSize = 16;
+
+  const handleDeletePost = async () => {
+    if (loading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      setLoading(true)
+      try {
+        const response = await deleteBoardContent(uuid)
+        navigate('/board')
+        toast.info('게시글이 삭제되었습니다')
+      } catch (e) {
+        console.error('error BoardDetailPage.jsx', e)
+        toast.error(e.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  const handleSubmitLike = async () => {
+    if (loading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    setLoading(true)
+    toast.info('게시글에 좋아요를 표시했습니다')
+    setLoading(false)
+  }
 
   useEffect(() => {
     const getData = async () => {
-      setLoading(true);
+      setPageLoading(true);
       try {
-        const responseContent = await getBoardContent(uuid);
-        console.log(responseContent.data);
-        setContent(responseContent.data);
-
-
+        const response = await getBoardContent(uuid);
+        // console.log('getBoardContent 결과', response.data);
+        setContent(response.data);
       } catch (error) {
-        console.error(error);
+        toast.error(error.message)
       } finally {
-        setLoading(false);
+        setPageLoading(false);
       }
     }
     getData();
   }, [uuid])
 
-  if (loading) {
+  if (pageLoading) {
     return (
-      <PageContainer>
-        <ErrorMessageWrapper>
-          <h1>
-            게시글을 불러오는 중입니다.
-          </h1>
-        </ErrorMessageWrapper>
-      </PageContainer>
+      <div css={pageStyle}>
+        <div css={errorStyle}>
+          <LoadingComponent message='게시글을 불러오는 중입니다' />
+        </div>
+      </div>
     )
   } else if (content) {
     return (
-      <PageContainer>
+      <div css={pageStyle}>
         <div css={css`display: flex; flex-direction: column;`}>
           <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc;`}>
-            <h2 css={css`padding: 4px; flex: 1;`}>
+            <span css={css`font-size: 1.5em; font-weight: bold; padding: 4px; margin: 8px; flex: 1;`}>
               {content.title}
-            </h2>
-            <div css={css`display: flex; flex-direction: row;`}>
-              <TextButton>
+            </span>
+            <div css={css`display: flex; flex-direction: row; gap: 8px;`}>
+              <button css={textButtonStyle}>
                 수정
-              </TextButton>
-              <TextButton>
+              </button>
+              <button css={textButtonStyle} onClick={handleDeletePost}>
                 삭제
-              </TextButton>
+              </button>
             </div>
           </div>
-          <div css={css`display: flex; justify-content: flex-end;`}>
-            <DetailInfo css={css`color: #D00392;`}>
-              <Heart size={iconSize} />
+          <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 20px;`}>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #D00392;`}>
+              <LuHeart size={iconSize} />
               {content.likeCount === undefined ? "null" : content.likeCount}
-            </DetailInfo>
-            <DetailInfo css={css`color: #0386D0;`}>
-              <MessageSquareText size={iconSize} />
-              {content.commentCount === undefined ? "null" : content.commentCount}
-            </DetailInfo>
-            <DetailInfo css={css`color: #1103D0;`}>
-              <Eye size={iconSize} />
-              {content.viewCount === undefined ? "null" : content.viewCount}
-            </DetailInfo>
+            </span>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
+              <LuMessageSquare size={iconSize} />
+              게시판 댓글수를 GET Board api에서도 주세요
+              {/* {comments.totalElements} */}
+            </span>
+            <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
+              <LuEye size={iconSize} />
+              {content.viewCount}
+            </span>
           </div>
         </div>
-        <div css={css`padding: 32px;`}>
+        <div css={css`padding: 16px;`}>
           <MarkdownViewer>
             {content.content}
           </MarkdownViewer>
         </div>
-        <div css={css`width: 100%; border: 1px solid black;`}>
+        <div css={css`width: 100%;`}>
           <div css={css`
-            padding: 8px; 
+            padding: 16px; 
             display: flex; 
-            border: 1px solid black; 
+            justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #ccc;`}>
-            <img
-              src="https://mblogthumb-phinf.pstatic.net/MjAyNDAzMjZfMjM1/MDAxNzExMzgyMDQ3Mzcy.KEHy_SCpkdrmxR5snlfM-O_KBK6eZMUcYqUhdjpaAgUg.2--tdZ4zRKNuXl01U19DwC6onpvn7HERFNt2bD-tDhwg.PNG/5.png?type=w400"
-              alt="임시 이미지"
-              css={css`width: 64px; height: 64px; border-radius: 20px; margin: 8px;`} />
-            <div css={css`display: flex; flex-direction: column;`}>
-              <span css={css`
+            <div css={css`display: flex; gap: 16px; align-items: center;`}>
+              <Avatar size={48} />
+              <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
+                <span css={css`
                 font-size: 18px;
-                font-weight: 700;
-                margin: 4px;`}>
-                작성자
-              </span>
-              <span css={css`margin: 4px;`}>
-                2025년 3월 1일
-              </span>
+                font-weight: 700;`}>
+                  작성자
+                </span>
+                <span>
+                  {(() => {
+                    const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
+                    const timePart = content.publishedAt.substring(11, 16);
+                    return `${datePart} ${timePart}`;
+                  })()}
+                </span>
+              </div>
             </div>
+            <button
+              css={css`
+                background-color: #D00392;
+                color: white;
+                text-align: center;
+                border-radius: 10px;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px; `}
+              onClick={handleSubmitLike}>
+              <LuHeart />
+              좋아요
+            </button>
           </div>
-          <div css={css`display: flex; flex-direction: column; padding: 8px;`}>
-            <span>
-              댓글 수 10
-            </span>
-            <Comment />
-          </div>
+          <Comment uuid={uuid} />
         </div>
-      </PageContainer>
+      </div >
     );
   } else {
     return (
-      <PageContainer>
-        <ErrorMessageWrapper>
+      <div css={pageStyle}>
+        <div css={errorStyle}>
           <h1>게시글을 찾을 수 없습니다.</h1>
           <button css={backButtonStyle} onClick={() => navigate('/board')}>
             뒤로 가기
           </button>
-        </ErrorMessageWrapper>
-      </PageContainer>
+        </div>
+      </div>
     );
   }
 };
 
 export default BoardDetailPage;
 
-const ErrorMessageWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const PageContainer = styled.div`
+const pageStyle = css`
   width: 100%;
   height: 100%;
-  min-height: 100vh;
-  padding: 4%;
+  padding: 3%;
+  gap: 40px;
   display: flex;
   flex-direction: column;
   border: 1px solid #ddd;
   border-radius: 16px;
 `;
 
-const postInfoStyle = css`
+const errorStyle = css`
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #777;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const backButtonStyle = css`
@@ -172,22 +208,12 @@ const backButtonStyle = css`
   }
 `;
 
-const TextButton = styled.button`
+const textButtonStyle = css`
   background: transparent;
   color: gray;
   border: none;
   cursor: pointer;
   &:hover {
-  text-decoration: underline;
+    text-decoration: underline;
   }
-`
-
-const DetailInfo = styled.span`
-  display: flex;
-  align-items: center;
-  margin: 8px;
-
-  & > * {
-    margin: 4px;
-  }
-`
+`;

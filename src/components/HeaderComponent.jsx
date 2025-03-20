@@ -124,7 +124,7 @@ const HeaderComponent = () => {
         <div className="highlight-and-search">
           <div className="highlight-banner">
             <FaBullhorn className="highlight-icon" />
-            <span>최원빈 기말고사때 소울푸드 6일 연속감 ㅋㅋ</span>
+            <span>현재 Version1 작업중입니다 _ MJS 일동</span>
           </div>
 
           <div className="search-bar">

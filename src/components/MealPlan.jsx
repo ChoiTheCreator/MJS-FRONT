@@ -1,16 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import apiClient from '../api/apiClient';
 import { useEffect, useState } from 'react';
 import LoadingComponent from './util/LoadingComponent';
+import { getWeeklyMenu } from '../api/mealApi';
+import { useNavigate } from 'react-router-dom';
+import { CgLogOff } from 'react-icons/cg';
+import { IoIosSad } from 'react-icons/io';
 
 const mealPlanStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  text-align: center;
+  gap: 6px;
   font-size: 0.9rem;
   color: #333;
-  height: 200px; /* 고정 높이 설정 */
+  height: 200px;
   overflow-y: auto; /* 내부 스크롤 활성화 */
   padding: 10px;
   box-sizing: border-box; /* 패딩 포함하여 높이 계산 */
@@ -19,17 +23,20 @@ const mealPlanStyle = css`
     font-size: 1.1rem;
     font-weight: bold;
     color: #001f5c;
-    margin-bottom: 10px; /* 제목과 내용 간 여백 추가 */
+    margin-bottom: 7px;
   }
 
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
 
     li {
-      margin: 5px 0;
+      flex: 1 1 calc(33.33% - 5px);
       word-wrap: break-word; /* 긴 단어 줄바꿈 처리 */
     }
   }
@@ -39,15 +46,16 @@ const MealPlan = () => {
   //빈 배열로 초기값 설정
   const [mealInfo, setMealInfo] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const handleMealPlanClick = () => {
+    navigate('/meal');
+  };
   useEffect(() => {
     const fetchMealPlan = async () => {
       try {
-        const response = await apiClient.get('/weeklymenu/get');
-        console.log(response.data.data);
-        setMealInfo(response.data.data || []);
+        const data = await getWeeklyMenu();
+        setMealInfo(data || []);
         setLoading(false);
-
-        return response.data;
       } catch (error) {
         console.log('식단 조회 오류', error);
       }
@@ -59,6 +67,18 @@ const MealPlan = () => {
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const todayDayName = dayNames[new Date().getDay()];
 
+  //주말일 경우 학교 식단이 Null이기에 Null 방지
+  const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+
+  if (isWeekend) {
+    return (
+      <div css={mealPlanStyle}>
+        <strong style={{ marginBottom: '7px', color: 'red' }}>
+          주말은 식단이 존재하지 않습니다!
+        </strong>
+      </div>
+    );
+  }
   //24 시간 3교대로 타임마다, 아침, 점심 , 저녁 fetching
   const currentHour = new Date().getHours();
   let mealCategory = 'BREAKFAST';
@@ -69,10 +89,11 @@ const MealPlan = () => {
     mealCategory = 'DINNER';
   }
 
-  //요일꺼를 타겟팅해서 찾는다.
-  const todayMeals = mealInfo.filter((meal) =>
-    meal.date.includes(`( ${todayDayName} )`)
-  );
+  const todayMeals = mealInfo.filter((meal) => {
+    const match = meal.date.match(/\(([^)]+)\)/); // 괄호 안의 문자 추출
+    const mealDay = match ? match[1].trim() : ''; // 공백 제거
+    return mealDay === todayDayName;
+  });
 
   const firstMeal =
     todayMeals.find((meal) => meal.menuCategory === mealCategory) ||
@@ -88,13 +109,10 @@ const MealPlan = () => {
   }
 
   return (
-    <div css={mealPlanStyle}>
-      <h4>오늘의 식단 </h4>
+    <div css={mealPlanStyle} onClick={handleMealPlanClick}>
+      {/* <h4>오늘의 식단 | {firstMeal.menuCategory} </h4> */}
+      {<strong style={{ marginBottom: '7px' }}>{firstMeal.date}</strong>}
       <ul>
-        <li>
-          <strong>{firstMeal.date}</strong>
-        </li>
-        <li>{firstMeal.menuCategory}</li>
         {firstMeal.meals.map((menu, index) => (
           <li key={index}>{menu}</li>
         ))}

@@ -1,14 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TabComponent from '../components/TabComponent';
 import WeatherComponent from '../components/WeatherComponent';
-import RankingComponent from '../components/RankingComponent';
+
 import AdBanner from '../components/AdBanner';
 import MealPlan from '../components/MealPlan';
 import MyongjiNews from '../components/MyoungjiNews';
+import MiniBoard from '../components/widgets/MiniBoard';
 
 const mainPageContainerStyle = css`
   width: 100%;
@@ -53,7 +53,6 @@ const reducedHeightBoxStyle = css`
 `;
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useAuth(); // 로그인 상태와 상태 변경 함수
 
   const handleLogout = () => {
@@ -90,8 +89,11 @@ const MainPage = () => {
         <div css={contentBoxStyle}>
           <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
         </div>
+        {/* <div css={contentBoxStyle}>
+          <RankingComponent /> 검색
+        </div> */}
         <div css={contentBoxStyle}>
-          <RankingComponent /> {/* 검색 순위 */}
+          <MiniBoard />
         </div>
       </div>
     </div>

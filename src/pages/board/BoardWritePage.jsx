@@ -1,27 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import {
-  Bold,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  Image,
-  Italic,
-  Link2,
-  Quote,
-  Strikethrough,
-} from 'lucide-react';
+import { LuBold, LuCode, LuHeading1, LuHeading2, LuHeading3, LuImage, LuItalic, LuLink2, LuQuote, LuStrikethrough } from "react-icons/lu";
 import { useRef, useState } from 'react';
 import MarkdownViewer from '../../components/MarkdownViewer';
 import { postBoardContent } from "../../api/boardApi";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BoardWritePage = () => {
   const [title, setTitle] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [link, setLink] = useState("");
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const titleBoxRef = useRef(null);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -284,29 +275,23 @@ const BoardWritePage = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const response = await postBoardContent(title, content, true, []);
-      console.log(response)
-
-      const responseId = response.data.uuid;
-      navigate(`/board/${responseId}`)
-    } catch (error) {
-      console.error(error)
+    if (isLoading) {
+      toast.error('잠시 기다려주세요')
+      return;
     }
 
-    // 상세 보기 페이지로 라우팅
-
-    // DEBUG: 임시 로컬 저장 코드
-    // const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
-    // const url = URL.createObjectURL(blob);
-    // const link = document.createElement('a');
-    // link.href = url;
-    // link.download = 'content.md';
-    // document.body.appendChild(link); // Firefox 대응
-    // link.click();
-    // document.body.removeChild(link);
-    // URL.revokeObjectURL(url);
-  };
+    setIsLoading(true);
+    try {
+      const response = await postBoardContent(title, content, true, []);
+      const responseId = response.data.uuid;
+      navigate(`/board/${responseId}`);
+      toast.info('게시글 업로드 완료')
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div css={editorWrapper}>
@@ -321,24 +306,24 @@ const BoardWritePage = () => {
       </div>
       <div css={toolbarContainer}>
         <div css={toolbar}>
-          <button css={toolbarButton} onClick={() => insertHeading('#')}><Heading1 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHeading('##')}><Heading2 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHeading('###')}><Heading3 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('#')}><LuHeading1 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('##')}><LuHeading2 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHeading('###')}><LuHeading3 size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
-          <button css={toolbarButton} onClick={() => insertTextStyle('**')}><Bold size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertTextStyle(' _', '_ ')}><Italic size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertTextStyle('~~')}><Strikethrough size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle('**')}><LuBold size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle(' _', '_ ')}><LuItalic size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertTextStyle('~~')}><LuStrikethrough size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
-          <button css={toolbarButton} onClick={() => insertQuote()}><Quote size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => insertHyperlink()}><Link2 size={toolbarIconSize} /></button>
-          <button css={toolbarButton} onClick={() => handleImageUploadClick()}><Image size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertQuote()}><LuQuote size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertHyperlink()}><LuLink2 size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => handleImageUploadClick()}><LuImage size={toolbarIconSize} /></button>
           <input
             type="file"
             accept="image/*"
             style={{ display: 'none' }}
             ref={fileInputRef}
             onChange={handleFileChange} />
-          <button css={toolbarButton} onClick={() => insertCode()}><Code size={toolbarIconSize} /></button>
+          <button css={toolbarButton} onClick={() => insertCode()}><LuCode size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
           <button onClick={handleSave}>저장</button>
         </div>
