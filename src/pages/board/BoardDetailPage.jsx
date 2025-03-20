@@ -8,6 +8,7 @@ import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '../../components/Comment';
 import LoadingComponent from '../../components/util/LoadingComponent';
 import { toast } from 'react-toastify';
+import Avatar from '@components/Avatar';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
@@ -28,8 +29,10 @@ const BoardDetailPage = () => {
       try {
         const response = await deleteBoardContent(uuid)
         navigate('/board')
-      } catch (error) {
-        toast.error(error.message)
+        toast.info('게시글이 삭제되었습니다')
+      } catch (e) {
+        console.error('error BoardDetailPage.jsx', e)
+        toast.error(e.message)
       } finally {
         setLoading(false)
       }
@@ -43,7 +46,7 @@ const BoardDetailPage = () => {
     }
 
     setLoading(true)
-    toast.info('게시글에 좋아요를 표시했습니다!')
+    toast.info('게시글에 좋아요를 표시했습니다')
     setLoading(false)
   }
 
@@ -117,10 +120,7 @@ const BoardDetailPage = () => {
             align-items: center;
             border-bottom: 1px solid #ccc;`}>
             <div css={css`display: flex; gap: 16px; align-items: center;`}>
-              <img
-                src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-                alt="임시 이미지"
-                css={css`width: 48px; height: 48px; border-radius: 20px;`} />
+              <Avatar size={48} />
               <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
                 <span css={css`
                 font-size: 18px;

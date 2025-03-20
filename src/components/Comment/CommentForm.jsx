@@ -3,6 +3,7 @@ import { css } from '@emotion/react'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { postBoardComment } from '../../api/commentApi'
+import Avatar from '@components/Avatar'
 
 export default function CommentForm({ uuid, onCommentAdded }) {
   const [content, setContent] = useState('')
@@ -32,10 +33,7 @@ export default function CommentForm({ uuid, onCommentAdded }) {
     <div css={css`margin: 16px; padding: 16px; display: flex; flex-direction: row; gap: 16px;`}>
       <div css={css`display: flex; flex-direction: row;`}>
         <div css={css`display:flex; flex-direction: column; gap: 16px;`}>
-          <img
-            src="https://thumb.ac-illust.com/51/51e1c1fc6f50743937e62fca9b942694_t.jpeg"
-            alt="임시 이미지"
-            css={css`width: 64px; height: 64px; border-radius: 20px;`} />
+          <Avatar size={64} />
         </div>
       </div>
       <input

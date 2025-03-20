@@ -7,6 +7,98 @@ import { useNavigate } from 'react-router-dom';
 import SuccessModal from '../components/message/SuccessModal';
 import { useAuth } from '../context/AuthContext';
 
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+  const openSignUpModal = () => setIsSignUpModalOpen(true);
+  const closeSignUpModal = () => setIsSignUpModalOpen(false);
+
+  //onChange 핸들러
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  //authContext에서 구현한 로그인 함수들을 가져옴
+  const { login, setIsLoggedIn } = useAuth();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const userInfo = {
+        email,
+        password,
+      };
+
+      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
+
+      await login(userInfo);
+      setIsLoggedIn(true);
+      setIsSuccessMessageModalOpen(true);
+    } catch (e) {
+      alert('로그인에 실패했습니다.');
+      console.error('❌ 로그인 오류:', e);
+    }
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessMessageModalOpen(false);
+    navigate('/main');
+  };
+
+  return (
+    <>
+      <Global styles={globalStyle} />
+      <div css={containerStyle}>
+        <form css={formStyle} onSubmit={handleSubmit}>
+          <div css={titleContainerStyle}>
+            <img src={logoImg} alt="학교 로고" css={logoStyle} />
+            <h2 css={titleStyle}>로그인</h2>
+          </div>
+          <input
+            type="text"
+            placeholder="이메일"
+            onChange={handleEmailChange}
+            css={inputStyle}
+          />
+          <input
+            type="password"
+            placeholder="비밀번호"
+            css={inputStyle}
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          {error && <p css={errorMessageStyle}>{error}</p>}
+          <button type="submit" css={buttonStyle}>
+            로그인
+          </button>
+          <p css={signupTextStyle}>
+            계정이 없으신가요?{' '}
+            <a href="#!" onClick={openSignUpModal}>
+              회원가입하기
+            </a>
+          </p>
+        </form>
+      </div>
+      {/* 모달처럼 보여야 하므로, navigating이 아닌 ChildBlockAppending */}
+      {isSignUpModalOpen && (
+        <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
+      )}
+      {isSuccessMessageModalOpen && (
+        <SuccessModal
+          message="로그인에 성공했습니다! 메인페이지로 이동합니다."
+          //successmodal에서 타임아웃으로 자동으로 닫게 했음요
+          onClose={handleSuccessModalClose}
+        ></SuccessModal>
+      )}
+    </>
+  );
+};
+
+export default LoginPage;
+
 const globalStyle = css`
   body,
   html,
@@ -130,96 +222,3 @@ const signupTextStyle = css`
     }
   }
 `;
-
-const LoginPage = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] =
-    useState(false);
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-
-  const openSignUpModal = () => setIsSignUpModalOpen(true);
-  const closeSignUpModal = () => setIsSignUpModalOpen(false);
-
-  //onChange 핸들러
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
-
-  //authContext에서 구현한 로그인 함수들을 가져옴
-  const { login, setIsLoggedIn } = useAuth();
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const userInfo = {
-        email,
-        password,
-      };
-
-      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
-
-      await login(userInfo);
-      setIsLoggedIn(true);
-      setIsSuccessMessageModalOpen(true);
-    } catch (e) {
-      alert('로그인에 실패했습니다.');
-      console.error('❌ 로그인 오류:', e);
-    }
-  };
-
-  const handleSuccessModalClose = () => {
-    setIsSuccessMessageModalOpen(false);
-    navigate('/main');
-  };
-
-  return (
-    <>
-      <Global styles={globalStyle} />
-      <div css={containerStyle}>
-        <form css={formStyle} onSubmit={handleSubmit}>
-          <div css={titleContainerStyle}>
-            <img src={logoImg} alt="학교 로고" css={logoStyle} />
-            <h2 css={titleStyle}>로그인</h2>
-          </div>
-          <input
-            type="text"
-            placeholder="이메일"
-            onChange={handleEmailChange}
-            css={inputStyle}
-          />
-          <input
-            type="password"
-            placeholder="비밀번호"
-            css={inputStyle}
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          {error && <p css={errorMessageStyle}>{error}</p>}
-          <button type="submit" css={buttonStyle}>
-            로그인
-          </button>
-          <p css={signupTextStyle}>
-            계정이 없으신가요?{' '}
-            <a href="#!" onClick={openSignUpModal}>
-              회원가입하기
-            </a>
-          </p>
-        </form>
-      </div>
-      {/* 모달처럼 보여야 하므로, navigating이 아닌 ChildBlockAppending */}
-      {isSignUpModalOpen && (
-        <SignUpPage closeSignUpModal={closeSignUpModal}></SignUpPage>
-      )}
-      {isSuccessMessageModalOpen && (
-        <SuccessModal
-          message="로그인에 성공했습니다! 메인페이지로 이동합니다."
-          //successmodal에서 타임아웃으로 자동으로 닫게 했음요
-          onClose={handleSuccessModalClose}
-        ></SuccessModal>
-      )}
-    </>
-  );
-};
-
-export default LoginPage;

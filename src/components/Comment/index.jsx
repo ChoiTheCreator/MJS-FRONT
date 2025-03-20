@@ -11,9 +11,10 @@ export default function Comment({ uuid }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [comments, setComments] = useState(null)
+  const [commentsVisibleCount, setCommentsVisibleCount] = useState(15)
 
   const fetchComments = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const response = await getBoardComments(uuid)
       console.log('getBoardComments 결과', response.data)
@@ -30,6 +31,10 @@ export default function Comment({ uuid }) {
   useEffect(() => {
     fetchComments()
   }, [fetchComments])
+
+  const handleViewMoreComments = () => {
+    setCommentsVisibleCount(commentsVisibleCount + 15)
+  }
 
   if (isLoading) {
     return (
@@ -49,18 +54,29 @@ export default function Comment({ uuid }) {
     return (
       <div css={css`display: flex; flex-direction: column; padding: 16px; gap: 16px;`}>
         <span>
-          댓글 수 {comments.length}
+          댓글 수 {comments.length}개
         </span>
         <div css={css`padding: 8px; gap: 16px;`}>
-          {comments.map((comment) => (
+          {comments.slice(0, commentsVisibleCount).map((comment) => (
             <CommentItem
               key={comment.commentUUID}
               userName={comment.nickname}
               createdAt={comment.createdAt}
               likeCount={comment.likeCount}
-              content={comment.content} />
+              content={comment.content}
+              boardUuid={uuid}
+              commentUuid={comment.commentUUID} />
           ))}
         </div>
+        {comments.length > commentsVisibleCount && (
+          <div css={css`display: flex; justify-content: center;`}>
+            <button onClick={handleViewMoreComments}>
+              <span>
+                댓글 더 보기
+              </span>
+            </button>
+          </div>
+        )}
         <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
       </div>
     )

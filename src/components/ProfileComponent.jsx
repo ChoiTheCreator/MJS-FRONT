@@ -1,14 +1,166 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { css } from '@emotion/react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useState } from 'react'
+import { FaExternalLinkAlt } from 'react-icons/fa'
+import LoadingComponent from './util/LoadingComponent'
+import Avatar from './Avatar'
+import { getUserInfo } from '@api/userApi'
 
-import dummyImg from '../IMG/Myself.jpeg';
-import { FaExternalLinkAlt } from 'react-icons/fa';
-import apiClient from '../api/apiClient';
-import LoadingComponent from './util/LoadingComponent';
+const ProfileComponent = () => {
+  const navigate = useNavigate()
+  const { isLoggedIn, logout } = useAuth()
+  const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
+  const handleLoginClick = () => {
+    navigate('/login')
+  }
+
+  const handleLogoutClick = async () => {
+    await logout()
+    window.location.reload()
+  }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (isLoggedIn) {
+        try {
+          const response = await getUserInfo()
+          setUserInfo(response.data)
+        } catch (e) {
+          console.error('서버 통신 오류:', e)
+          await logout()
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        setIsLoading(false)
+      }
+    }
+    fetchUserData()
+  }, [isLoggedIn])
+
+  //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
+  if (isLoading) {
+    return (
+      <div style={{ marginLeft: '300px' }}>
+        <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
+      </div>
+    )
+  } else {
+    if (isError) {
+      return (
+        <div css={profileContainerStyle}>
+          <div css={css`display: flex; flex-direction: column; justify-content: center; align-items: center;`}>
+            <span css={css`text-size: 2rem;`}>
+              오류가 발생했습니다
+            </span>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {isLoggedIn ? (
+          <div css={profileContainerStyle}>
+            <div css={profileTopSectionStyle}>
+              {/* 프로필 이미지 & 유저 정보 */}
+              <div css={profileInfoStyle}>
+                <Avatar size={50} />
+                <div css={userDetailsStyle}>
+                  <span css={userNameStyle}>
+                    {userInfo?.nickname}
+                  </span>
+                  <span css={userEmailStyle}>
+                    {userInfo?.email}
+                  </span>
+                </div>
+              </div>
+              {/* 오른쪽 외부 링크 아이콘 */}
+
+              <FaExternalLinkAlt css={iconStyle} onClick={handleLogoutClick} />
+            </div>
+
+            {/* 구분선 */}
+            <div css={dividerStyle}></div>
+
+            {/* 네비게이션 메뉴 */}
+            <div css={navigationStyle}>
+              <a
+                href='https://msi.mju.ac.kr'
+                target="_blank"
+                rel="noopener noreferrer"
+                css={css`text-decoration: none; color: inherit;`}>
+                <span css={css`color: #012968;`}>
+                  MSI
+                </span>
+              </a>
+              <a
+                href='https://myicap.mju.ac.kr'
+                target="_blank"
+                rel="noopener noreferrer"
+                css={css`text-decoration: none; color: inherit;`}>
+                <span css={css`color: #0386D0;`}>
+                  MY
+                </span>
+                <span css={css`color: #7E8080;`}>
+                  i
+                </span>
+                <span css={css`color: #002968;`}>
+                  Cap
+                </span>
+              </a>
+              <a
+                href='https://mcloud.mju.ac.kr'
+                target="_blank"
+                rel="noopener noreferrer"
+                css={css`text-decoration: none; color: inherit;`}>
+                <span css={css`color: #17171B;`}>
+                  Office
+                </span>
+                <span css={css`color: #EF6700;`}>
+                  365
+                </span>
+              </a>
+              <Link
+                to={'/profile'}
+                css={css`text-decoration: none; color: inherit;`}>
+                <span css={css`color: #17171B;`}>
+                  MyPage
+                </span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div css={profileContainerStyle}>
+            <div css={profileLoginSectionStyle}>
+              <div css={loginMessageStyle}>
+                커뮤니티 이용을 위한
+                <span style={{ color: ' navy', fontWeight: 'bold' }}>
+                  {' '}
+                  로그인{' '}
+                </span>
+                이 필요합니다!
+              </div>
+              <button css={loginButtonStyle} onClick={handleLoginClick}>
+                {' '}
+                로그인
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+}
+
+// 방금 이렇게 local storage에 uuid (사용자 파라미터) 로그인 상태 를 각 로컬 스토리지, 세션 스트로지에 저장하여 리렌더링 시의 상태를 유지하는 과정, 그 상태를 통해 useEffect로 fetching을 하고난 후, Ux 증진을 위해
+export default ProfileComponent
 
 const profileContainerStyle = css`
   display: flex;
@@ -37,13 +189,6 @@ const profileInfoStyle = css`
   display: flex;
   align-items: center;
   gap: 15px;
-`;
-
-const profileImageStyle = css`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
 `;
 
 const userDetailsStyle = css`
@@ -80,16 +225,6 @@ const navigationStyle = css`
   justify-content: space-around;
   font-size: 0.9rem;
   font-weight: bold;
-
-  span {
-    cursor: pointer;
-    &:nth-of-type(2) {
-      color: #0055ff; /* MYiCap 강조 */
-    }
-    &:nth-of-type(3) {
-      color: #ff6600; /* Office365 강조 */
-    }
-  }
 `;
 
 const loginMessageStyle = css`
@@ -120,121 +255,3 @@ const loginButtonStyle = css`
     transform: scale(0.95);
   }
 `;
-
-const ProfileComponent = () => {
-  const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn, user, setUser, uuid, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [isError, setIsError] = useState(false)
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
-  const handleLogoutClick = async () => {
-    await logout();
-    setIsLoggedIn(false);
-    window.location.reload();
-  };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (isLoggedIn) {
-        try {
-          const response = await apiClient.get(`/members/info`);
-          console.log(response.data);
-          setUser(response.data.data);
-        } catch (error) {
-          console.error('서버 통신 오류:', error);
-          setIsError(true)
-        } finally {
-          setLoading(false)
-        }
-      } else {
-        setLoading(false)
-      }
-    };
-    fetchUserData();
-  }, [isLoggedIn, user?.id, setUser, uuid]);
-
-  //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
-  if (loading) {
-    return (
-      <div style={{ marginLeft: '300px' }}>
-        <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div css={profileContainerStyle}>
-        <div css={css`display: flex; flex-direction: column; justify-content: center; align-items: center;`}>
-          <span css={css`text-size: 2rem;`}>
-            오류가 발생했습니다
-          </span>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      {isLoggedIn ? (
-        <div css={profileContainerStyle}>
-          <div css={profileTopSectionStyle}>
-            {/* 프로필 이미지 & 유저 정보 */}
-            <div css={profileInfoStyle}>
-              <img css={profileImageStyle} src={dummyImg} alt="Profile" />
-              <div css={userDetailsStyle}>
-                <span css={userNameStyle}>{user?.nickname || '이름 없음'}</span>
-                <span css={userEmailStyle}>{user?.email || '이메일 없음'}</span>
-              </div>
-            </div>
-            {/* 오른쪽 외부 링크 아이콘 */}
-
-            <FaExternalLinkAlt css={iconStyle} onClick={handleLogoutClick} />
-          </div>
-
-          {/* 구분선 */}
-          <div css={dividerStyle}></div>
-
-          {/* 네비게이션 메뉴 */}
-          <div css={navigationStyle}>
-            <a href='https://msi.mju.ac.kr' target="_blank" rel="noopener noreferrer">
-              <span>MSI</span>
-            </a>
-            <a href='https://myicap.mju.ac.kr' target="_blank" rel="noopener noreferrer">
-              <span>MYiCap</span>
-            </a>
-            <a href='https://mcloud.mju.ac.kr' target="_blank" rel="noopener noreferrer">
-              <span>Office365</span>
-            </a>
-            <Link to={'/profile'}>
-              <span>MyPage</span>
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <div css={profileContainerStyle}>
-          <div css={profileLoginSectionStyle}>
-            <div css={loginMessageStyle}>
-              커뮤니티 이용을 위한
-              <span style={{ color: ' navy', fontWeight: 'bold' }}>
-                {' '}
-                로그인{' '}
-              </span>
-              이 필요합니다!
-            </div>
-            <button css={loginButtonStyle} onClick={handleLoginClick}>
-              {' '}
-              로그인
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default ProfileComponent;
-// 방금 이렇게 local storage에 uuid (사용자 파라미터) 로그인 상태 를 각 로컬 스토리지, 세션 스트로지에 저장하여 리렌더링 시의 상태를 유지하는 과정, 그 상태를 통해 useEffect로 fetching을 하고난 후, Ux 증진을 위해
