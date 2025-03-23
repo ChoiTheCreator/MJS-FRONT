@@ -33,8 +33,8 @@ const mealTableStyle = css`
   }
 
   th {
-    background-color: #316090;
-    color: white;
+    background-color: white;
+    color: gray;
     font-weight: bold;
     padding: 17px;
   }
@@ -68,6 +68,11 @@ const menuTextStyle = css`
   white-space: pre-line;
 `;
 
+const todayHighlightStyle = css`
+  font-weight: bold;
+  font-style: italic;
+`;
+
 const normalizeDateKey = (dateStr) => dateStr.replace(/\D/g, '');
 
 const MealPage = () => {
@@ -87,6 +92,13 @@ const MealPage = () => {
     };
 
     fetchMealData();
+  }, []);
+
+  const todayKey = useMemo(() => {
+    const today = new Date();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // 1월 = 0 이므로 +1
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${month}${day}`; // '0328' 형태로 반환
   }, []);
 
   const allDates = useMemo(() => {
@@ -187,7 +199,13 @@ const MealPage = () => {
                 <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
                     <td key={cell.column.id} {...cell.getCellProps()}>
-                      <div css={menuTextStyle}>
+                      <div
+                        css={
+                          cell.column.id === todayKey
+                            ? [menuTextStyle, todayHighlightStyle]
+                            : menuTextStyle
+                        }
+                      >
                         {cell.column.id === 'mealType'
                           ? mealTypeToKorean(cell.value)
                           : cell.render('Cell')}
