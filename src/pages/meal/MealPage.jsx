@@ -75,6 +75,11 @@ const todayColumnHighlight = css`
   background-color: aliceblue;
 `;
 
+const mealTypeCellStyle = css`
+  text-align: center !important;
+  color: #333;
+`;
+
 const normalizeDateKey = (dateStr) => dateStr.replace(/\D/g, '');
 
 const MealPage = () => {
@@ -214,7 +219,9 @@ const MealPage = () => {
                     >
                       <div
                         css={
-                          cell.column.id === todayKey
+                          cell.column.id === 'mealType'
+                            ? mealTypeCellStyle
+                            : cell.column.id === todayKey
                             ? [menuTextStyle, todayHighlightStyle]
                             : menuTextStyle
                         }
