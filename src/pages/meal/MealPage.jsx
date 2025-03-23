@@ -37,7 +37,6 @@ const mealTableStyle = css`
   }
 
   th {
-    background-color: white;
     color: gray;
     padding: 17px;
   }
@@ -69,8 +68,11 @@ const menuTextStyle = css`
 `;
 
 const todayHighlightStyle = css`
-  font-weight: bold;
   font-style: italic;
+`;
+
+const todayColumnHighlight = css`
+  background-color: aliceblue;
 `;
 
 const normalizeDateKey = (dateStr) => dateStr.replace(/\D/g, '');
@@ -96,9 +98,9 @@ const MealPage = () => {
 
   const todayKey = useMemo(() => {
     const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // 1월 = 0 이므로 +1
+    const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
-    return `${month}${day}`; // '0328' 형태로 반환
+    return `${month}${day}`;
   }, []);
 
   const allDates = useMemo(() => {
@@ -118,17 +120,13 @@ const MealPage = () => {
 
     return mealTypes.map((mealType) => {
       const row = { mealType };
-
       allDates.forEach((date) => {
         const normalizedKey = normalizedDateMap[date];
         const found = mealData.find(
           (item) => item.date === date && item.menuCategory === mealType
         );
-
-        // 줄바꿈: <br>이 아니라 '\n' 사용하고, React에서 pre-line 스타일 적용
         row[normalizedKey] = found ? found.meals.join('\n') : '';
       });
-
       return row;
     });
   }, [mealData, allDates, normalizedDateMap]);
@@ -137,12 +135,12 @@ const MealPage = () => {
     switch (type) {
       case 'BREAKFAST':
         return '조식';
-
       case 'LUNCH':
         return '중식';
-
       case 'DINNER':
         return '석식';
+      default:
+        return type;
     }
   };
 
@@ -186,9 +184,12 @@ const MealPage = () => {
               <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th
-                    style={{ width: '40px' }}
                     key={column.id}
                     {...column.getHeaderProps()}
+                    css={
+                      column.id === todayKey ? todayColumnHighlight : undefined
+                    }
+                    style={{ width: '40px' }}
                   >
                     {column.render('Header')}
                   </th>
@@ -202,7 +203,15 @@ const MealPage = () => {
               return (
                 <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td key={cell.column.id} {...cell.getCellProps()}>
+                    <td
+                      key={cell.column.id}
+                      {...cell.getCellProps()}
+                      css={
+                        cell.column.id === todayKey
+                          ? todayColumnHighlight
+                          : undefined
+                      }
+                    >
                       <div
                         css={
                           cell.column.id === todayKey
