@@ -32,15 +32,14 @@ const mealTableStyle = css`
     font-size: 17px;
   }
 
+  td:hover {
+    background-color: aliceblue;
+  }
+
   th {
     background-color: white;
     color: gray;
-    font-weight: bold;
     padding: 17px;
-  }
-
-  tr:hover {
-    background-color: #e6f7ff;
   }
 `;
 
@@ -62,10 +61,11 @@ const mealTitleStyle = css`
 `;
 
 const menuTextStyle = css`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   white-space: pre-line;
+  text-align: left;
+  line-height: 1.8;
+  padding: 10px;
+  color: gray;
 `;
 
 const todayHighlightStyle = css`
@@ -148,7 +148,7 @@ const MealPage = () => {
 
   const transposedColumns = useMemo(() => {
     return [
-      { accessor: 'mealType', Header: 'Meal Type' },
+      { accessor: 'mealType', Header: '' },
       ...allDates.map((date) => ({
         accessor: normalizedDateMap[date],
         Header: date,
@@ -185,7 +185,11 @@ const MealPage = () => {
             {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th key={column.id} {...column.getHeaderProps()}>
+                  <th
+                    style={{ width: '40px' }}
+                    key={column.id}
+                    {...column.getHeaderProps()}
+                  >
                     {column.render('Header')}
                   </th>
                 ))}
