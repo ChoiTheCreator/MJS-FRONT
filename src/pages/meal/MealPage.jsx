@@ -4,12 +4,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { getWeeklyMenu } from '../../api/mealApi';
 import LoadingComponent from '../../components/util/LoadingComponent';
 import { useTable } from 'react-table';
+
 const mealTableStyle = css`
   display: flex;
-
   flex-direction: column;
   width: 1280px;
-
   font-family: 'Arial', sans-serif;
 
   table {
@@ -27,7 +26,7 @@ const mealTableStyle = css`
   td {
     border: 1px solid #ddd;
     padding: 12px;
-    color: gray;
+    color: black;
     text-align: center;
     vertical-align: middle;
     font-size: 17px;
@@ -63,7 +62,6 @@ const mealTitleStyle = css`
 
   span {
     color: gray;
-
     font-size: 17px;
   }
 `;
@@ -88,69 +86,59 @@ const MealPage = () => {
     fetchMealData();
   }, []);
 
-  // 데이터를 날짜별로 그룹화하여 하나의 행(row)으로 만듭니다.
-  const tableData = useMemo(() => {
-    if (!mealData || mealData.length === 0) return [];
+  const normalizedKey = (date) => date.split(' ')[0];
 
-    //MealData는 3가지 속성을 가진 배열임 (date, menuCategory, meals)
-
-    const grouped = mealData.reduce((acc, item) => {
-      const { date, menuCategory, meals } = item;
-
-      //처음에 acc에는 값이 없다. 따라서 누적합 객체의 date속성에 저런 객체 타입을 초기화 한다.
-      if (!acc[date]) {
-        acc[date] = { date, breakfast: '', lunch: '', dinner: '' };
-      }
-
-      const mealString = meals.join(', '); //데이터에서 fetching 되는 meals라는 값이 배열을 ,로 구분자로 하나의 문자열로 만들어주는게 join()임
-      if (menuCategory === 'BREAKFAST') {
-        acc[date].breakfast = mealString;
-      } else if (menuCategory === 'LUNCH') {
-        acc[date].lunch = mealString;
-      } else if (menuCategory === 'DINNER') {
-        acc[date].dinner = mealString;
-      }
-      return acc;
-    }, {});
-    return Object.values(grouped); // 현재 acc[date] = { date, breakfast: '', lunch: '', dinner: '' };
+  //mealDate에는 현재 날짜별로 아침점심저녁 겹치게 나오니까, 중복제거
+  const allDates = useMemo(() => {
+    const dateSet = Array.from(new Set(mealData.map((item) => item.date)));
+    return dateSet;
   }, [mealData]);
 
-  //4가지의 열 date, breakfast, lunch, dinnner
-  const columns = useMemo(
-    () => [
-      { accessor: 'date', Header: 'Date' },
-      { accessor: 'breakfast', Header: 'BREAKFAST' },
-      { accessor: 'lunch', Header: 'LUNCH' },
-      { accessor: 'dinner', Header: 'DINNER' },
-    ],
-    []
-  );
+  const allDateKeys = allDates.map(normalizedKey);
+  const transposedData = useMemo(() => {
+    if (!mealData || mealData.length === 0) return [];
+
+    const mealTypes = ['BREAKFAST', 'LUNCH', 'DINNER'];
+
+    const table = mealTypes.map((mealType) => {
+      //const row = { mealType }; //객체 축약 문법...
+
+      const row = { mealType: mealType };
+
+      //집합임
+      allDates.forEach((date) => {
+        const found = mealData.find(
+          //같은 날+ 같은 카테고리인 mealData해서 find
+          (item) => item.date === date && item.menuCategory === mealType
+        );
+        row[date] = found ? found.meals.join(', ') : '';
+      });
+      return row;
+    });
+
+    return table;
+  }, [mealData, allDates]);
+
+  console.log(transposedData);
+
+  const transposedColumns = useMemo(() => {
+    return [
+      { accessor: 'mealType', Header: '' },
+      //새로운 열은 이제 날짜임
+      ...allDates.map((date) => ({
+        accessor: date,
+        Header: date,
+      })),
+    ];
+  }, [allDates]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: tableData });
+    useTable({ columns: transposedColumns, data: transposedData });
 
-  const firstDate = tableData.length > 0 ? tableData[0].date : '';
-  const lastDate = tableData.length > 0 ? tableData[4].date : '';
-
-  // 오늘 날짜 가져오기 (YYYY-MM-DD)
-  const today = new Date().toISOString().split('T')[0];
-
-  const formatDate = (dateString) => {
-    const parts = dateString.split(' ')[0].split('.');
-    //03.10 (월) 을 03 10 (공백 기준으로 먼저 나누고, 03.10 (월)
-    //그 이후 .으로 나누면 03 10 이라는 값이 배열에 박힘 마지막에 (월)은 버려짐
-
-    const date = new Date();
-    const year = date.getFullYear(); //현재년도
-
-    //2025-03-10 (이런 형식을 갖추기 위해 padStart(앞에다가 pad를 댄다))
-    const compareDate = `${year}-${parts[0].padStart(
-      2,
-      '0'
-    )}-${parts[1].padStart(2, '0')}`;
-
-    return compareDate;
-  };
+  const firstDate = allDates[0] || '';
+  console.log('첫날', firstDate);
+  const lastDate = allDates[4] || '';
+  console.log('마지막날', lastDate);
 
   return (
     <div css={mealTableStyle}>
@@ -163,17 +151,15 @@ const MealPage = () => {
       </div>
       {loading ? (
         <LoadingComponent message="식단 정보를 불러오고 있습니다." />
-      ) : tableData.length === 0 ? (
+      ) : transposedData.length === 0 ? (
         <div>식단 정보가 없습니다.</div>
       ) : (
-        // 정해진 props 값 by useTable({columns,data:tableData})
         <table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th key={column.id} {...column.getHeaderProps()}>
-                    {/* 위에서 정의한 column 객체의 Header를 렌더할땐 이리한다. */}
                     {column.render('Header')}
                   </th>
                 ))}
@@ -183,18 +169,9 @@ const MealPage = () => {
           <tbody {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row);
-              const rowData = row.original; //tableDate ORG
-              const compareDate = formatDate(rowData.date);
-              const isToday = today === compareDate;
-              compareDate === console.log('오늘 날짜는', compareDate);
-              console.log('Row Data:', rowData);
-
+              console.log('ROW DATA:', row.original);
               return (
-                <tr
-                  key={rowData.date}
-                  {...row.getRowProps()}
-                  className={isToday ? 'highlight' : ''}
-                >
+                <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
                     <td key={cell.column.id} {...cell.getCellProps()}>
                       {cell.render('Cell')}
