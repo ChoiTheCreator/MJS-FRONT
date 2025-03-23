@@ -26,7 +26,7 @@ const mealTableStyle = css`
   td {
     border: 1px solid #ddd;
     padding: 12px;
-    color: black;
+    color: gray;
     text-align: center;
     vertical-align: middle;
     font-size: 17px;
@@ -42,9 +42,6 @@ const mealTableStyle = css`
   tr:hover {
     background-color: #e6f7ff;
   }
-  .highlight {
-    background-color: #e6f7ff !important;
-  }
 `;
 
 const mealTitleStyle = css`
@@ -54,8 +51,6 @@ const mealTitleStyle = css`
   margin-bottom: 20px;
   strong {
     font-size: 20px;
-    flex-direction: row;
-    justify-content: start;
     color: black;
     margin-right: 15px;
   }
@@ -66,6 +61,15 @@ const mealTitleStyle = css`
   }
 `;
 
+const menuTextStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: pre-line;
+`;
+
+const normalizeDateKey = (dateStr) => dateStr.replace(/\D/g, '');
+
 const MealPage = () => {
   const [loading, setLoading] = useState(true);
   const [mealData, setMealData] = useState([]);
@@ -74,7 +78,6 @@ const MealPage = () => {
     const fetchMealData = async () => {
       try {
         const response = await getWeeklyMenu();
-        console.log('API로부터 받은 mealData:', response);
         setMealData(response);
       } catch (error) {
         console.error('식단 불러오기 실패', error);
@@ -86,59 +89,69 @@ const MealPage = () => {
     fetchMealData();
   }, []);
 
-  const normalizedKey = (date) => date.split(' ')[0];
-
-  //mealDate에는 현재 날짜별로 아침점심저녁 겹치게 나오니까, 중복제거
   const allDates = useMemo(() => {
-    const dateSet = Array.from(new Set(mealData.map((item) => item.date)));
-    return dateSet;
+    return Array.from(new Set(mealData.map((item) => item.date)));
   }, [mealData]);
 
-  const allDateKeys = allDates.map(normalizedKey);
+  const normalizedDateMap = useMemo(() => {
+    return Object.fromEntries(
+      allDates.map((date) => [date, normalizeDateKey(date)])
+    );
+  }, [allDates]);
+
   const transposedData = useMemo(() => {
     if (!mealData || mealData.length === 0) return [];
 
     const mealTypes = ['BREAKFAST', 'LUNCH', 'DINNER'];
 
-    const table = mealTypes.map((mealType) => {
-      //const row = { mealType }; //객체 축약 문법...
+    return mealTypes.map((mealType) => {
+      const row = { mealType };
 
-      const row = { mealType: mealType };
-
-      //집합임
       allDates.forEach((date) => {
+        const normalizedKey = normalizedDateMap[date];
         const found = mealData.find(
-          //같은 날+ 같은 카테고리인 mealData해서 find
           (item) => item.date === date && item.menuCategory === mealType
         );
-        row[date] = found ? found.meals.join(', ') : '';
+
+        // 줄바꿈: <br>이 아니라 '\n' 사용하고, React에서 pre-line 스타일 적용
+        row[normalizedKey] = found ? found.meals.join('\n') : '';
       });
+
       return row;
     });
+  }, [mealData, allDates, normalizedDateMap]);
 
-    return table;
-  }, [mealData, allDates]);
+  const mealTypeToKorean = (type) => {
+    switch (type) {
+      case 'BREAKFAST':
+        return '조식';
 
-  console.log(transposedData);
+      case 'LUNCH':
+        return '중식';
+
+      case 'DINNER':
+        return '석식';
+    }
+  };
 
   const transposedColumns = useMemo(() => {
     return [
-      { accessor: 'mealType', Header: '' },
-      //새로운 열은 이제 날짜임
+      { accessor: 'mealType', Header: 'Meal Type' },
       ...allDates.map((date) => ({
-        accessor: date,
+        accessor: normalizedDateMap[date],
         Header: date,
       })),
     ];
-  }, [allDates]);
+  }, [allDates, normalizedDateMap]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns: transposedColumns, data: transposedData });
+    useTable({
+      columns: transposedColumns,
+      data: transposedData,
+    });
 
   const firstDate = allDates[0] || '';
-  console.log('첫날', firstDate);
   const lastDate = allDates[4] || '';
-  console.log('마지막날', lastDate);
 
   return (
     <div css={mealTableStyle}>
@@ -149,6 +162,7 @@ const MealPage = () => {
           [{firstDate} - {lastDate}]
         </span>
       </div>
+
       {loading ? (
         <LoadingComponent message="식단 정보를 불러오고 있습니다." />
       ) : transposedData.length === 0 ? (
@@ -169,12 +183,15 @@ const MealPage = () => {
           <tbody {...getTableBodyProps()}>
             {rows.map((row) => {
               prepareRow(row);
-              console.log('ROW DATA:', row.original);
               return (
                 <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
                     <td key={cell.column.id} {...cell.getCellProps()}>
-                      {cell.render('Cell')}
+                      <div css={menuTextStyle}>
+                        {cell.column.id === 'mealType'
+                          ? mealTypeToKorean(cell.value)
+                          : cell.render('Cell')}
+                      </div>
                     </td>
                   ))}
                 </tr>
