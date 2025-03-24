@@ -61,6 +61,7 @@ const mealTitleStyle = css`
 
 const todayDateTextStyle = css`
   font-weight: bold !important;
+  font-style: italic;
 `;
 
 const dateTextStyle = css`
