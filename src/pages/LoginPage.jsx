@@ -12,7 +12,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] = useState(false);
+  const [isSuccessMessageModalOpen, setIsSuccessMessageModalOpen] =
+    useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   const openSignUpModal = () => setIsSignUpModalOpen(true);
@@ -23,7 +24,7 @@ const LoginPage = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   //authContext에서 구현한 로그인 함수들을 가져옴
-  const { login, setIsLoggedIn } = useAuth();
+  const { postLogin, setIsLoggedIn } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -33,8 +34,9 @@ const LoginPage = () => {
       };
 
       console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
+      //postLOGIn으로
 
-      await login(userInfo);
+      await postLogin(userInfo);
       setIsLoggedIn(true);
       setIsSuccessMessageModalOpen(true);
     } catch (e) {

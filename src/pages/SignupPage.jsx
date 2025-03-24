@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 �
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
+import { postSignup } from '@/api/authApi';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -72,7 +73,7 @@ const buttonStyle = (enabled) => css`
   cursor: ${enabled ? 'pointer' : 'not-allowed'};
 `;
 
-const passwordErrorStyle = css`
+const ErrorStyle = css`
   color: red;
   font-size: 12px;
   text-align: left;
@@ -81,7 +82,7 @@ const passwordErrorStyle = css`
   margin-bottom: 10px;
 `;
 
-const passwordConfirmStyle = css`
+const ConfirmStyle = css`
   color: #28a745; /* 연두색 */
   font-size: 12px;
   text-align: left;
@@ -119,6 +120,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const PASSWORD_REGEX =
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
 
+  const MJU_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@mju\.ac\.kr$/;
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
     if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
@@ -136,7 +138,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showStudentId, setShowStudentId] = useState(false);
   const [showGender, setShowGender] = useState(false);
   const [showNickname, setShowNickname] = useState(false);
-
+  const [isMjuEmail, setIsMjuMail] = useState(false);
   const navigate = useNavigate();
 
   //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
@@ -193,7 +195,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
-      const data = await signup(newUser);
+      const data = await postSignup(newUser);
 
       setIsSignUpcomplete(true);
       //회원가입 성공하면 로그인 페이지로 리다리엑션
@@ -241,7 +243,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
                   )}
                   {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
                   {passwordError && password.length > 1 ? (
-                    <span css={passwordErrorStyle}>{passwordError}</span>
+                    <span css={ErrorStyle}>{passwordError}</span>
                   ) : null}
                   {showPasswordField && (
                     <div css={inputContainerStyle}>
@@ -273,11 +275,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
                   {/* 확인 비밀번호를 틀릴경우  */}
                   {confirmPassword && confirmPassword !== password ? (
-                    <p css={passwordErrorStyle}>
-                      비밀번호가 일치하지 않습니다.
-                    </p>
+                    <p css={ErrorStyle}>비밀번호가 일치하지 않습니다.</p>
                   ) : confirmPassword && confirmPassword === password ? (
-                    <p css={passwordConfirmStyle}>확인되었습니다!</p>
+                    <p css={ConfirmStyle}>확인되었습니다!</p>
                   ) : null}
                   <button
                     type="button"
