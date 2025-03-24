@@ -116,11 +116,12 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  //비밀번호 검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
+  //검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
   const PASSWORD_REGEX =
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
 
   const MJU_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@mju\.ac\.kr$/;
+
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
     if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
@@ -139,11 +140,12 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showGender, setShowGender] = useState(false);
   const [showNickname, setShowNickname] = useState(false);
   const [isMjuEmail, setIsMjuMail] = useState(false);
+
   const navigate = useNavigate();
 
   //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
   useEffect(() => {
-    if (name.length > 2) setShowEmail(true);
+    if (name.length >= 2) setShowEmail(true);
   }, [name]);
 
   useEffect(() => {
@@ -169,11 +171,19 @@ const SignUpPage = ({ closeSignUpModal }) => {
   //요청한 스텝바이스텝을 위한 상태값 (1 상태)
   const isStepOneValid =
     //첫번째 네개의 값이 다 채워지면 1상태
-    name && email && password && confirmPassword === password;
+    name && email && password && confirmPassword && isMjuEmail === password;
 
   //(2상태) 두번째 네개의 값이 다 채워지면 2상태
   const isStepTwoValid = department && studentId && gender && nickname;
 
+  //이메일 입력하고 난 뒤
+  const handleEmailChange = (email) => {
+    const rightInput = MJU_EMAIL_REGEX.test(email);
+
+    if (rightInput) {
+      setIsMjuMail(true);
+    }
+  };
   const handleNextStep = () => {
     if (step === 1 && isStepOneValid) {
       setStep(2);
@@ -195,8 +205,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
     };
 
     try {
-      const data = await postSignup(newUser);
-
+      await signup(newUser);
       setIsSignUpcomplete(true);
       //회원가입 성공하면 로그인 페이지로 리다리엑션
       setTimeout(() => {
