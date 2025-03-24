@@ -59,6 +59,14 @@ const mealTitleStyle = css`
   }
 `;
 
+const todayDateTextStyle = css`
+  font-weight: bold !important;
+`;
+
+const dateTextStyle = css`
+  font-weight: 400;
+`;
+
 const menuTextStyle = css`
   white-space: pre-line;
   text-align: left;
@@ -192,7 +200,9 @@ const MealPage = () => {
                     key={column.id}
                     {...column.getHeaderProps()}
                     css={
-                      column.id === todayKey ? todayColumnHighlight : undefined
+                      column.id === todayKey
+                        ? [todayColumnHighlight, todayDateTextStyle]
+                        : [dateTextStyle]
                     }
                     style={{ width: '40px' }}
                   >
