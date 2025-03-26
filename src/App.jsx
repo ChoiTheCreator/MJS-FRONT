@@ -2,7 +2,7 @@
 import { AuthProvider } from './context/AuthContext';
 import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
-import ScrollToTop from '@components/scrollToTop';
+import ScrollToTop from './components/ScrollToTop';
 import Layout from './components/Layout';
 import BoardDetailPage from '@pages/board/BoardDetailPage';
 import BoardListPage from '@pages/board/BoardListPage';
@@ -55,11 +55,14 @@ const App = () => {
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
 
-            <Route path='/profile/' element={<ProfilePage />} />
-            <Route path='/profile/edit' element={<ProfileEditPage />} />
-            <Route path='/profile/inquery' element={<InqueryPage />} />
-            <Route path='/profile/inquery/write' element={<InqueryWritePage />} />
-            <Route path='/profile/withdrawal' element={<WithDrawalPage />} />
+            <Route path="/profile/" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<ProfileEditPage />} />
+            <Route path="/profile/inquery" element={<InqueryPage />} />
+            <Route
+              path="/profile/inquery/write"
+              element={<InqueryWritePage />}
+            />
+            <Route path="/profile/withdrawal" element={<WithDrawalPage />} />
 
             {/* 식단 상세조회 페이지 */}
             <Route path="/meal" element={<MealPage />} />
