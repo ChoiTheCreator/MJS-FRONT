@@ -115,7 +115,8 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
-
+  const [isMjuEmail, setIsMjuMail] = useState(false);
+  const [MjuEmailError, setMjuEmailError] = useState('');
   //검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
   const PASSWORD_REGEX =
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
@@ -139,7 +140,6 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [showStudentId, setShowStudentId] = useState(false);
   const [showGender, setShowGender] = useState(false);
   const [showNickname, setShowNickname] = useState(false);
-  const [isMjuEmail, setIsMjuMail] = useState(false);
 
   const navigate = useNavigate();
 
@@ -148,42 +148,48 @@ const SignUpPage = ({ closeSignUpModal }) => {
     if (name.length >= 2) setShowEmail(true);
   }, [name]);
 
+  //이메일이 바뀔때 -> effect check MJU EMAIL REGEX
   useEffect(() => {
-    if (email.includes('@')) setShowPasswordField(true);
+    if (email.length > 0 && !MJU_EMAIL_REGEX.test(email)) {
+      setShowPasswordField(false);
+      setIsMjuMail(false);
+      setMjuEmailError(
+        '이메일 형식은 명지대학교의 공식 이메일이어야만 합니다.'
+      );
+    } else {
+      setShowPasswordField(true);
+    }
   }, [email]);
 
   useEffect(() => {
     if (password.length >= 8) setShowConfirmPassword(true);
+    else setShowConfirmPassword(false);
   }, [password]);
 
   useEffect(() => {
     if (department.length > 2) setShowStudentId(true);
+    else setShowStudentId(false);
   }, [department]);
 
   useEffect(() => {
     if (studentId.length >= 6) setShowGender(true);
+    else setShowGender(false);
   }, [studentId]);
 
   useEffect(() => {
     if (gender) setShowNickname(true);
+    else setShowNickname(false);
   }, [gender]);
 
   //요청한 스텝바이스텝을 위한 상태값 (1 상태)
   const isStepOneValid =
     //첫번째 네개의 값이 다 채워지면 1상태
-    name && email && password && confirmPassword && isMjuEmail === password;
+    name && email && password && confirmPassword && isMjuEmail;
+  password === confirmPassword;
 
   //(2상태) 두번째 네개의 값이 다 채워지면 2상태
   const isStepTwoValid = department && studentId && gender && nickname;
 
-  //이메일 입력하고 난 뒤
-  const handleEmailChange = (email) => {
-    const rightInput = MJU_EMAIL_REGEX.test(email);
-
-    if (rightInput) {
-      setIsMjuMail(true);
-    }
-  };
   const handleNextStep = () => {
     if (step === 1 && isStepOneValid) {
       setStep(2);
@@ -241,6 +247,10 @@ const SignUpPage = ({ closeSignUpModal }) => {
                     onChange={(e) => setName(e.target.value)}
                     css={inputStyle}
                   />
+                  {/* 명지대 이메일로 쓰지 않았을 경우.. 오류 발생 */}
+                  {!isMjuEmail && password.length > 1 ? (
+                    <span css={ErrorStyle}> {MjuEmailError}</span>
+                  ) : null}
                   {showEmail && (
                     <input
                       type="email"
