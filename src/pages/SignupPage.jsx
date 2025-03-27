@@ -120,7 +120,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
-    if (verifyPassword(password))
+    if (!verifyPassword(password))
       setPasswordError(
         '비밀번호는 영문, 숫자, 특수문자 포함 8-16자여야 합니다.'
       );
@@ -138,21 +138,21 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
   const navigate = useNavigate();
 
-  //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
   useEffect(() => {
     if (name.length >= 2) setShowEmail(true);
   }, [name]);
 
-  //이메일이 바뀔때 -> effect check MJU EMAIL REGEX
   useEffect(() => {
-    if (verifyMjuEmail(email)) {
+    if (!verifyMjuEmail(email)) {
       setShowPasswordField(false);
       setIsMjuMail(false);
       setMjuEmailError(
         '이메일 형식은 명지대학교의 공식 이메일이어야만 합니다.'
       );
-    } else {
-      setShowPasswordField();
+    }
+    if (verifyMjuEmail(email)) {
+      setShowPasswordField(true);
+      setMjuEmailError('');
     }
   }, [email]);
 
