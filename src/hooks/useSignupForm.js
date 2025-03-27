@@ -1,49 +1,30 @@
-// ### useSignUpForm 훅의 역할
-
-// - 회원가입 폼 전체 로직을 상태 기반으로 관리하는 컨트롤러 훅
-// - 입력값 상태, 단계 전환, 유효성 검사, 조건부 렌더링, 제출 처리까지 전반적인 흐름을 담당함
-// - 컴포넌트(SignUpPage)는 이 훅에서 제공하는 값만 사용해 UI를 렌더링하도록 설계됨
+//SignUpPage 컴포넌트의 과도한 부담을 줄이기 위한 컴포넌트.
 import { useEffect, useState } from 'react';
-import { verifyMjuEmail, verifyPassword } from '@/util/verifyRegex';
 import { useAuth } from '@/context/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
+import { verifyMjuEmail, verifyPassword } from '@/util/verifyRegex';
 const useSignupForm = () => {
   const [step, setStep] = useState(1);
   const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
   const { signup } = useAuth();
+
+  // 입력 상태
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [department, setDepartment] = useState('');
+  const [studentId, setStudentId] = useState('');
+  const [gender, setGender] = useState('');
+  const [nickname, setNickname] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [isMjuEmail, setIsMjuMail] = useState(false);
   const [MjuEmailError, setMjuEmailError] = useState('');
 
-  //입력상태 통일 (여러개의 useState로 setState 처리하는것 보다 이게 훨씬 효율적)
-  //또한 서버에 전송할때 이렇게 묶는게 훨씬 효율적
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    department: '',
-    studentId: '',
-    gender: '',
-    nickname: '',
-  });
-
-  const {
-    name,
-    email,
-    password,
-    confirmPassword,
-    department,
-    studentId,
-    gender,
-    nickname,
-  } = formData;
-
-  const handleChange = (stateAttribute) => (e) => {
-    setFormData((prev) => ({ ...prev, [stateAttribute]: e.target.value }));
-  };
+  const [isStepOneValid, setIsStepOneVaild] = useState(false);
 
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
@@ -55,7 +36,6 @@ const useSignupForm = () => {
       setPasswordError('');
     }
   }, [password]);
-
   // 상태 변경을 위한 useEffect
   const [showEmail, setShowEmail] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -67,7 +47,12 @@ const useSignupForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!verifyMjuEmail(email)) {
+    if (name.length >= 2) setShowEmail(true);
+    else setShowEmail(false);
+  }, [name]);
+
+  useEffect(() => {
+    if (!verifyMjuEmail(email) && email.length > 1) {
       setShowPasswordField(false);
       setIsMjuMail(false);
       setMjuEmailError(
@@ -81,13 +66,19 @@ const useSignupForm = () => {
   }, [email]);
 
   useEffect(() => {
-    if (name.length >= 2) setShowEmail(true);
-  }, [name]);
-
-  useEffect(() => {
     if (password.length >= 8) setShowConfirmPassword(true);
     else setShowConfirmPassword(false);
   }, [password]);
+
+  useEffect(() => {
+    if (password === confirmPassword && confirmPassword.length > 0) {
+      console.log('현재 비밀번호와 확인 비밀번호가 일치합니다.');
+      setIsStepOneVaild(true);
+    } else {
+      setIsStepOneVaild(false);
+      console.log('현재 비밀번호와 일치하지 않습니다.');
+    }
+  }, [password, confirmPassword]);
 
   useEffect(() => {
     if (department.length > 2) setShowStudentId(true);
@@ -103,12 +94,6 @@ const useSignupForm = () => {
     if (gender) setShowNickname(true);
     else setShowNickname(false);
   }, [gender]);
-
-  //요청한 스텝바이스텝을 위한 상태값 (1 상태)
-  const isStepOneValid =
-    //첫번째 네개의 값이 다 채워지면 1상태
-    name && email && password && confirmPassword && isMjuEmail;
-  password === confirmPassword;
 
   //(2상태) 두번째 네개의 값이 다 채워지면 2상태
   const isStepTwoValid = department && studentId && gender && nickname;
@@ -146,25 +131,54 @@ const useSignupForm = () => {
     }
   };
 
+  // 리턴값 자체를 객체 타입으로 value 속성에 어떤값 이런식으로 주는게 더 현명
+  //그럼 원본 컴포넌트에서 받아볼수 있기때문임!
   return {
-    step,
-    isSignUpComplete,
-    formData,
-    handleChange,
-    handleNextStep,
-    handleSubmit,
-    isStepOneValid,
-    isStepTwoValid,
-    showPassword,
-    setShowPassword,
-    passwordError,
-    MjuEmailError,
-    showEmail,
-    showPasswordField,
-    showConfirmPassword,
-    showStudentId,
-    showGender,
-    showNickname,
+    values: {
+      name,
+      email,
+      password,
+      confirmPassword,
+      department,
+      studentId,
+      gender,
+      nickname,
+    },
+    setters: {
+      setName,
+      setEmail,
+      setPassword,
+      setConfirmPassword,
+      setDepartment,
+      setStudentId,
+      setGender,
+      setNickname,
+    },
+    errors: {
+      passwordError,
+      MjuEmailError,
+    },
+    flags: {
+      isMjuEmail,
+      isStepOneValid,
+      isStepTwoValid,
+      isSignUpComplete,
+      step,
+    },
+    display: {
+      showEmail,
+      showPasswordField,
+      showConfirmPassword,
+      showStudentId,
+      showGender,
+      showNickname,
+      showPassword,
+    },
+    actions: {
+      setShowPassword,
+      handleNextStep,
+      handleSubmit,
+    },
   };
 };
 

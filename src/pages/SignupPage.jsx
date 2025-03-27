@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
+import useSignupForm from '@/hooks/useSignupForm';
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
 import { useNavigate } from 'react-router-dom';
@@ -98,125 +98,47 @@ const successIconStyle = css`
 `;
 
 const SignUpPage = ({ closeSignUpModal }) => {
-  const [step, setStep] = useState(1);
-  const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
-  const { signup } = useAuth();
-
-  // 입력 상태
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [department, setDepartment] = useState('');
-  const [studentId, setStudentId] = useState('');
-  const [gender, setGender] = useState('');
-  const [nickname, setNickname] = useState('');
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
-  const [isMjuEmail, setIsMjuMail] = useState(false);
-  const [MjuEmailError, setMjuEmailError] = useState('');
-
-  //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
-  useEffect(() => {
-    if (!verifyPassword(password))
-      setPasswordError(
-        '비밀번호는 영문, 숫자, 특수문자 포함 8-16자여야 합니다.'
-      );
-    else {
-      setPasswordError('');
-    }
-  }, [password]);
-  // 상태 변경을 위한 useEffect
-  const [showEmail, setShowEmail] = useState(false);
-  const [showPasswordField, setShowPasswordField] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showStudentId, setShowStudentId] = useState(false);
-  const [showGender, setShowGender] = useState(false);
-  const [showNickname, setShowNickname] = useState(false);
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (name.length >= 2) setShowEmail(true);
-  }, [name]);
-
-  useEffect(() => {
-    if (!verifyMjuEmail(email) && email.length > 1) {
-      setShowPasswordField(false);
-      setIsMjuMail(false);
-      setMjuEmailError(
-        '이메일 형식은 명지대학교의 공식 학생 이메일이어야만 합니다.'
-      );
-    }
-    if (verifyMjuEmail(email)) {
-      setShowPasswordField(true);
-      setMjuEmailError('');
-    }
-  }, [email]);
-
-  useEffect(() => {
-    if (password.length >= 8) setShowConfirmPassword(true);
-    else setShowConfirmPassword(false);
-  }, [password]);
-
-  useEffect(() => {
-    if (department.length > 2) setShowStudentId(true);
-    else setShowStudentId(false);
-  }, [department]);
-
-  useEffect(() => {
-    if (studentId.length >= 6) setShowGender(true);
-    else setShowGender(false);
-  }, [studentId]);
-
-  useEffect(() => {
-    if (gender) setShowNickname(true);
-    else setShowNickname(false);
-  }, [gender]);
-
-  //요청한 스텝바이스텝을 위한 상태값 (1 상태)
-  const isStepOneValid =
-    //첫번째 네개의 값이 다 채워지면 1상태
-    name && email && password && confirmPassword && isMjuEmail;
-  password === confirmPassword;
-
-  //(2상태) 두번째 네개의 값이 다 채워지면 2상태
-  const isStepTwoValid = department && studentId && gender && nickname;
-
-  const handleNextStep = () => {
-    if (step === 1 && isStepOneValid) {
-      setStep(2);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    //서버에 보낼 객체값가공
-    const newUser = {
+  //커스텀훅의 return 값을 중첩 구조분해 할당하여 return
+  const {
+    values: {
       name,
       email,
       password,
+      confirmPassword,
       department,
       studentId,
       gender,
       nickname,
-    };
-
-    try {
-      await signup(newUser);
-      setIsSignUpcomplete(true);
-      //회원가입 성공하면 로그인 페이지로 리다리엑션
-      setTimeout(() => {
-        navigate('/login');
-      }, 500);
-    } catch (e) {
-      alert('회원가입에 실패했습니다.');
-      console.log('회원가입 실패', e);
-    }
-  };
+    },
+    setters: {
+      setName,
+      setEmail,
+      setPassword,
+      setConfirmPassword,
+      setDepartment,
+      setStudentId,
+      setGender,
+      setNickname,
+    },
+    errors: { passwordError, MjuEmailError },
+    flags: {
+      isStepOneValid,
+      isStepTwoValid,
+      step,
+      isSignUpComplete,
+      isMjuEmail,
+    },
+    display: {
+      showEmail,
+      showPasswordField,
+      showConfirmPassword,
+      showStudentId,
+      showGender,
+      showNickname,
+      showPassword,
+    },
+    actions: { setShowPassword, handleNextStep, handleSubmit },
+  } = useSignupForm();
 
   return (
     <div css={modalOverlayStyle} onClick={closeSignUpModal}>
