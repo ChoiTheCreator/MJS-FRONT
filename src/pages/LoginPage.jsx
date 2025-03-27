@@ -24,7 +24,7 @@ const LoginPage = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   //authContext에서 구현한 로그인 함수들을 가져옴
-  const { postLogin, setIsLoggedIn } = useAuth();
+  const { login, setIsLoggedIn } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -36,7 +36,7 @@ const LoginPage = () => {
       console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
       //postLOGIn으로
 
-      await postLogin(userInfo);
+      await login(userInfo);
       setIsLoggedIn(true);
       setIsSuccessMessageModalOpen(true);
     } catch (e) {

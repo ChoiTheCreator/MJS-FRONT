@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 �
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
-import { postSignup } from '@/api/authApi';
+import { verifyMjuEmail, verifyPassword } from '@/util/verifyRegex';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -117,19 +117,14 @@ const SignUpPage = ({ closeSignUpModal }) => {
   const [passwordError, setPasswordError] = useState('');
   const [isMjuEmail, setIsMjuMail] = useState(false);
   const [MjuEmailError, setMjuEmailError] = useState('');
-  //검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
-  const PASSWORD_REGEX =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
-
-  const MJU_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@mju\.ac\.kr$/;
 
   //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
   useEffect(() => {
-    if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
+    if (verifyPassword(password))
       setPasswordError(
         '비밀번호는 영문, 숫자, 특수문자 포함 8-16자여야 합니다.'
       );
-    } else {
+    else {
       setPasswordError('');
     }
   }, [password]);
@@ -150,14 +145,14 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
   //이메일이 바뀔때 -> effect check MJU EMAIL REGEX
   useEffect(() => {
-    if (email.length > 0 && !MJU_EMAIL_REGEX.test(email)) {
+    if (verifyMjuEmail(email)) {
       setShowPasswordField(false);
       setIsMjuMail(false);
       setMjuEmailError(
         '이메일 형식은 명지대학교의 공식 이메일이어야만 합니다.'
       );
     } else {
-      setShowPasswordField(true);
+      setShowPasswordField();
     }
   }, [email]);
 
