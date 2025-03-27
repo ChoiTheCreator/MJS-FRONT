@@ -143,7 +143,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
   }, [name]);
 
   useEffect(() => {
-    if (!verifyMjuEmail(email)) {
+    if (!verifyMjuEmail(email) && email.length > 1) {
       setShowPasswordField(false);
       setIsMjuMail(false);
       setMjuEmailError(
