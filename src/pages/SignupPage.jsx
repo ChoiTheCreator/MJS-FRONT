@@ -147,7 +147,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
       setShowPasswordField(false);
       setIsMjuMail(false);
       setMjuEmailError(
-        '이메일 형식은 명지대학교의 공식 이메일이어야만 합니다.'
+        '이메일 형식은 명지대학교의 공식 학생 이메일이어야만 합니다.'
       );
     }
     if (verifyMjuEmail(email)) {
@@ -213,7 +213,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
         navigate('/login');
       }, 500);
     } catch (e) {
-      alert('회원가입에 실패했습니다');
+      alert('회원가입에 실패했습니다.');
       console.log('회원가입 실패', e);
     }
   };
@@ -242,8 +242,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
                     onChange={(e) => setName(e.target.value)}
                     css={inputStyle}
                   />
-                  {/* 명지대 이메일로 쓰지 않았을 경우.. 오류 발생 */}
-                  {!isMjuEmail && password.length > 1 ? (
+                  {!isMjuEmail ? (
                     <span css={ErrorStyle}> {MjuEmailError}</span>
                   ) : null}
                   {showEmail && (
