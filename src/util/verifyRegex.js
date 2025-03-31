@@ -4,6 +4,7 @@ const PASSWORD_REGEX =
 
 const MJU_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@mju\.ac\.kr$/;
 
+
 export const verifyPassword = (password) => {
   return password.length > 0 && PASSWORD_REGEX.test(password);
 };
@@ -11,3 +12,5 @@ export const verifyPassword = (password) => {
 export const verifyMjuEmail = (email) => {
   return email.length > 0 && MJU_EMAIL_REGEX.test(email);
 };
+
+

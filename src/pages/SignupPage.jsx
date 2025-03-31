@@ -1,12 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import useSignupForm from '@/hooks/useSignupForm';
-import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
-import { useNavigate } from 'react-router-dom';
-
-import { useAuth } from '../context/AuthContext';
-import { verifyMjuEmail, verifyPassword } from '@/util/verifyRegex';
 
 const modalOverlayStyle = css`
   position: fixed;
