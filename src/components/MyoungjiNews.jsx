@@ -121,7 +121,7 @@ const MyongjiNews = () => {
         //EndPoint -> /news?category={}
 
         const response = await getNews(category);
-        // console.log('뉴스 컴포넌트 Fetching', response.data.content);
+
         setNewsData((prevData) => ({
           ...prevData,
 
