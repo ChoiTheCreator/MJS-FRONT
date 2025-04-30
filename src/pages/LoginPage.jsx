@@ -34,7 +34,7 @@ const LoginPage = () => {
         password,
       };
 
-      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
+      console.log('📤 로그인 요청 데이터:', userInfo);
       //postLOGIn으로
 
       await login(userInfo);
@@ -48,7 +48,7 @@ const LoginPage = () => {
 
   const handleSuccessModalClose = () => {
     setIsSuccessMessageModalOpen(false);
-    navigate('/main');
+    navigate('/');
   };
 
   return (
