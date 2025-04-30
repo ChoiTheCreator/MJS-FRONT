@@ -7,7 +7,6 @@ import Layout from './components/Layout';
 import BoardDetailPage from '@pages/board/BoardDetailPage';
 import BoardListPage from '@pages/board/BoardListPage';
 import BoardWritePage from '@pages/board/BoardWritePage';
-
 import NotFoundPage from '@pages/NotFoundPage';
 import MainPage from '@pages/MainPage';
 import LoginPage from '@pages/LoginPage';

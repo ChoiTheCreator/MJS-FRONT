@@ -8,7 +8,7 @@ export const getNotice = async ({
   size = 5,
 }) => {
   try {
-    const response = await apiClient.get('/notice', {
+    const response = await apiClient.get('/notices', {
       params: { category, year, page, size },
     });
     // console.log('공지사항 받은 데이터', response.data);
